@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Milton PI — Saúde Suplementar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#000;--s1:#0c0c0c;--s2:#121212;--s3:#1a1a1a;
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --ac:#e63946;--ac-bg:rgba(230,57,70,.1);--ac-bd:rgba(230,57,70,.3);
+  --gr:#22c55e;--am:#f59e0b;--vi:#8b5cf6;--cy:#06b6d4;
+  --tx:#efefef;--mu:#6e6e6e;--mu2:#3f3f3f;
+  --mo:'IBM Plex Mono',monospace;--r:8px;
+}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:'Inter',sans-serif;background:#000;color:var(--tx);
+  display:grid;
+  grid-template-columns:208px 1fr;
+  grid-template-rows:52px 1fr;
+  grid-template-areas:"hd hd""sb mn";
+}
+/* HEADER */
+header{grid-area:hd;display:flex;align-items:center;justify-content:space-between;padding:0 1.4rem;border-bottom:1px solid var(--b1);background:#000;z-index:50}
+.logo{display:flex;align-items:center;gap:.6rem}
+.lm{width:26px;height:26px;border-radius:5px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff;letter-spacing:-.3px}
+.ln{font-size:.84rem;font-weight:600;letter-spacing:-.15px}
+.ln em{color:var(--mu);font-style:normal;font-weight:400;font-size:.71rem;margin-left:.28rem}
+.hr{display:flex;align-items:center;gap:.75rem}
+.dbp{display:flex;align-items:center;gap:.35rem;font-size:.67rem;font-family:var(--mo);color:var(--mu)}
+.dbd{width:5px;height:5px;border-radius:50%;background:var(--gr);animation:bk 2.5s infinite}
+.dbd.off{background:#555;animation:none}
+@keyframes bk{0%,100%{opacity:1}50%{opacity:.2}}
+.htag{font-size:.63rem;font-family:var(--mo);color:var(--mu2);background:var(--s2);border:1px solid var(--b1);border-radius:4px;padding:.14rem .46rem}
+/* SIDEBAR */
+aside{grid-area:sb;background:var(--s1);border-right:1px solid var(--b1);display:flex;flex-direction:column;padding:.6rem 0;overflow-y:auto}
+.ns{padding:.26rem 1rem .1rem;font-size:.57rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--mu2);margin-top:.35rem}
+.ni{display:flex;align-items:center;gap:.5rem;padding:.43rem 1rem;font-size:.75rem;font-weight:500;color:var(--mu);cursor:pointer;border-left:2px solid transparent;transition:all .12s;user-select:none}
+.ni:hover{color:var(--tx);background:var(--s2)}
+.ni.on{color:var(--ac);background:var(--ac-bg);border-left-color:var(--ac)}
+.ni svg{width:14px;height:14px;flex-shrink:0;opacity:.5}
+.ni.on svg{opacity:1}
+/* MAIN */
+main{grid-area:mn;overflow:hidden;background:#000;display:flex;flex-direction:column}
+.page{display:none;flex:1;flex-direction:column;min-height:0}
+.page.on{display:flex;animation:fi .18s ease}
+@keyframes fi{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+/* PAGE HEADER */
+.ph{padding:.9rem 1.5rem .6rem;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.pht{font-size:.92rem;font-weight:600;letter-spacing:-.2px}
+.phs{font-size:.68rem;color:var(--mu);margin-top:.1rem}
+.pha{display:flex;gap:.3rem}
+.btn{display:inline-flex;align-items:center;padding:.3rem .78rem;border-radius:5px;border:1px solid var(--b2);background:var(--s2);color:var(--mu);font-size:.69rem;font-weight:500;cursor:pointer;font-family:inherit;transition:all .12s}
+.btn:hover{color:var(--tx);background:var(--s3)}
+.btn.on{background:var(--ac-bg);border-color:var(--ac-bd);color:var(--ac)}
+/* MAP */
+.ml{display:grid;grid-template-columns:1fr 285px;flex:1;min-height:0;overflow:hidden}
+.ma{position:relative;overflow:hidden;background:#000;border-right:1px solid var(--b1)}
+.mc{position:absolute;top:.75rem;left:.75rem;display:flex;flex-direction:column;gap:.26rem;z-index:20}
+.mb2{width:28px;height:28px;background:rgba(8,8,8,.92);border:1px solid var(--b2);border-radius:5px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--mu);font-size:14px;transition:all .12s;user-select:none;backdrop-filter:blur(4px)}
+.mb2:hover{background:var(--s2);color:var(--tx)}
+#bsvg{display:block;width:100%;height:100%}
+#bsvg .st{cursor:pointer;transition:fill .2s ease}
+#bsvg .st:hover{filter:brightness(1.35)}
+#bsvg .st.sel{stroke:#fff !important;stroke-width:1.5px}
+#bsvg .stl{fill:rgba(255,255,255,.32);pointer-events:none;text-anchor:middle;dominant-baseline:middle;font-family:'IBM Plex Mono',monospace}
+/* map bottom elements */
+.mbc{position:absolute;bottom:.75rem;left:.75rem;z-index:20;display:flex;align-items:center;gap:.28rem;font-size:.63rem;color:var(--mu);font-family:var(--mo)}
+.mbc span{color:var(--tx)}
+.mleg{position:absolute;bottom:.75rem;right:.75rem;z-index:20;background:rgba(0,0,0,.88);border:1px solid var(--b1);border-radius:7px;padding:.48rem .68rem;min-width:142px;backdrop-filter:blur(6px)}
+.mlt{font-size:.57rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mu);margin-bottom:.26rem}
+.mlb{height:4px;border-radius:2px;background:linear-gradient(90deg,#1a1a1a,#e63946);margin-bottom:.25rem}
+.mll{display:flex;justify-content:space-between;font-size:.58rem;font-family:var(--mo);color:var(--mu2)}
+/* map overlay states */
+#map-overlay{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;z-index:15;pointer-events:none}
+.map-msg{color:var(--mu);font-size:.78rem;display:flex;align-items:center;gap:.5rem}
+.sp{width:14px;height:14px;border-radius:50%;border:2px solid var(--b1);border-top-color:var(--ac);animation:sp .55s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* TOOLTIP */
+.tip{position:fixed;pointer-events:none;z-index:999;background:rgba(4,4,4,.97);border:1px solid var(--b2);border-radius:7px;padding:.62rem .82rem;min-width:178px;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s;box-shadow:0 6px 20px rgba(0,0,0,.85)}
+.tip.on{opacity:1;transform:translateY(0)}
+.tipt{font-size:.74rem;font-weight:600;margin-bottom:.37rem}
+.tr{display:flex;justify-content:space-between;padding:.1rem 0;font-size:.66rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.tr:last-of-type{border-bottom:none}
+.tl{color:var(--mu)}.tv{font-family:var(--mo);font-weight:600}
+.tiph{font-size:.58rem;color:var(--mu2);text-align:center;margin-top:.28rem}
+/* MAP PANEL */
+.mp{display:flex;flex-direction:column;overflow:hidden;background:var(--s1)}
+.mph{padding:.8rem 1rem;border-bottom:1px solid var(--b1);flex-shrink:0}
+.mpt{font-size:.73rem;font-weight:600}
+.mps{font-size:.62rem;color:var(--mu);margin-top:.1rem}
+.mpb{flex:1;overflow-y:auto;padding:.6rem 1rem}
+.mpb::-webkit-scrollbar{width:2px}
+.mpb::-webkit-scrollbar-thumb{background:var(--s3)}
+.kg{display:grid;grid-template-columns:1fr 1fr;gap:.37rem;margin-bottom:.72rem}
+.kc{background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:.5rem .65rem}
+.kl{font-size:.55rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mu2);margin-bottom:.15rem}
+.kv{font-family:var(--mo);font-size:.9rem;font-weight:600}
+.kv.ac{color:var(--ac)}.kv.gn{color:var(--gr)}
+.ri{display:flex;align-items:center;gap:.4rem;padding:.37rem 0;border-bottom:1px solid var(--b1)}
+.ri:last-child{border-bottom:none}
+.rn{font-family:var(--mo);font-size:.58rem;color:var(--mu2);width:13px;flex-shrink:0}
+.rw{flex:1;overflow:hidden}
+.rnm{font-size:.67rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.13rem}
+.rt{height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.rf{height:100%;background:var(--ac);border-radius:2px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.rp{font-family:var(--mo);font-size:.6rem;color:var(--mu);flex-shrink:0}
+/* CONTENT */
+.ca{padding:.9rem 1.5rem;flex:1;overflow-y:auto}
+.ca::-webkit-scrollbar{width:3px}
+.ca::-webkit-scrollbar-thumb{background:var(--s2)}
+.panel{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden;margin-bottom:.9rem}
+.ph2{padding:.7rem 1.05rem;border-bottom:1px solid var(--b1);display:flex;align-items:center}
+.ptl{font-size:.73rem;font-weight:600;display:flex;align-items:center;gap:.38rem}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--ac);flex-shrink:0}
+.pb{padding:.9rem 1.05rem}
+.srow{display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:.55rem;margin-bottom:.9rem}
+.sc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:.78rem .88rem;transition:border-color .17s,transform .17s}
+.sc:hover{border-color:var(--b2);transform:translateY(-2px)}
+.slx{font-size:.57rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mu2);margin-bottom:.3rem}
+.sv{font-family:var(--mo);font-size:1.38rem;font-weight:600;line-height:1}
+.ss{font-size:.58rem;color:var(--mu2);margin-top:.15rem}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+@media(max-width:1050px){.two{grid-template-columns:1fr}}
+.brow{display:flex;align-items:center;gap:.5rem;margin-bottom:.42rem}
+.blbl{font-size:.66rem;color:var(--mu);min-width:96px;text-align:right}
+.btrack{flex:1;height:6px;border-radius:3px;background:rgba(255,255,255,.05);overflow:hidden}
+.bfill{height:100%;border-radius:3px;background:var(--ac);transition:width .7s cubic-bezier(.4,0,.2,1)}
+.bval{font-size:.66rem;font-family:var(--mo);min-width:32px;color:var(--mu)}
+.cbox{position:relative}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.72rem}
+th{text-align:left;padding:.45rem .82rem;font-size:.58rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--mu2);border-bottom:1px solid var(--b1);white-space:nowrap}
+td{padding:.53rem .82rem;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.num{font-family:var(--mo)}
+.badge{display:inline-block;padding:.1rem .45rem;border-radius:3px;font-size:.59rem;font-weight:600;white-space:nowrap}
+.br{background:rgba(230,57,70,.13);color:#fca5a5}
+.bb{background:rgba(59,130,246,.13);color:#93c5fd}
+.bg{background:rgba(34,197,94,.13);color:#86efac}
+.bv{background:rgba(139,92,246,.13);color:#c4b5fd}
+.bc{background:rgba(6,182,212,.13);color:#67e8f9}
+.ba{background:rgba(245,158,11,.13);color:#fcd34d}
+.sl2{font-size:.56rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--mu2);margin-bottom:.42rem}
+footer{padding:.57rem 1.5rem;font-size:.62rem;color:var(--mu2);border-top:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;font-family:var(--mo)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="lm">M</div>
+    <div class="ln">Milton PI <em>Saúde Suplementar</em></div>
+  </div>
+  <div class="hr">
+    <div class="dbp"><div class="dbd off" id="dbd"></div><span id="dbl">Demo · Mock data</span></div>
+    <div class="htag">Protótipo · v0.1 · 2026</div>
+  </div>
+</header>
+
+<aside>
+  <div class="ns">Exploração</div>
+  <div class="ni on" onclick="go('map')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><path d="M9 4v13M15 7v13"/></svg>
+    Mapa do Brasil
+  </div>
+  <div class="ni" onclick="go('ov')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Visão Geral
+  </div>
+  <div class="ns" style="margin-top:.5rem">Dados ANS</div>
+  <div class="ni" onclick="go('mkt')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+    Market Share
+  </div>
+  <div class="ni" onclick="go('op')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    Operadoras
+  </div>
+  <div class="ni" onclick="go('pl')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+    Planos
+  </div>
+  <div class="ns" style="margin-top:.5rem">Indicadores</div>
+  <div class="ni" onclick="go('sd')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Perfil de Saúde
+  </div>
+  <div class="ni" onclick="go('hs')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Histórico
+  </div>
+</aside>
+
+<main>
+
+<!-- MAP -->
+<div id="page-map" class="page on">
+  <div class="ph">
+    <div><div class="pht">Mapa de Saúde Suplementar</div><div class="phs">Scroll = zoom · Drag = mover · Clique no estado para detalhar</div></div>
+    <div class="pha">
+      <button class="btn on" onclick="setM('ben',this)">Beneficiários</button>
+      <button class="btn"    onclick="setM('cob',this)">Cobertura %</button>
+      <button class="btn"    onclick="setM('idh',this)">IDH</button>
+    </div>
+  </div>
+  <div class="ml">
+    <div class="ma" id="ma">
+      <div class="mc">
+        <div class="mb2" onclick="mz(1.5)">+</div>
+        <div class="mb2" onclick="mz(.67)">−</div>
+        <div class="mb2" onclick="mr()" style="font-size:10px">⌂</div>
+      </div>
+      <svg id="bsvg"></svg>
+      <div id="map-overlay"><div class="map-msg"><div class="sp"></div>Carregando mapa do IBGE...</div></div>
+      <div class="mbc">Brasil <span style="color:var(--mu2);margin:0 .15rem">›</span> <span id="bc">Todos os estados</span></div>
+      <div class="mleg">
+        <div class="mlt" id="legt">Beneficiários</div>
+        <div class="mlb"></div>
+        <div class="mll"><span id="lmin">0</span><span id="lmax">—</span></div>
+      </div>
+      <div class="tip" id="tip"></div>
+    </div>
+    <div class="mp">
+      <div class="mph"><div class="mpt" id="mpt">Brasil — Visão Nacional</div><div class="mps" id="mps">Selecione um estado no mapa</div></div>
+      <div class="mpb" id="mpb"></div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<div id="page-ov" class="page">
+  <div class="ph"><div><div class="pht">Visão Geral do Modelo</div><div class="phs">14 tabelas · IBGE + ANS + dados sintéticos</div></div></div>
+  <div class="ca">
+    <div id="srow" class="srow"></div>
+    <div class="two">
+      <div class="panel"><div class="ph2"><div class="ptl"><span class="dot"></span>Registros por Tabela</div></div><div class="pb"><div id="barsov"></div></div></div>
+      <div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--vi)"></span>Distribuição</div></div><div class="pb"><div class="cbox" style="height:235px"><canvas id="dc"></canvas></div></div></div>
+    </div>
+  </div>
+  <footer><span>Milton PI · Protótipo · Mock Data</span><span id="ftt"></span></footer>
+</div>
+
+<!-- MARKET -->
+<div id="page-mkt" class="page">
+  <div class="ph"><div><div class="pht">Market Share</div><div class="phs">Top 10 operadoras por beneficiários</div></div></div>
+  <div class="ca">
+    <div class="panel" style="margin-bottom:.9rem"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--gr)"></span>Beneficiários por Operadora</div></div><div class="pb"><div class="cbox" style="height:270px"><canvas id="mkc"></canvas></div></div></div>
+    <div class="panel"><div class="ph2"><div class="ptl"><span class="dot"></span>Dados Completos</div></div><div class="pb tw"><div id="mktt"></div></div></div>
+  </div>
+</div>
+
+<!-- OPERADORAS -->
+<div id="page-op" class="page">
+  <div class="ph"><div><div class="pht">Operadoras ANS</div><div class="phs">Cadastro de operadoras ativas · CADOP</div></div></div>
+  <div class="ca"><div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--cy)"></span>Operadoras Cadastradas</div></div><div class="pb tw"><div id="optt"></div></div></div></div>
+</div>
+
+<!-- PLANOS -->
+<div id="page-pl" class="page">
+  <div class="ph"><div><div class="pht">Planos de Saúde</div><div class="phs">Produtos ativos · ANS Dados Abertos</div></div></div>
+  <div class="ca"><div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--vi)"></span>Planos Ativos por Cobertura Municipal</div></div><div class="pb tw"><div id="pltt"></div></div></div></div>
+</div>
+
+<!-- SAUDE -->
+<div id="page-sd" class="page">
+  <div class="ph"><div><div class="pht">Perfil de Saúde Pública</div><div class="phs">IBGE PNAD + Datasus · Indicadores socioeconômicos</div></div></div>
+  <div class="ca">
+    <div class="two" style="margin-bottom:.9rem">
+      <div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--gr)"></span>IDH por Município</div></div><div class="pb"><div class="cbox" style="height:215px"><canvas id="ic"></canvas></div></div></div>
+      <div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--am)"></span>Cobertura de Plano (%)</div></div><div class="pb"><div class="cbox" style="height:215px"><canvas id="cc"></canvas></div></div></div>
+    </div>
+    <div class="panel"><div class="ph2"><div class="ptl"><span class="dot"></span>Indicadores Socioeconômicos</div></div><div class="pb tw"><div id="sdtt"></div></div></div>
+  </div>
+</div>
+
+<!-- HISTORICO -->
+<div id="page-hs" class="page">
+  <div class="ph"><div><div class="pht">Histórico de Buscas</div><div class="phs">Recomendações recentes · Sistema interno</div></div></div>
+  <div class="ca"><div class="panel"><div class="ph2"><div class="ptl"><span class="dot" style="background:var(--ac)"></span>Buscas Recentes</div></div><div class="pb tw"><div id="hstt"></div></div></div></div>
+</div>
+
+</main>
+
+<script>
+/* ════════════════════════════════════════════════════════
+   IBGE CODE → UF mapping (para decodificar o GeoJSON real)
+════════════════════════════════════════════════════════ */
+const IBGE_UF = {
+  "11":"RO","12":"AC","13":"AM","14":"RR","15":"PA","16":"AP","17":"TO",
+  "21":"MA","22":"PI","23":"CE","24":"RN","25":"PB","26":"PE","27":"AL",
+  "28":"SE","29":"BA","31":"MG","32":"ES","33":"RJ","35":"SP",
+  "41":"PR","42":"SC","43":"RS","50":"MS","51":"MT","52":"GO","53":"DF"
+};
+
+/* ════════════════════════════════════════════════════════
+   MOCK DATA — estados
+════════════════════════════════════════════════════════ */
+const E={
+  AC:{nome:"Acre",reg:"Norte",ben:160000,op:6,mun:22,cob:18.2,idh:0.663,renda:1200},
+  AL:{nome:"Alagoas",reg:"Nordeste",ben:410000,op:14,mun:102,cob:12.6,idh:0.631,renda:950},
+  AM:{nome:"Amazonas",reg:"Norte",ben:820000,op:20,mun:62,cob:19.4,idh:0.674,renda:1300},
+  AP:{nome:"Amapá",reg:"Norte",ben:145000,op:5,mun:16,cob:19.5,idh:0.708,renda:1450},
+  BA:{nome:"Bahia",reg:"Nordeste",ben:2100000,op:45,mun:417,cob:14.3,idh:0.660,renda:1200},
+  CE:{nome:"Ceará",reg:"Nordeste",ben:1400000,op:32,mun:184,cob:15.2,idh:0.682,renda:1100},
+  DF:{nome:"Distrito Federal",reg:"Centro-Oeste",ben:1950000,op:55,mun:1,cob:55.3,idh:0.824,renda:4800},
+  ES:{nome:"Espírito Santo",reg:"Sudeste",ben:1100000,op:42,mun:78,cob:30.1,idh:0.740,renda:2050},
+  GO:{nome:"Goiás",reg:"Centro-Oeste",ben:1800000,op:50,mun:246,cob:26.5,idh:0.735,renda:1900},
+  MA:{nome:"Maranhão",reg:"Nordeste",ben:480000,op:15,mun:217,cob:7.2,idh:0.639,renda:820},
+  MG:{nome:"Minas Gerais",reg:"Sudeste",ben:5800000,op:95,mun:853,cob:31.5,idh:0.731,renda:2100},
+  MS:{nome:"Mato Grosso do Sul",reg:"Centro-Oeste",ben:720000,op:25,mun:79,cob:27.3,idh:0.729,renda:1950},
+  MT:{nome:"Mato Grosso",reg:"Centro-Oeste",ben:650000,op:22,mun:141,cob:20.5,idh:0.725,renda:1800},
+  PA:{nome:"Pará",reg:"Norte",ben:760000,op:18,mun:144,cob:9.8,idh:0.646,renda:980},
+  PB:{nome:"Paraíba",reg:"Nordeste",ben:430000,op:14,mun:223,cob:11.4,idh:0.658,renda:1000},
+  PE:{nome:"Pernambuco",reg:"Nordeste",ben:1650000,op:38,mun:185,cob:17.8,idh:0.673,renda:1350},
+  PI:{nome:"Piauí",reg:"Nordeste",ben:320000,op:12,mun:224,cob:9.1,idh:0.646,renda:870},
+  PR:{nome:"Paraná",reg:"Sul",ben:4100000,op:68,mun:399,cob:37.2,idh:0.749,renda:2300},
+  RJ:{nome:"Rio de Janeiro",reg:"Sudeste",ben:7400000,op:85,mun:92,cob:42.1,idh:0.761,renda:2800},
+  RN:{nome:"Rio Grande do Norte",reg:"Nordeste",ben:520000,op:16,mun:167,cob:14.9,idh:0.684,renda:1150},
+  RO:{nome:"Rondônia",reg:"Norte",ben:290000,op:10,mun:52,cob:17.3,idh:0.690,renda:1400},
+  RR:{nome:"Roraima",reg:"Norte",ben:130000,op:4,mun:15,cob:22.1,idh:0.707,renda:1500},
+  RS:{nome:"Rio Grande do Sul",reg:"Sul",ben:4200000,op:70,mun:497,cob:38.4,idh:0.746,renda:2400},
+  SC:{nome:"Santa Catarina",reg:"Sul",ben:3200000,op:60,mun:295,cob:41.8,idh:0.774,renda:2600},
+  SE:{nome:"Sergipe",reg:"Nordeste",ben:380000,op:12,mun:75,cob:16.2,idh:0.665,renda:1100},
+  SP:{nome:"São Paulo",reg:"Sudeste",ben:18500000,op:120,mun:645,cob:48.2,idh:0.783,renda:3200},
+  TO:{nome:"Tocantins",reg:"Norte",ben:240000,op:8,mun:139,cob:15.0,idh:0.699,renda:1350}
+};
+const STATS=[
+  {t:"produto_saude",n:840},{t:"operadora",n:312},{t:"municipio",n:5570},
+  {t:"market_share",n:2400},{t:"historico_busca",n:180},{t:"usuario",n:95},
+  {t:"perfil_saude_pub",n:1200},{t:"feedback_usuario",n:340},
+  {t:"abrangencia_plano",n:9800},{t:"rede_credenciada",n:1500},
+  {t:"preco_faixa_etaria",n:6720},{t:"estado",n:27},
+  {t:"serie_anual",n:5},{t:"serie_mensal",n:60}
+];
+const MKT=["Unimed","Bradesco Saúde","Amil","SulAmérica","Porto Seguro","Hapvida","NotreDame","Golden Cross","Prevent Senior","Assim Saúde"].map((op,i)=>({mun:["São Paulo","Rio de Janeiro","Curitiba","Salvador","Fortaleza"][i%5],uf:["SP","RJ","PR","BA","CE"][i%5],op,comp:"2026-07",ben:2800000-i*255000,pct:(32-i*2.9).toFixed(1)}));
+const OPS=["Unimed","Bradesco Saúde","Amil","SulAmérica","Porto Seguro","Hapvida","NotreDame","Golden Cross","Prevent Senior","Assim Saúde","Omint","Mediservice"].map((nm,i)=>({nm,mod:["Cooperativa Médica","Medicina de Grupo","Seguradora Esp.","Autogestão"][i%4],uf:["SP","RJ","MG","RS","PR","SP","CE","RJ","SP","SP","SP","SP"][i],pl:80-i*6,ben:3200000-i*250000}));
+const PLS=["Master Hospitalar","Plus Ambulatorial","Empresarial Total","Referência Nacional","Odonto Premium","Individual Básico","Flex Coletivo","Saúde Familiar","Top Executivo","Solidário","Light","Regional Sul"].map((nm,i)=>({nm,op:["Unimed","Amil","Bradesco","SulAmérica","Porto Seguro"][i%5],tipo:["individual","coletivo_empresarial","coletivo_adesao"][i%3],seg:["hospitalar","ambulatorial","odontologico","referencia"][i%4],cob:["Nacional","Regional","Local"][i%3],copart:i%2===0,mun:600-i*45}));
+const SDS=["São Paulo","Rio de Janeiro","Belo Horizonte","Porto Alegre","Curitiba","Salvador","Fortaleza","Manaus","Brasília","Recife","Goiânia","Florianópolis"].map((m,i)=>({m,uf:["SP","RJ","MG","RS","PR","BA","CE","AM","DF","PE","GO","SC"][i],pop:12000000-i*800000,idh:0.83-i*0.015,cob:55-i*3.5,renda:3200-i*200,gini:0.52+i*0.01}));
+const HST=["Ana Lima","Carlos Souza","Maria Oliveira","João Santos","Pedro Costa","Lucia Ferreira","Rafael Mendes","Camila Rocha"].map((u,i)=>({u,mun:["São Paulo","Rio de Janeiro","Curitiba","Salvador"][i%4],canal:["web","mobile","api"][i%3],filtros:{tipo:"hospitalar",faixa:`${20+i*5}-${25+i*5}`},feedbacks:i%3,dt:new Date(Date.now()-i*5400000).toISOString()}));
+const PAL=["#e63946","#3b82f6","#8b5cf6","#22c55e","#f59e0b","#06b6d4","#f472b6","#a78bfa","#34d399","#fbbf24","#60a5fa","#4ade80","#38bdf8","#fb923c","#e879f9"];
+
+/* ════════════════════════════════════════════════════════
+   MAP ENGINE
+════════════════════════════════════════════════════════ */
+let metric="ben", selUF=null;
+let svgD, gEl, proj, pathFn, zoomFn, geoData=null;
+let dcC,mkC,iC,cC;
+const ldd={};
+
+function go(p){
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
+  document.querySelector(`.ni[onclick="go('${p}')"]`)?.classList.add('on');
+  document.getElementById('page-'+p)?.classList.add('on');
+  if(!ldd[p]){ldd[p]=1;loadPage(p);}
+}
+function loadPage(p){({ov:loadOv,mkt:loadMkt,op:loadOp,pl:loadPl,sd:loadSd,hs:loadHs})[p]?.();}
+
+/* Extract UF from IBGE feature */
+function getUF(feat){
+  const p=feat.properties||{};
+  /* IBGE API returns codarea as the state code */
+  const code = (p.codarea||p.cod||p.GEOCODIGO||'').toString().substring(0,2);
+  return IBGE_UF[code] || p.sigla || p.UF || p.abbrev_state || '';
+}
+
+function getVal(uf){
+  const s=E[uf]; if(!s) return 0;
+  return {ben:s.ben,cob:s.cob,idh:s.idh}[metric]||0;
+}
+
+async function initMap(){
+  const container=document.getElementById('ma');
+  /* Wait for layout */
+  await new Promise(r=>setTimeout(r,100));
+  const rect=container.getBoundingClientRect();
+  const W=Math.max(rect.width,400);
+  const H=Math.max(rect.height,350);
+
+  const svgNode=document.getElementById('bsvg');
+  svgNode.setAttribute('width',W);
+  svgNode.setAttribute('height',H);
+
+  svgD=d3.select('#bsvg');
+  svgD.selectAll('*').remove();
+  gEl=svgD.append('g');
+
+  zoomFn=d3.zoom().scaleExtent([1,20]).on('zoom',e=>gEl.attr('transform',e.transform));
+  svgD.call(zoomFn);
+
+  renderPanelGlobal();
+
+  /* Fetch real Brazil GeoJSON from reliable source */
+  const URL='https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson';
+  try{
+    const ctrl=new AbortController();
+    const tid=setTimeout(()=>ctrl.abort(),10000);
+    const res=await fetch(URL,{signal:ctrl.signal});
+    clearTimeout(tid);
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const geo=await res.json();
+    geoData=geo;
+
+    /* Setup projection to fit the fetched geo */
+    proj=d3.geoMercator().fitExtent([[20,20],[W-20,H-20]],geo);
+    pathFn=d3.geoPath().projection(proj);
+
+    document.getElementById('map-overlay').style.display='none';
+    drawMap();
+    document.getElementById('dbd').classList.remove('off');
+    document.getElementById('dbl').textContent='GeoJSON Brasil · Conectado';
+  }catch(e){
+    /* Fallback: show user-friendly message */
+    document.getElementById('map-overlay').innerHTML=
+      '<div class="map-msg" style="flex-direction:column;gap:.5rem;text-align:center">'+
+      '<span style="color:#e63946;font-size:.8rem">⚠ IBGE offline</span>'+
+      '<span style="font-size:.65rem;color:#555">Verifique a conexão e recarregue</span>'+
+      '<button class="btn" onclick="initMap()" style="pointer-events:all;margin-top:.3rem">↻ Tentar novamente</button>'+
+      '</div>';
+  }
+}
+
+function drawMap(){
+  if(!geoData||!proj) return;
+  gEl.selectAll('*').remove();
+
+  const vals=Object.keys(E).map(uf=>getVal(uf)).filter(v=>v>0);
+  const mn=d3.min(vals)||0, mx=d3.max(vals)||1;
+  updateLeg(mn,mx);
+  const cs=d3.scaleSequential().domain([mn,mx]).interpolator(d3.interpolate('#1a1a1a','#e63946'));
+  const tip=document.getElementById('tip');
+
+  gEl.selectAll('.st')
+    .data(geoData.features)
+    .join('path')
+    .attr('class',d=>`st${selUF===getUF(d)?' sel':''}`)
+    .attr('d',pathFn)
+    .attr('fill',d=>{const v=getVal(getUF(d));return v>0?cs(v):'#1c1c1c';})
+    .attr('stroke','rgba(255,255,255,.1)')
+    .attr('stroke-width',.5)
+    .on('mousemove',(ev,d)=>{
+      const uf=getUF(d);
+      const s=E[uf]||{};
+      tip.innerHTML=`
+        <div class="tipt">${s.nome||uf} <span style="color:var(--mu);font-size:.62rem">(${uf})</span></div>
+        <div class="tr"><span class="tl">Beneficiários</span><span class="tv">${fmtK(s.ben)}</span></div>
+        <div class="tr"><span class="tl">Operadoras</span><span class="tv">${s.op||'—'}</span></div>
+        <div class="tr"><span class="tl">Cobertura</span><span class="tv">${s.cob?s.cob.toFixed(1)+'%':'—'}</span></div>
+        <div class="tr"><span class="tl">IDH</span><span class="tv">${s.idh?s.idh.toFixed(3):'—'}</span></div>
+        <div class="tr"><span class="tl">Região</span><span class="tv">${s.reg||'—'}</span></div>
+        <div class="tiph">Clique para detalhar</div>`;
+      tip.classList.add('on');
+      /* prevent tooltip from going off-screen */
+      const tx=ev.clientX+16, ty=ev.clientY-10;
+      tip.style.left=tx+'px'; tip.style.top=ty+'px';
+    })
+    .on('mouseleave',()=>tip.classList.remove('on'))
+    .on('click',(ev,d)=>{ev.stopPropagation();zoomSt(d);});
+
+  /* UF labels */
+  gEl.selectAll('.stl')
+    .data(geoData.features)
+    .join('text')
+    .attr('class','stl')
+    .attr('font-size',d=>{
+      try{const b=pathFn.bounds(d);return Math.min(10,Math.max(6,(b[1][0]-b[0][0])*.18))+'px';}
+      catch(e){return'8px';}
+    })
+    .attr('x',d=>{try{return pathFn.centroid(d)[0];}catch(e){return 0;}})
+    .attr('y',d=>{try{return pathFn.centroid(d)[1];}catch(e){return 0;}})
+    .text(d=>getUF(d));
+}
+
+function zoomSt(feat){
+  const uf=getUF(feat);
+  try{
+    const [[x0,y0],[x1,y1]]=pathFn.bounds(feat);
+    const W=+svgD.attr('width'), H=+svgD.attr('height');
+    const sc=Math.min(14,.8/Math.max((x1-x0)/W,(y1-y0)/H));
+    const tx=W/2-sc*(x0+x1)/2, ty=H/2-sc*(y0+y1)/2;
+    selUF=uf; drawMap();
+    svgD.transition().duration(620).call(zoomFn.transform,d3.zoomIdentity.translate(tx,ty).scale(sc));
+  }catch(e){selUF=uf; drawMap();}
+  document.getElementById('bc').textContent=E[uf]?.nome||uf;
+  renderPanelState(uf);
+}
+
+function mz(f){svgD.transition().duration(280).call(zoomFn.scaleBy,f);}
+function mr(){
+  selUF=null; drawMap();
+  svgD.transition().duration(520).call(zoomFn.transform,d3.zoomIdentity);
+  document.getElementById('bc').textContent='Todos os estados';
+  renderPanelGlobal();
+}
+function setM(m,btn){
+  metric=m;
+  document.querySelectorAll('.pha .btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('legt').textContent={ben:'Beneficiários',cob:'Cobertura %',idh:'IDH'}[m];
+  drawMap();
+}
+function updateLeg(mn,mx){
+  document.getElementById('lmin').textContent=metric==='ben'?fmtK(mn):metric==='cob'?mn.toFixed(1)+'%':mn.toFixed(3);
+  document.getElementById('lmax').textContent=metric==='ben'?fmtK(mx):metric==='cob'?mx.toFixed(1)+'%':mx.toFixed(3);
+}
+
+function renderPanelGlobal(){
+  const arr=Object.values(E);
+  const tB=arr.reduce((s,d)=>s+d.ben,0), tO=arr.reduce((s,d)=>s+d.op,0);
+  const aC=arr.reduce((s,d)=>s+d.cob,0)/arr.length;
+  const aI=arr.reduce((s,d)=>s+d.idh,0)/arr.length;
+  document.getElementById('mpt').textContent='Brasil — Visão Nacional';
+  document.getElementById('mps').textContent='27 estados + DF';
+  const top=[...arr].sort((a,b)=>b.ben-a.ben).slice(0,9);
+  const mb=top[0].ben;
+  document.getElementById('mpb').innerHTML=`
+    <div class="kg">
+      <div class="kc"><div class="kl">Beneficiários</div><div class="kv ac">${fmtK(tB)}</div></div>
+      <div class="kc"><div class="kl">Operadoras</div><div class="kv">${tO}</div></div>
+      <div class="kc"><div class="kl">Cobertura Média</div><div class="kv gn">${aC.toFixed(1)}%</div></div>
+      <div class="kc"><div class="kl">IDH Médio</div><div class="kv">${aI.toFixed(3)}</div></div>
+    </div>
+    <div class="sl2">Ranking por Beneficiários</div>
+    ${top.map((s,i)=>`<div class="ri"><div class="rn">${i+1}</div><div class="rw"><div class="rnm">${s.nome}</div><div class="rt"><div class="rf" style="width:${(s.ben/mb*100).toFixed(1)}%"></div></div></div><div class="rp">${fmtK(s.ben)}</div></div>`).join('')}`;
+}
+
+function renderPanelState(uf){
+  const s=E[uf]; if(!s) return;
+  document.getElementById('mpt').textContent=s.nome;
+  document.getElementById('mps').textContent=`${s.reg} · ${s.mun} municípios`;
+  document.getElementById('mpb').innerHTML=`
+    <div class="kg">
+      <div class="kc"><div class="kl">Beneficiários</div><div class="kv ac">${fmtK(s.ben)}</div></div>
+      <div class="kc"><div class="kl">Operadoras</div><div class="kv">${s.op}</div></div>
+      <div class="kc"><div class="kl">Cobertura</div><div class="kv gn">${s.cob.toFixed(1)}%</div></div>
+      <div class="kc"><div class="kl">IDH</div><div class="kv">${s.idh.toFixed(3)}</div></div>
+    </div>
+    <div class="sl2">Renda Per Capita</div>
+    <div style="font-family:var(--mo);font-size:1.05rem;font-weight:600;margin-bottom:.8rem">${fmtCur(s.renda)}</div>
+    <div class="sl2">Municípios Cobertos</div>
+    <div style="font-family:var(--mo);font-size:1.05rem;font-weight:600;margin-bottom:.8rem">${fmt(s.mun)}</div>
+    <div class="sl2">Região</div>
+    <span class="badge bb" style="font-size:.67rem;padding:.19rem .56rem">${s.reg}</span>
+    <div style="margin-top:.9rem"><button class="btn" onclick="mr()" style="width:100%;justify-content:center">← Voltar ao Brasil</button></div>`;
+}
+
+/* ════════════════════════════════════════════════════════
+   OTHER PAGES
+════════════════════════════════════════════════════════ */
+function loadOv(){
+  document.getElementById('ftt').textContent=new Date().toLocaleString('pt-BR');
+  const hi=['produto_saude','operadora','municipio','market_share','historico_busca','usuario'];
+  const lbl={produto_saude:'Planos',operadora:'Operadoras',municipio:'Municípios',market_share:'Market Share',historico_busca:'Buscas',usuario:'Usuários'};
+  const tot=STATS.reduce((s,r)=>s+r.n,0);
+  document.getElementById('srow').innerHTML=STATS.filter(r=>hi.includes(r.t)).map(r=>`<div class="sc"><div class="slx">${lbl[r.t]||r.t}</div><div class="sv">${fmt(r.n)}</div><div class="ss">registros</div></div>`).join('')+`<div class="sc"><div class="slx">Total Geral</div><div class="sv">${fmt(tot)}</div><div class="ss">14 tabelas</div></div>`;
+  const mx=Math.max(...STATS.map(r=>r.n));
+  document.getElementById('barsov').innerHTML=STATS.map(r=>`<div class="brow"><div class="blbl">${r.t.replace(/_/g,' ')}</div><div class="btrack"><div class="bfill" style="width:${(r.n/mx*100).toFixed(1)}%"></div></div><div class="bval">${fmt(r.n)}</div></div>`).join('');
+  const ctx=document.getElementById('dc').getContext('2d');
+  if(dcC)dcC.destroy();
+  dcC=new Chart(ctx,{type:'doughnut',data:{labels:STATS.map(r=>r.t.replace(/_/g,' ')),datasets:[{data:STATS.map(r=>r.n),backgroundColor:PAL,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,cutout:'70%',plugins:{legend:{position:'right',labels:{color:'#555',font:{size:9,family:"'Inter'"},boxWidth:9,padding:6}}}}});
+}
+function loadMkt(){
+  const ctx=document.getElementById('mkc').getContext('2d');
+  if(mkC)mkC.destroy();
+  mkC=new Chart(ctx,{type:'bar',data:{labels:MKT.map(r=>`${r.op} · ${r.mun}`),datasets:[{label:'Beneficiários',data:MKT.map(r=>r.ben),backgroundColor:'#e63946',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#3f3f3f',font:{size:9}},grid:{color:'rgba(255,255,255,.03)'}},y:{ticks:{color:'#6e6e6e',font:{size:9}},grid:{display:false}}}}});
+  document.getElementById('mktt').innerHTML=tbl(MKT,[{k:'mun',l:'Município'},{k:'uf',l:'UF'},{k:'op',l:'Operadora'},{k:'comp',l:'Competência'},{k:'ben',l:'Beneficiários',r:v=>`<span class="num">${fmt(v)}</span>`},{k:'pct',l:'% Mercado',r:v=>bdg(`${v}%`,+v>30?'r':+v>15?'a':'g')}]);
+}
+function loadOp(){document.getElementById('optt').innerHTML=tbl(OPS,[{k:'nm',l:'Operadora'},{k:'mod',l:'Modalidade',r:v=>bdg(v,'v')},{k:'uf',l:'UF'},{k:'pl',l:'Planos',r:v=>`<span class="num">${fmt(v)}</span>`},{k:'ben',l:'Beneficiários',r:v=>`<span class="num">${fmt(v)}</span>`}]);}
+function loadPl(){
+  const tm={individual:'<span class="badge bb">Ind</span>',coletivo_empresarial:'<span class="badge bv">Col Emp</span>',coletivo_adesao:'<span class="badge bc">Col Ades</span>'};
+  const sm={hospitalar:'<span class="badge bb">Hosp</span>',ambulatorial:'<span class="badge bg">Amb</span>',odontologico:'<span class="badge bv">Odonto</span>',referencia:'<span class="badge ba">Ref</span>'};
+  document.getElementById('pltt').innerHTML=tbl(PLS,[{k:'nm',l:'Plano'},{k:'op',l:'Operadora'},{k:'tipo',l:'Tipo',r:v=>tm[v]||bdg(v,'a')},{k:'seg',l:'Segmentação',r:v=>sm[v]||bdg(v,'c')},{k:'cob',l:'Cobertura'},{k:'copart',l:'Copart.',r:v=>bdg(v?'Sim':'Não',v?'r':'g')},{k:'mun',l:'Municípios',r:v=>`<span class="num">${fmt(v)}</span>`}]);
+}
+function loadSd(){
+  const ctx1=document.getElementById('ic').getContext('2d');
+  if(iC)iC.destroy();
+  iC=new Chart(ctx1,{type:'bar',data:{labels:SDS.map(r=>r.m),datasets:[{data:SDS.map(r=>r.idh),backgroundColor:PAL,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{min:.6,ticks:{color:'#3f3f3f'},grid:{color:'rgba(255,255,255,.03)'}},x:{ticks:{color:'#6e6e6e',font:{size:8},maxRotation:40},grid:{display:false}}}}});
+  const ctx2=document.getElementById('cc').getContext('2d');
+  if(cC)cC.destroy();
+  cC=new Chart(ctx2,{type:'bar',data:{labels:SDS.map(r=>r.m),datasets:[{data:SDS.map(r=>r.cob),backgroundColor:SDS.map((_,i)=>PAL[(i+4)%PAL.length]),borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{color:'#3f3f3f',callback:v=>v+'%'},grid:{color:'rgba(255,255,255,.03)'}},x:{ticks:{color:'#6e6e6e',font:{size:8},maxRotation:40},grid:{display:false}}}}});
+  document.getElementById('sdtt').innerHTML=tbl(SDS,[{k:'m',l:'Município'},{k:'uf',l:'UF'},{k:'pop',l:'População',r:v=>`<span class="num">${fmt(v)}</span>`},{k:'idh',l:'IDH',r:v=>`<span class="num">${v.toFixed(3)}</span>`},{k:'cob',l:'Cobertura',r:v=>bdg(`${v.toFixed(1)}%`,v>50?'g':v>30?'a':'r')},{k:'renda',l:'Renda Pc',r:v=>`<span class="num">${fmtCur(v)}</span>`},{k:'gini',l:'Gini',r:v=>`<span class="num">${v.toFixed(3)}</span>`}]);
+}
+function loadHs(){document.getElementById('hstt').innerHTML=tbl(HST,[{k:'u',l:'Usuário'},{k:'mun',l:'Município'},{k:'canal',l:'Canal',r:v=>bdg(v,v==='mobile'?'v':v==='api'?'a':'c')},{k:'filtros',l:'Filtros',r:v=>{const o=typeof v==='string'?JSON.parse(v):v;return Object.entries(o).map(([k,val])=>`<span class="badge bb" style="margin:.07rem">${k}: ${val}</span>`).join('');}},{k:'feedbacks',l:'Feedbacks',r:v=>bdg(v,v>0?'g':'r')},{k:'dt',l:'Data',r:v=>v?v.replace('T',' ').slice(0,16):'—'}]);}
+
+/* HELPERS */
+const fmt=n=>n==null?'—':Number(n).toLocaleString('pt-BR');
+const fmtK=n=>{if(n==null)return'—';if(n>=1e6)return(n/1e6).toFixed(1)+'M';if(n>=1e3)return(n/1e3).toFixed(0)+'K';return''+n;};
+const fmtCur=n=>n==null?'—':`R$ ${Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2})}`;
+const _c={r:'br',b:'bb',g:'bg',v:'bv',c:'bc',a:'ba'};
+const bdg=(t,c='b')=>`<span class="badge ${_c[c]||'bb'}">${t}</span>`;
+function tbl(rows,cols){
+  if(!rows.length)return'<div style="padding:2rem;text-align:center;color:#3f3f3f;font-size:.73rem">Sem dados</div>';
+  return`<table><thead><tr>${cols.map(c=>`<th>${c.l}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>`<td>${c.r?c.r(r[c.k],r):(r[c.k]??'—')}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+}
+
+/* BOOT */
+ldd['map']=1;
+window.addEventListener('load', initMap);
+</script>
+</body>
+</html>
