@@ -11,7 +11,7 @@ dados reais (IBGE + ANS) e dados sintéticos para validação do modelo ER.
 - Python 3.9+
 
 ```bash
-pip install psycopg2-binary faker requests
+pip install psycopg2-binary faker requests flask flask-cors
 ```
 
 ---
