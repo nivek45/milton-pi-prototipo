@@ -1,1842 +1,2729 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Milton Analytics — Inteligência em Saúde Suplementar</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-/* ========================================================
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Milton Analytics — Inteligência em Saúde Suplementar</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+      /* ========================================================
    RESET & DESIGN TOKENS
    ======================================================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-:root {
-  --bg-app: #080d11;
-  --bg-sidebar: #0d141b;
-  --bg-surface: #121c24;
-  --bg-surface-elevated: #182430;
-  --bg-surface-hover: #1e2e3d;
-  
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default: rgba(255, 255, 255, 0.10);
-  --border-active: rgba(16, 185, 129, 0.35);
-  
-  --primary: #10b981;
-  --primary-glow: rgba(16, 185, 129, 0.22);
-  --primary-light: #34d399;
-  --primary-dark: #059669;
-  --primary-subtle: rgba(16, 185, 129, 0.10);
-  
-  --accent-teal: #14b8a6;
-  --accent-cyan: #06b6d4;
-  --accent-blue: #3b82f6;
-  --accent-amber: #f59e0b;
-  --accent-indigo: #6366f1;
-  --accent-rose: #f43f5e;
-  
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-faint: #64748b;
-  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-pill: 9999px;
-  
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 24px -4px rgba(16, 185, 129, 0.25);
-  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
-}
+      :root {
+        --bg-app: #0b0c0d;
+        --bg-sidebar: #111214;
+        --bg-surface: #17181a;
+        --bg-surface-elevated: #1d1e21;
+        --bg-surface-hover: #232428;
 
-html, body {
-  height: 100%;
-  background: var(--bg-app);
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
-}
+        --border-subtle: rgba(255, 255, 255, 0.06);
+        --border-default: rgba(255, 255, 255, 0.11);
+        --border-active: rgba(74, 158, 120, 0.45);
 
-body {
-  display: grid;
-  grid-template-columns: 248px 1fr;
-  grid-template-rows: 64px 1fr;
-  grid-template-areas: "header header" "sidebar main";
-  overflow: hidden;
-}
+        --primary: #4a9e78;
+        --primary-glow: rgba(74, 158, 120, 0.18);
+        --primary-light: #7fc7a2;
+        --primary-dark: #2f6b4d;
+        --primary-subtle: rgba(74, 158, 120, 0.1);
 
-/* ========================================================
+        --accent-teal: #4a8f8a;
+        --accent-cyan: #4a8aa0;
+        --accent-blue: #5c7fa8;
+        --accent-amber: #b98a4a;
+        --accent-indigo: #7a7ea3;
+        --accent-rose: #a35c62;
+
+        --text-main: #f2f3f4;
+        --text-muted: #9a9da1;
+        --text-faint: #68696c;
+        --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+        --font-sans:
+          "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+        --font-mono: "IBM Plex Mono", monospace;
+
+        --radius-xs: 3px;
+        --radius-sm: 5px;
+        --radius-md: 8px;
+        --radius-lg: 12px;
+        --radius-pill: 9999px;
+
+        --shadow-card:
+          0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -8px rgba(0, 0, 0, 0.5);
+        --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
+        --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+        --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      html,
+      body {
+        height: 100%;
+        background: var(--bg-app);
+        color: var(--text-main);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--primary-light);
+        outline-offset: 2px;
+        border-radius: var(--radius-xs);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.001ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.001ms !important;
+        }
+      }
+
+      body {
+        display: grid;
+        grid-template-columns: 248px 1fr;
+        grid-template-rows: 64px 1fr;
+        grid-template-areas: "header header" "sidebar main";
+        overflow: hidden;
+      }
+
+      /* ========================================================
    HEADER
    ======================================================== */
-header {
-  grid-area: header;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.75rem;
-  background: rgba(13, 20, 27, 0.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid var(--border-subtle);
-  z-index: 60;
-}
+      header {
+        grid-area: header;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 1.75rem;
+        background: var(--bg-sidebar);
+        border-bottom: 1px solid var(--border-subtle);
+        z-index: 60;
+      }
 
-.brand-group {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
+      .brand-group {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+      }
 
-.mobile-toggle {
-  display: none;
-  background: transparent;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  color: var(--text-main);
-  padding: 0.45rem;
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-}
+      .mobile-toggle {
+        display: none;
+        background: transparent;
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-sm);
+        color: var(--text-main);
+        padding: 0.45rem;
+        cursor: pointer;
+        align-items: center;
+        justify-content: center;
+      }
 
-.mobile-toggle svg { width: 20px; height: 20px; stroke: currentColor; }
+      .mobile-toggle svg {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+      }
 
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  text-decoration: none;
-}
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        text-decoration: none;
+      }
 
-.brand-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, #10b981 0%, #047857 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  box-shadow: 0 2px 12px rgba(16, 185, 129, 0.35);
-  transition: transform 0.3s var(--ease-spring);
-  flex-shrink: 0;
-}
-.brand:hover .brand-icon { transform: scale(1.05) rotate(2deg); }
+      .brand-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--radius-sm);
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-active);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--primary-light);
+        flex-shrink: 0;
+      }
 
-.brand-text {
-  display: flex;
-  flex-direction: column;
-}
+      .brand-text {
+        display: flex;
+        flex-direction: column;
+      }
 
-.brand-name {
-  font-size: 1.05rem;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
+      .brand-name {
+        font-family: var(--font-display);
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: var(--text-main);
+        display: flex;
+        align-items: baseline;
+        gap: 0.3rem;
+      }
 
-.brand-name span { color: var(--primary-light); font-weight: 600; }
+      .brand-name span {
+        color: var(--primary-light);
+        font-style: italic;
+        font-weight: 500;
+      }
 
-.brand-desc {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-weight: 500;
-}
+      .brand-desc {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
 
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
 
-.live-indicator {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-pill);
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--primary-light);
-}
+      .live-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.35rem 0.85rem;
+        border-radius: var(--radius-pill);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+      }
 
-.pulse-circle {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary);
-  box-shadow: 0 0 10px var(--primary);
-  animation: health-pulse 2.2s infinite ease-in-out;
-  flex-shrink: 0;
-}
+      .pulse-circle {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--primary-light);
+        animation: health-pulse 2.6s infinite ease-in-out;
+        flex-shrink: 0;
+      }
 
-@keyframes health-pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(0.8); opacity: 0.4; }
-}
+      @keyframes health-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.35;
+        }
+      }
 
-.version-tag {
-  font-size: 0.72rem;
-  font-family: var(--font-mono);
-  color: var(--text-faint);
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  padding: 0.3rem 0.75rem;
-  border-radius: var(--radius-pill);
-}
+      .version-tag {
+        font-size: 0.72rem;
+        font-family: var(--font-mono);
+        color: var(--text-faint);
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        padding: 0.3rem 0.75rem;
+        border-radius: var(--radius-pill);
+      }
 
-/* ========================================================
+      /* ========================================================
    SIDEBAR & DRAWER
    ======================================================== */
-.sidebar-backdrop {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(4px);
-  z-index: 70;
-  opacity: 0;
-  transition: opacity 0.25s ease;
-}
+      .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        z-index: 70;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
 
-.sidebar-backdrop.active { display: block; opacity: 1; }
+      .sidebar-backdrop.active {
+        display: block;
+        opacity: 1;
+      }
 
-aside {
-  grid-area: sidebar;
-  background: var(--bg-sidebar);
-  border-right: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  padding: 1.25rem 0.85rem;
-  overflow-y: auto;
-  gap: 0.35rem;
-  z-index: 75;
-}
+      aside {
+        grid-area: sidebar;
+        background: var(--bg-sidebar);
+        border-right: 1px solid var(--border-subtle);
+        display: flex;
+        flex-direction: column;
+        padding: 1.25rem 0.85rem;
+        overflow-y: auto;
+        gap: 0.35rem;
+        z-index: 75;
+      }
 
-.nav-label {
-  padding: 0.6rem 0.75rem 0.25rem;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-}
+      .nav-label {
+        padding: 0.7rem 0.75rem 0.3rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--text-faint);
+      }
 
-.nav-link {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: var(--radius-sm);
-  font-size: 0.84rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: all 0.2s var(--ease-spring);
-  user-select: none;
-}
+      .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 0.85rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.84rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        cursor: pointer;
+        border: 1px solid transparent;
+        transition: all 0.2s var(--ease-spring);
+        user-select: none;
+      }
 
-.nav-link:hover {
-  color: var(--text-main);
-  background: var(--bg-surface);
-  transform: translateX(2px);
-}
+      .nav-link:hover {
+        color: var(--text-main);
+        background: var(--bg-surface);
+        transform: translateX(2px);
+      }
 
-.nav-link.active {
-  color: #fff;
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.14) 0%, rgba(16, 185, 129, 0.04) 100%);
-  border-color: rgba(16, 185, 129, 0.25);
-  box-shadow: inset 3px 0 0 var(--primary);
-}
+      .nav-link:active {
+        transform: translateX(2px) scale(0.98);
+      }
 
-.nav-link svg {
-  width: 17px;
-  height: 17px;
-  stroke-width: 2;
-  opacity: 0.7;
-  transition: opacity 0.2s, stroke 0.2s;
-  flex-shrink: 0;
-}
+      .nav-link.active {
+        color: var(--text-main);
+        background: var(--primary-subtle);
+        border-color: var(--border-active);
+        box-shadow: inset 2px 0 0 var(--primary);
+      }
 
-.nav-link:hover svg { opacity: 1; }
-.nav-link.active svg { stroke: var(--primary-light); opacity: 1; }
+      .nav-link.active:hover {
+        transform: none;
+      }
 
-.sidebar-card {
-  margin-top: auto;
-  padding: 1rem;
-  background: linear-gradient(145deg, rgba(16, 185, 129, 0.08) 0%, rgba(13, 20, 27, 0.4) 100%);
-  border: 1px solid rgba(16, 185, 129, 0.18);
-  border-radius: var(--radius-md);
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  line-height: 1.45;
-}
+      .nav-link svg {
+        width: 17px;
+        height: 17px;
+        stroke-width: 2;
+        opacity: 0.7;
+        transition:
+          opacity 0.2s,
+          stroke 0.2s;
+        flex-shrink: 0;
+      }
 
-.sidebar-card h4 {
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-bottom: 0.25rem;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
+      .nav-link:hover svg {
+        opacity: 1;
+      }
+      .nav-link.active svg {
+        stroke: var(--primary-light);
+        opacity: 1;
+      }
 
-/* ========================================================
+      .sidebar-card {
+        margin-top: auto;
+        padding: 1rem;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-left: 2px solid var(--primary);
+        border-radius: var(--radius-sm);
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      .sidebar-card h4 {
+        color: var(--text-main);
+        font-size: 0.82rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      /* ========================================================
    MAIN CONTENT & PAGES
    ======================================================== */
-main {
-  grid-area: main;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-app);
-}
+      main {
+        grid-area: main;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-app);
+      }
 
-.page {
-  display: none;
-  flex: 1;
-  flex-direction: column;
-  min-height: 0;
-}
+      .page {
+        display: none;
+        flex: 1;
+        flex-direction: column;
+        min-height: 0;
+      }
 
-.page.active {
-  display: flex;
-  animation: pageSlideIn 0.32s var(--ease-spring);
-}
+      .page.active {
+        display: flex;
+        animation: pageSlideIn 0.38s var(--ease-out);
+      }
 
-@keyframes pageSlideIn {
-  from { opacity: 0; transform: translateY(8px) scale(0.995); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
+      @keyframes pageSlideIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-/* Page Header */
-.page-head {
-  padding: 1.15rem 1.85rem;
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(13, 20, 27, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  gap: 1rem;
-}
+      @keyframes cardRise {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
 
-.page-title-group h2 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 0.55rem;
-}
+      .metrics-banner .metric-card {
+        animation: cardRise 0.45s var(--ease-out) both;
+      }
+      .metrics-banner .metric-card:nth-child(1) {
+        animation-delay: 0.02s;
+      }
+      .metrics-banner .metric-card:nth-child(2) {
+        animation-delay: 0.06s;
+      }
+      .metrics-banner .metric-card:nth-child(3) {
+        animation-delay: 0.1s;
+      }
+      .metrics-banner .metric-card:nth-child(4) {
+        animation-delay: 0.14s;
+      }
+      .metrics-banner .metric-card:nth-child(5) {
+        animation-delay: 0.18s;
+      }
+      .metrics-banner .metric-card:nth-child(6) {
+        animation-delay: 0.22s;
+      }
+      .metrics-banner .metric-card:nth-child(7) {
+        animation-delay: 0.26s;
+      }
 
-.page-title-group p {
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  margin-top: 0.15rem;
-}
+      /* Page Header */
+      .page-head {
+        padding: 1.3rem 1.85rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-sidebar);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        gap: 1rem;
+      }
 
-.segmented-control {
-  display: inline-flex;
-  background: var(--bg-sidebar);
-  border: 1px solid var(--border-default);
-  padding: 0.25rem;
-  border-radius: var(--radius-pill);
-  gap: 0.25rem;
-  flex-shrink: 0;
-}
+      .page-title-group h2 {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+      }
 
-.seg-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.95rem;
-  border-radius: var(--radius-pill);
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s var(--ease-spring);
-}
+      .page-title-group p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
 
-.seg-btn:hover { color: var(--text-main); background: var(--bg-surface); }
+      .segmented-control {
+        display: inline-flex;
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        padding: 0.25rem;
+        border-radius: var(--radius-pill);
+        gap: 0.25rem;
+        flex-shrink: 0;
+      }
 
-.seg-btn.active {
-  background: var(--primary);
-  color: #032b1d;
-  font-weight: 700;
-  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
-}
+      .seg-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        padding: 0.4rem 0.95rem;
+        border-radius: var(--radius-pill);
+        border: none;
+        background: transparent;
+        color: var(--text-muted);
+        font-size: 0.78rem;
+        font-weight: 600;
+        font-family: inherit;
+        cursor: pointer;
+        transition: all 0.2s var(--ease-spring);
+      }
 
-/* ========================================================
+      .seg-btn:hover {
+        color: var(--text-main);
+        background: var(--bg-surface);
+      }
+
+      .seg-btn:active {
+        transform: scale(0.96);
+      }
+
+      .seg-btn.active {
+        background: var(--primary);
+        color: #06170f;
+        font-weight: 600;
+      }
+
+      /* ========================================================
    MAP LAYOUT
    ======================================================== */
-.map-layout {
-  display: grid;
-  grid-template-columns: 1fr 360px;
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-}
+      .map-layout {
+        display: grid;
+        grid-template-columns: 1fr 360px;
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
 
-.map-viewport {
-  position: relative;
-  overflow: hidden;
-  background: radial-gradient(circle at center, #111d27 0%, #080d11 100%);
-  border-right: 1px solid var(--border-subtle);
-  min-height: 280px;
-}
+      .map-viewport {
+        position: relative;
+        overflow: hidden;
+        background: var(--bg-app);
+        border-right: 1px solid var(--border-subtle);
+        min-height: 280px;
+      }
 
-.map-controls {
-  position: absolute;
-  top: 1.1rem;
-  left: 1.1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  z-index: 20;
-}
+      .map-controls {
+        position: absolute;
+        top: 1.1rem;
+        left: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.45rem;
+        z-index: 20;
+      }
 
-.ctrl-btn {
-  width: 36px;
-  height: 36px;
-  background: rgba(13, 20, 27, 0.85);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--text-main);
-  font-size: 16px;
-  font-weight: 600;
-  transition: all 0.18s var(--ease-spring);
-  backdrop-filter: blur(10px);
-  box-shadow: var(--shadow-card);
-}
+      .ctrl-btn {
+        width: 34px;
+        height: 34px;
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--text-main);
+        font-size: 16px;
+        font-weight: 500;
+        transition:
+          border-color 0.18s ease,
+          color 0.18s ease,
+          transform 0.18s var(--ease-spring);
+        box-shadow: var(--shadow-card);
+      }
 
-.ctrl-btn:hover {
-  background: var(--bg-surface-hover);
-  border-color: var(--primary);
-  color: var(--primary-light);
-  transform: translateY(-2px);
-}
+      .ctrl-btn:hover {
+        border-color: var(--primary);
+        color: var(--primary-light);
+        transform: translateY(-1px);
+      }
 
-#map-svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
+      .ctrl-btn:active {
+        transform: translateY(0) scale(0.94);
+      }
 
-#map-svg .state-feature {
-  cursor: pointer;
-  transition: fill 0.3s ease, stroke 0.2s ease, filter 0.2s ease;
-  stroke: rgba(255, 255, 255, 0.12);
-  stroke-width: 0.75px;
-}
+      #map-svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
 
-#map-svg .state-feature:hover {
-  filter: brightness(1.25);
-  stroke: #6ee7b7 !important;
-  stroke-width: 2px !important;
-}
+      #map-svg .state-feature {
+        cursor: pointer;
+        transition:
+          fill 0.3s ease,
+          stroke 0.2s ease,
+          filter 0.2s ease;
+        stroke: rgba(255, 255, 255, 0.12);
+        stroke-width: 0.75px;
+      }
 
-#map-svg .state-feature.selected {
-  stroke: #ffffff !important;
-  stroke-width: 2.4px !important;
-  filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.6)) brightness(1.2);
-}
+      #map-svg .state-feature:hover {
+        filter: brightness(1.15);
+        stroke: #7fc7a2 !important;
+        stroke-width: 1.5px !important;
+      }
 
-#map-svg .state-label {
-  fill: rgba(255, 255, 255, 0.65);
-  pointer-events: none;
-  text-anchor: middle;
-  dominant-baseline: middle;
-  font-family: var(--font-mono);
-  font-weight: 600;
-}
+      #map-svg .state-feature.selected {
+        stroke: #eef4f0 !important;
+        stroke-width: 2px !important;
+        filter: brightness(1.1);
+      }
 
-.map-breadcrumb {
-  position: absolute;
-  bottom: 1.1rem;
-  left: 1.1rem;
-  z-index: 20;
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  font-size: 0.78rem;
-  color: var(--text-muted);
-  background: rgba(13, 20, 27, 0.88);
-  border: 1px solid var(--border-default);
-  padding: 0.45rem 0.95rem;
-  border-radius: var(--radius-pill);
-  backdrop-filter: blur(12px);
-}
+      #map-svg .state-label {
+        fill: rgba(242, 243, 244, 0.6);
+        pointer-events: none;
+        text-anchor: middle;
+        dominant-baseline: middle;
+        font-family: var(--font-mono);
+        font-weight: 500;
+      }
 
-.map-breadcrumb strong { color: var(--primary-light); font-weight: 700; }
+      .map-breadcrumb {
+        position: absolute;
+        bottom: 1.1rem;
+        left: 1.1rem;
+        z-index: 20;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.78rem;
+        color: var(--text-muted);
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        padding: 0.45rem 0.95rem;
+        border-radius: var(--radius-sm);
+      }
 
-.map-legend {
-  position: absolute;
-  bottom: 1.1rem;
-  right: 1.1rem;
-  z-index: 20;
-  background: rgba(13, 20, 27, 0.9);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-md);
-  padding: 0.85rem 1.05rem;
-  min-width: 180px;
-  backdrop-filter: blur(12px);
-  box-shadow: var(--shadow-card);
-}
+      .map-breadcrumb strong {
+        color: var(--primary-light);
+        font-weight: 600;
+      }
 
-.legend-title {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 0.4rem;
-}
+      .map-legend {
+        position: absolute;
+        bottom: 1.1rem;
+        right: 1.1rem;
+        z-index: 20;
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-sm);
+        padding: 0.85rem 1.05rem;
+        min-width: 180px;
+        box-shadow: var(--shadow-card);
+      }
 
-.legend-bar {
-  height: 6px;
-  border-radius: 3px;
-  background: linear-gradient(90deg, #0e2a22, #059669, #10b981, #6ee7b7);
-  margin-bottom: 0.35rem;
-}
+      .legend-title {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        margin-bottom: 0.45rem;
+      }
 
-.legend-values {
-  display: flex;
-  justify-content: space-between;
-  font-size: 0.7rem;
-  font-family: var(--font-mono);
-  color: var(--text-faint);
-  font-weight: 500;
-}
+      .legend-bar {
+        height: 5px;
+        border-radius: 3px;
+        background: linear-gradient(90deg, #232428, #2f6b4d, #4a9e78, #7fc7a2);
+        margin-bottom: 0.35rem;
+      }
 
-/* Floating Glass Tooltip */
-.glass-tooltip {
-  position: fixed;
-  pointer-events: none;
-  z-index: 999;
-  background: rgba(13, 20, 27, 0.96);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  border-radius: var(--radius-md);
-  padding: 0.95rem 1.15rem;
-  min-width: 230px;
-  opacity: 0;
-  transform: translateY(6px);
-  transition: opacity 0.15s, transform 0.15s;
-  box-shadow: var(--shadow-card), var(--shadow-glow);
-  backdrop-filter: blur(16px);
-}
+      .legend-values {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.7rem;
+        font-family: var(--font-mono);
+        color: var(--text-faint);
+        font-weight: 500;
+      }
 
-.glass-tooltip.show { opacity: 1; transform: translateY(0); }
+      /* Floating Glass Tooltip */
+      .glass-tooltip {
+        position: fixed;
+        pointer-events: none;
+        z-index: 999;
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        border-left: 2px solid var(--primary);
+        border-radius: var(--radius-sm);
+        padding: 0.95rem 1.15rem;
+        min-width: 230px;
+        opacity: 0;
+        transform: translateY(6px);
+        transition:
+          opacity 0.15s,
+          transform 0.15s;
+        box-shadow: var(--shadow-card);
+      }
 
-.tooltip-header {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #fff;
-  margin-bottom: 0.6rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--border-subtle);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+      .glass-tooltip.show {
+        opacity: 1;
+        transform: translateY(0);
+      }
 
-.tooltip-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.22rem 0;
-  font-size: 0.78rem;
-}
+      .tooltip-header {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 0.6rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--border-subtle);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-.tooltip-label { color: var(--text-muted); }
-.tooltip-val { font-family: var(--font-mono); font-weight: 600; color: var(--text-main); }
-.tooltip-val.highlight { color: var(--primary-light); }
+      .tooltip-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.22rem 0;
+        font-size: 0.78rem;
+      }
 
-.tooltip-action {
-  font-size: 0.68rem;
-  color: var(--primary-light);
-  text-align: center;
-  margin-top: 0.55rem;
-  padding-top: 0.45rem;
-  border-top: 1px dashed var(--border-subtle);
-  font-weight: 600;
-}
+      .tooltip-label {
+        color: var(--text-muted);
+      }
+      .tooltip-val {
+        font-family: var(--font-mono);
+        font-weight: 600;
+        color: var(--text-main);
+      }
+      .tooltip-val.highlight {
+        color: var(--primary-light);
+      }
 
-/* Map Side Panel */
-.map-side-panel {
-  display: flex;
-  flex-direction: column;
-  background: var(--bg-sidebar);
-  border-left: 1px solid var(--border-subtle);
-  overflow: hidden;
-}
+      .tooltip-action {
+        font-size: 0.68rem;
+        color: var(--primary-light);
+        text-align: center;
+        margin-top: 0.55rem;
+        padding-top: 0.45rem;
+        border-top: 1px dashed var(--border-subtle);
+        font-weight: 600;
+      }
 
-.panel-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(18, 28, 36, 0.4);
-}
+      /* Map Side Panel */
+      .map-side-panel {
+        display: flex;
+        flex-direction: column;
+        background: var(--bg-sidebar);
+        border-left: 1px solid var(--border-subtle);
+        overflow: hidden;
+      }
 
-.panel-header h3 {
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
+      .panel-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: rgba(20, 21, 23, 0.4);
+      }
 
-.panel-header p {
-  font-size: 0.76rem;
-  color: var(--text-muted);
-  margin-top: 0.2rem;
-}
+      .panel-header h3 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 500;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
 
-.panel-scrollable {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.35rem 1.5rem;
-}
+      .panel-header p {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        margin-top: 0.2rem;
+      }
 
-.panel-scrollable::-webkit-scrollbar { width: 5px; }
-.panel-scrollable::-webkit-scrollbar-thumb { background: var(--bg-surface-elevated); border-radius: 4px; }
+      .panel-scrollable {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.35rem 1.5rem;
+      }
 
-.stat-grid-2x2 {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-  margin-bottom: 1.4rem;
-}
+      .panel-scrollable::-webkit-scrollbar {
+        width: 5px;
+      }
+      .panel-scrollable::-webkit-scrollbar-thumb {
+        background: var(--bg-surface-elevated);
+        border-radius: 4px;
+      }
 
-.stat-tile {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 0.85rem 0.95rem;
-  transition: all 0.2s var(--ease-spring);
-}
+      .stat-grid-2x2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1.4rem;
+      }
 
-.stat-tile:hover {
-  border-color: var(--border-active);
-  transform: translateY(-2px);
-  background: var(--bg-surface-elevated);
-}
+      .stat-tile {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        padding: 0.85rem 0.95rem;
+        transition: all 0.2s var(--ease-spring);
+      }
 
-.tile-tag {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 0.3rem;
-}
+      .stat-tile:hover {
+        border-color: var(--border-active);
+        background: var(--bg-surface-elevated);
+        transform: translateY(-2px);
+      }
 
-.tile-number {
-  font-family: var(--font-mono);
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #fff;
-}
+      .tile-tag {
+        font-size: 0.74rem;
+        font-weight: 500;
+        color: var(--text-faint);
+        margin-bottom: 0.35rem;
+      }
 
-.tile-number.green { color: var(--primary-light); }
-.tile-number.teal { color: var(--accent-teal); }
+      .tile-number {
+        font-family: var(--font-mono);
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text-main);
+      }
 
-.ranking-heading {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+      .tile-number.green {
+        color: var(--primary-light);
+      }
+      .tile-number.teal {
+        color: var(--accent-teal);
+      }
 
-.ranking-row {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.55rem 0;
-  border-bottom: 1px solid var(--border-subtle);
-  transition: background 0.15s ease;
-}
+      .ranking-heading {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--text-faint);
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-.ranking-pos {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: var(--text-faint);
-  width: 18px;
-  flex-shrink: 0;
-}
+      .ranking-row {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.55rem 0;
+        border-bottom: 1px solid var(--border-subtle);
+        transition: background 0.15s ease;
+      }
 
-.ranking-info { flex: 1; overflow: hidden; }
+      .ranking-pos {
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--text-faint);
+        width: 18px;
+        flex-shrink: 0;
+      }
 
-.ranking-name {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-main);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 0.25rem;
-}
+      .ranking-info {
+        flex: 1;
+        overflow: hidden;
+      }
 
-.ranking-track {
-  height: 5px;
-  background: var(--bg-surface-elevated);
-  border-radius: 3px;
-  overflow: hidden;
-}
+      .ranking-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0.25rem;
+      }
 
-.ranking-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #059669, #10b981);
-  border-radius: 3px;
-  transition: width 0.8s var(--ease-spring);
-}
+      .ranking-track {
+        height: 5px;
+        background: var(--bg-surface-elevated);
+        border-radius: 3px;
+        overflow: hidden;
+      }
 
-.ranking-val {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
+      .ranking-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #2f6b4d, #4a9e78);
+        border-radius: 3px;
+        transition: width 0.8s var(--ease-spring);
+      }
 
-/* ========================================================
+      .ranking-val {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+
+      /* ========================================================
    CONTENT SECTIONS & CARDS
    ======================================================== */
-.content-area {
-  padding: 1.6rem 2rem;
-  flex: 1;
-  overflow-y: auto;
-}
+      .content-area {
+        padding: 1.6rem 2rem;
+        flex: 1;
+        overflow-y: auto;
+      }
 
-.content-area::-webkit-scrollbar { width: 6px; }
-.content-area::-webkit-scrollbar-thumb { background: var(--bg-surface-elevated); border-radius: 4px; }
+      .content-area::-webkit-scrollbar {
+        width: 6px;
+      }
+      .content-area::-webkit-scrollbar-thumb {
+        background: var(--bg-surface-elevated);
+        border-radius: 4px;
+      }
 
-.metrics-banner {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  gap: 0.95rem;
-  margin-bottom: 1.5rem;
-}
+      .metrics-banner {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 0.95rem;
+        margin-bottom: 1.5rem;
+      }
 
-.metric-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 1.15rem 1.25rem;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.24s var(--ease-spring);
-  box-shadow: var(--shadow-card);
-}
+      .metric-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1.15rem 1.25rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.24s var(--ease-spring);
+        box-shadow: var(--shadow-card);
+      }
 
-.metric-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 3px;
-  background: linear-gradient(90deg, #10b981, #14b8a6);
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
+      .metric-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 3px;
+        height: 100%;
+        background: var(--primary);
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
 
-.metric-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--border-active);
-  box-shadow: var(--shadow-card), 0 0 16px rgba(16, 185, 129, 0.12);
-}
+      .metric-card:hover {
+        border-color: var(--border-active);
+        transform: translateY(-3px);
+        box-shadow:
+          0 1px 2px rgba(0, 0, 0, 0.4),
+          0 12px 24px -10px rgba(0, 0, 0, 0.55);
+      }
 
-.metric-card:hover::before { opacity: 1; }
+      .metric-card:hover::before {
+        opacity: 1;
+      }
 
-.metric-label {
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 0.45rem;
-}
+      .metric-label {
+        font-size: 0.76rem;
+        font-weight: 500;
+        color: var(--text-faint);
+        margin-bottom: 0.5rem;
+      }
 
-.metric-value {
-  font-family: var(--font-mono);
-  font-size: 1.65rem;
-  font-weight: 700;
-  color: #fff;
-  line-height: 1.1;
-}
+      .metric-value {
+        font-family: var(--font-mono);
+        font-size: 1.65rem;
+        font-weight: 600;
+        color: var(--text-main);
+        line-height: 1.1;
+      }
 
-.metric-desc {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  margin-top: 0.35rem;
-}
+      .metric-desc {
+        font-size: 0.74rem;
+        color: var(--text-muted);
+        margin-top: 0.35rem;
+      }
 
-.card-panel {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-card);
-}
+      .card-panel {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-card);
+      }
 
-.card-head {
-  padding: 1rem 1.4rem;
-  border-bottom: 1px solid var(--border-subtle);
-  background: rgba(24, 36, 48, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+      .card-head {
+        padding: 1rem 1.4rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-surface-elevated);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
 
-.card-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
+      .card-title {
+        font-size: 0.92rem;
+        font-weight: 600;
+        color: var(--text-main);
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
 
-.indicator-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--primary);
-  box-shadow: 0 0 8px var(--primary);
-}
+      .indicator-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--primary);
+        flex-shrink: 0;
+      }
 
-.card-body { padding: 1.4rem; }
+      .card-body {
+        padding: 1.4rem;
+      }
 
-.grid-2col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.35rem;
-}
+      .grid-2col {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.35rem;
+      }
 
-/* Search bar & Filters */
-.table-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
+      /* Search bar & Filters */
+      .table-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        flex-wrap: wrap;
+      }
 
-.search-input-wrapper {
-  position: relative;
-  flex: 1;
-  max-width: 320px;
-  min-width: 220px;
-}
+      .search-input-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 320px;
+        min-width: 220px;
+      }
 
-.search-input-wrapper svg {
-  position: absolute;
-  left: 0.85rem;
-  top: 50%;
-  transform: translateY(-50%);
-  stroke: var(--text-faint);
-  width: 15px;
-  height: 15px;
-}
+      .search-input-wrapper svg {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        stroke: var(--text-faint);
+        width: 15px;
+        height: 15px;
+      }
 
-.search-input {
-  width: 100%;
-  background: var(--bg-surface-elevated);
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-pill);
-  padding: 0.45rem 1rem 0.45rem 2.2rem;
-  color: #fff;
-  font-size: 0.8rem;
-  font-family: inherit;
-  outline: none;
-  transition: all 0.2s ease;
-}
+      .search-input {
+        width: 100%;
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-pill);
+        padding: 0.45rem 1rem 0.45rem 2.2rem;
+        color: #fff;
+        font-size: 0.8rem;
+        font-family: inherit;
+        outline: none;
+        transition: all 0.2s ease;
+      }
 
-.search-input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
-}
+      .search-input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+      }
 
-.search-input::placeholder { color: var(--text-faint); }
+      .search-input::placeholder {
+        color: var(--text-faint);
+      }
 
-/* Table Styles */
-.table-wrapper { overflow-x: auto; }
+      /* Table Styles */
+      .table-wrapper {
+        overflow-x: auto;
+      }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.84rem;
-}
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.84rem;
+      }
 
-th {
-  text-align: left;
-  padding: 0.75rem 1.1rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-default);
-  background: rgba(24, 36, 48, 0.45);
-  white-space: nowrap;
-}
+      th {
+        text-align: left;
+        padding: 0.75rem 1.1rem;
+        font-size: 0.76rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--border-default);
+        background: var(--bg-surface-elevated);
+        white-space: nowrap;
+      }
 
-td {
-  padding: 0.85rem 1.1rem;
-  border-bottom: 1px solid var(--border-subtle);
-  vertical-align: middle;
-  color: var(--text-main);
-  transition: background 0.15s ease;
-}
+      td {
+        padding: 0.85rem 1.1rem;
+        border-bottom: 1px solid var(--border-subtle);
+        vertical-align: middle;
+        color: var(--text-main);
+        transition: background 0.15s ease;
+      }
 
-tr:last-child td { border-bottom: none; }
+      tr:last-child td {
+        border-bottom: none;
+      }
 
-tr:hover td {
-  background: rgba(16, 185, 129, 0.05);
-}
+      tr:hover td {
+        background: var(--bg-surface-elevated);
+      }
 
-.tag-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.25rem 0.65rem;
-  border-radius: var(--radius-pill);
-  font-size: 0.74rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
+      .tag-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.22rem 0.6rem;
+        border-radius: var(--radius-xs);
+        font-size: 0.74rem;
+        font-weight: 500;
+        white-space: nowrap;
+      }
 
-.tag-green { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
-.tag-teal { background: rgba(20, 184, 166, 0.12); color: #5eead4; border: 1px solid rgba(20, 184, 166, 0.25); }
-.tag-blue { background: rgba(59, 130, 246, 0.12); color: #93c5fd; border: 1px solid rgba(59, 130, 246, 0.25); }
-.tag-purple { background: rgba(99, 102, 241, 0.12); color: #c7d2fe; border: 1px solid rgba(99, 102, 241, 0.25); }
-.tag-amber { background: rgba(245, 158, 11, 0.12); color: #fde68a; border: 1px solid rgba(245, 158, 11, 0.25); }
+      .tag-green {
+        background: rgba(74, 158, 120, 0.12);
+        color: #8fd0ab;
+        border: 1px solid rgba(74, 158, 120, 0.3);
+      }
+      .tag-teal {
+        background: rgba(74, 143, 138, 0.12);
+        color: #8fc2bd;
+        border: 1px solid rgba(74, 143, 138, 0.3);
+      }
+      .tag-blue {
+        background: rgba(92, 127, 168, 0.12);
+        color: #a7bedd;
+        border: 1px solid rgba(92, 127, 168, 0.3);
+      }
+      .tag-purple {
+        background: rgba(122, 126, 163, 0.12);
+        color: #b7bade;
+        border: 1px solid rgba(122, 126, 163, 0.3);
+      }
+      .tag-amber {
+        background: rgba(185, 138, 74, 0.12);
+        color: #dbb27f;
+        border: 1px solid rgba(185, 138, 74, 0.3);
+      }
 
-.progress-row {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  margin-bottom: 0.65rem;
-}
+      .progress-row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        margin-bottom: 0.65rem;
+      }
 
-.progress-label {
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: var(--text-muted);
-  min-width: 140px;
-  text-align: right;
-  text-transform: capitalize;
-}
+      .progress-label {
+        font-size: 0.78rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        min-width: 140px;
+        text-align: right;
+        text-transform: capitalize;
+      }
 
-.progress-track {
-  flex: 1;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--bg-surface-elevated);
-  overflow: hidden;
-}
+      .progress-track {
+        flex: 1;
+        height: 8px;
+        border-radius: 4px;
+        background: var(--bg-surface-elevated);
+        overflow: hidden;
+      }
 
-.progress-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, #059669, #10b981);
-  transition: width 0.8s var(--ease-spring);
-}
+      .progress-fill {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #2f6b4d, #4a9e78);
+        transition: width 0.8s var(--ease-spring);
+      }
 
-.progress-val {
-  font-family: var(--font-mono);
-  font-size: 0.76rem;
-  font-weight: 600;
-  min-width: 50px;
-  color: var(--text-muted);
-}
+      .progress-val {
+        font-family: var(--font-mono);
+        font-size: 0.76rem;
+        font-weight: 600;
+        min-width: 50px;
+        color: var(--text-muted);
+      }
 
-footer {
-  padding: 0.9rem 2rem;
-  font-size: 0.74rem;
-  color: var(--text-faint);
-  border-top: 1px solid var(--border-subtle);
-  background: var(--bg-sidebar);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-shrink: 0;
-  font-family: var(--font-mono);
-}
+      footer {
+        padding: 0.9rem 2rem;
+        font-size: 0.74rem;
+        color: var(--text-faint);
+        border-top: 1px solid var(--border-subtle);
+        background: var(--bg-sidebar);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+      }
 
-.map-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 15;
-  pointer-events: none;
-}
+      .map-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 15;
+        pointer-events: none;
+      }
 
-.spinner {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  border: 2px solid rgba(16, 185, 129, 0.2);
-  border-top-color: var(--primary);
-  animation: spin 0.65s linear infinite;
-}
+      .spinner {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid var(--border-default);
+        border-top-color: var(--primary);
+        animation: spin 0.65s linear infinite;
+      }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-.loading-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: rgba(13, 20, 27, 0.92);
-  padding: 0.85rem 1.35rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-default);
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  box-shadow: var(--shadow-card);
-}
+      .loading-chip {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background: rgba(17, 18, 20, 0.92);
+        padding: 0.85rem 1.35rem;
+        border-radius: var(--radius-pill);
+        border: 1px solid var(--border-default);
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        box-shadow: var(--shadow-card);
+      }
 
-/* ========================================================
+      /* ========================================================
    RESPONSIVE DESIGN BREAKPOINTS
    ======================================================== */
-@media (max-width: 1024px) {
-  .grid-2col { grid-template-columns: 1fr; }
-  
-  .map-layout {
-    grid-template-columns: 1fr 310px;
-  }
-}
+      @media (max-width: 1024px) {
+        .grid-2col {
+          grid-template-columns: 1fr;
+        }
 
-@media (max-width: 900px) {
-  body {
-    grid-template-columns: 1fr;
-    grid-template-rows: 60px 1fr;
-    grid-template-areas: "header" "main";
-  }
+        .map-layout {
+          grid-template-columns: 1fr 310px;
+        }
+      }
 
-  .mobile-toggle { display: inline-flex; }
+      @media (max-width: 900px) {
+        body {
+          grid-template-columns: 1fr;
+          grid-template-rows: 60px 1fr;
+          grid-template-areas: "header" "main";
+        }
 
-  aside {
-    position: fixed;
-    top: 60px;
-    left: 0;
-    width: 270px;
-    height: calc(100vh - 60px);
-    transform: translateX(-100%);
-    transition: transform 0.3s var(--ease-spring);
-    box-shadow: var(--shadow-card);
-    border-right: 1px solid var(--border-default);
-  }
+        .mobile-toggle {
+          display: inline-flex;
+        }
 
-  aside.open { transform: translateX(0); }
+        aside {
+          position: fixed;
+          top: 60px;
+          left: 0;
+          width: 270px;
+          height: calc(100vh - 60px);
+          transform: translateX(-100%);
+          transition: transform 0.3s var(--ease-spring);
+          box-shadow: var(--shadow-card);
+          border-right: 1px solid var(--border-default);
+        }
 
-  .map-layout {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(320px, 48vh) auto;
-    overflow-y: auto;
-  }
+        aside.open {
+          transform: translateX(0);
+        }
 
-  .map-viewport {
-    border-right: none;
-    border-bottom: 1px solid var(--border-subtle);
-  }
+        .map-layout {
+          grid-template-columns: 1fr;
+          grid-template-rows: minmax(320px, 48vh) auto;
+          overflow-y: auto;
+        }
 
-  .map-side-panel {
-    border-left: none;
-    overflow-y: visible;
-  }
+        .map-viewport {
+          border-right: none;
+          border-bottom: 1px solid var(--border-subtle);
+        }
 
-  .panel-scrollable {
-    overflow-y: visible;
-    padding: 1.25rem 1.25rem 2rem;
-  }
+        .map-side-panel {
+          border-left: none;
+          overflow-y: visible;
+        }
 
-  .page-head {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1rem 1.25rem;
-  }
+        .panel-scrollable {
+          overflow-y: visible;
+          padding: 1.25rem 1.25rem 2rem;
+        }
 
-  .content-area { padding: 1.2rem 1.25rem; }
+        .page-head {
+          flex-direction: column;
+          align-items: flex-start;
+          padding: 1rem 1.25rem;
+        }
 
-  .version-tag { display: none; }
-}
+        .content-area {
+          padding: 1.2rem 1.25rem;
+        }
 
-@media (max-width: 640px) {
-  header { padding: 0 1rem; }
-  
-  .brand-desc { display: none; }
-  
-  .live-indicator span { display: none; }
-  .live-indicator { padding: 0.35rem; }
+        .version-tag {
+          display: none;
+        }
+      }
 
-  .metrics-banner {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 0.65rem;
-  }
+      @media (max-width: 640px) {
+        header {
+          padding: 0 1rem;
+        }
 
-  .metric-card { padding: 0.95rem 1rem; }
-  .metric-value { font-size: 1.35rem; }
+        .brand-desc {
+          display: none;
+        }
 
-  .card-body { padding: 1rem; }
-  .card-head { padding: 0.85rem 1rem; }
+        .live-indicator span {
+          display: none;
+        }
+        .live-indicator {
+          padding: 0.35rem;
+        }
 
-  .progress-label {
-    min-width: 100px;
-    font-size: 0.72rem;
-  }
+        .metrics-banner {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 0.65rem;
+        }
 
-  .map-legend {
-    min-width: 140px;
-    padding: 0.65rem 0.85rem;
-    right: 0.65rem;
-    bottom: 0.65rem;
-  }
+        .metric-card {
+          padding: 0.95rem 1rem;
+        }
+        .metric-value {
+          font-size: 1.35rem;
+        }
 
-  .map-breadcrumb {
-    left: 0.65rem;
-    bottom: 0.65rem;
-    font-size: 0.72rem;
-    padding: 0.35rem 0.75rem;
-  }
+        .card-body {
+          padding: 1rem;
+        }
+        .card-head {
+          padding: 0.85rem 1rem;
+        }
 
-  .map-controls {
-    top: 0.65rem;
-    left: 0.65rem;
-  }
+        .progress-label {
+          min-width: 100px;
+          font-size: 0.72rem;
+        }
 
-  .ctrl-btn { width: 32px; height: 32px; font-size: 14px; }
+        .map-legend {
+          min-width: 140px;
+          padding: 0.65rem 0.85rem;
+          right: 0.65rem;
+          bottom: 0.65rem;
+        }
 
-  .segmented-control { width: 100%; justify-content: space-between; }
-  .seg-btn { flex: 1; justify-content: center; padding: 0.4rem 0.5rem; font-size: 0.74rem; }
+        .map-breadcrumb {
+          left: 0.65rem;
+          bottom: 0.65rem;
+          font-size: 0.72rem;
+          padding: 0.35rem 0.75rem;
+        }
 
-  .search-input-wrapper { max-width: 100%; }
+        .map-controls {
+          top: 0.65rem;
+          left: 0.65rem;
+        }
 
-  footer {
-    flex-direction: column;
-    gap: 0.35rem;
-    text-align: center;
-    padding: 0.8rem 1rem;
-  }
-}
-</style>
-</head>
-<body>
+        .ctrl-btn {
+          width: 32px;
+          height: 32px;
+          font-size: 14px;
+        }
 
-<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="toggleSidebar(false)"></div>
+        .segmented-control {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .seg-btn {
+          flex: 1;
+          justify-content: center;
+          padding: 0.4rem 0.5rem;
+          font-size: 0.74rem;
+        }
 
-<!-- HEADER -->
-<header>
-  <div class="brand-group">
-    <button class="mobile-toggle" onclick="toggleSidebar()" aria-label="Abrir Menu">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
-      </svg>
-    </button>
-    <div class="brand">
-      <div class="brand-icon">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        .search-input-wrapper {
+          max-width: 100%;
+        }
+
+        footer {
+          flex-direction: column;
+          gap: 0.35rem;
+          text-align: center;
+          padding: 0.8rem 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div
+      class="sidebar-backdrop"
+      id="sidebar-backdrop"
+      onclick="toggleSidebar(false)"
+    ></div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="brand-group">
+        <button
+          class="mobile-toggle"
+          onclick="toggleSidebar()"
+          aria-label="Abrir Menu"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+        </button>
+        <div class="brand">
+          <div class="brand-icon">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+            </svg>
+          </div>
+          <div class="brand-text">
+            <div class="brand-name">Milton <span>Analytics</span></div>
+            <div class="brand-desc">Observatório de Saúde Suplementar</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="live-indicator">
+          <div class="pulse-circle" id="status-dot"></div>
+          <span id="status-text">Base Sincronizada</span>
+        </div>
+        <div class="version-tag">PostgreSQL 16 · ANS CADOP</div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="nav-label">Navegação</div>
+      <div class="nav-link active" onclick="switchPage('map')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+          <line x1="9" y1="3" x2="9" y2="18" />
+          <line x1="15" y1="6" x2="15" y2="21" />
         </svg>
+        Mapa Regional
       </div>
-      <div class="brand-text">
-        <div class="brand-name">Milton <span>Analytics</span></div>
-        <div class="brand-desc">Observatório de Saúde Suplementar</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="header-actions">
-    <div class="live-indicator">
-      <div class="pulse-circle" id="status-dot"></div>
-      <span id="status-text">Base Sincronizada</span>
-    </div>
-    <div class="version-tag">PostgreSQL 16 · ANS CADOP</div>
-  </div>
-</header>
-
-<!-- SIDEBAR -->
-<aside id="sidebar">
-  <div class="nav-label">Navegação</div>
-  <div class="nav-link active" onclick="switchPage('map')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/></svg>
-    Mapa Regional
-  </div>
-  <div class="nav-link" onclick="switchPage('ov')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
-    Visão Geral
-  </div>
-
-  <div class="nav-label" style="margin-top:0.8rem">Regulação & Mercado</div>
-  <div class="nav-link" onclick="switchPage('mkt')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-    Market Share
-  </div>
-  <div class="nav-link" onclick="switchPage('op')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-    Operadoras
-  </div>
-  <div class="nav-link" onclick="switchPage('pl')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-    Catálogo de Planos
-  </div>
-
-  <div class="nav-label" style="margin-top:0.8rem">Demografia & Uso</div>
-  <div class="nav-link" onclick="switchPage('sd')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-    Perfil Municipal
-  </div>
-  <div class="nav-link" onclick="switchPage('hs')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Consultas Recentes
-  </div>
-
-  <div class="sidebar-card">
-    <h4>
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--primary-light)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-      Guia Interativo
-    </h4>
-    Navegue pelas 27 Unidades Federativas clicando no mapa para detalhar cobertura, renda e operadoras líderes.
-  </div>
-</aside>
-
-<!-- MAIN APP BODY -->
-<main>
-
-<!-- PAGE 1: MAPA REGIONAL -->
-<div id="page-map" class="page active">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Distribuição Geográfica da Saúde Suplementar</h2>
-      <p>Explore os indicadores estaduais e a penetração das operadoras de saúde</p>
-    </div>
-    <div class="segmented-control">
-      <button class="seg-btn active" onclick="setMetric('ben', this)">Beneficiários</button>
-      <button class="seg-btn"        onclick="setMetric('cob', this)">Cobertura %</button>
-      <button class="seg-btn"        onclick="setMetric('idh', this)">IDH</button>
-    </div>
-  </div>
-
-  <div class="map-layout">
-    <div class="map-viewport" id="map-container">
-      <div class="map-controls">
-        <button class="ctrl-btn" onclick="zoomMap(1.4)" title="Aproximar">+</button>
-        <button class="ctrl-btn" onclick="zoomMap(0.7)" title="Afastar">−</button>
-        <button class="ctrl-btn" onclick="resetMap()" title="Restaurar Visão Geral">⌂</button>
+      <div class="nav-link" onclick="switchPage('ov')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <rect width="7" height="9" x="3" y="3" rx="1" />
+          <rect width="7" height="5" x="14" y="3" rx="1" />
+          <rect width="7" height="9" x="14" y="12" rx="1" />
+          <rect width="7" height="5" x="3" y="16" rx="1" />
+        </svg>
+        Visão Geral
       </div>
 
-      <svg id="map-svg"></svg>
-
-      <div class="map-loading-overlay" id="map-loading">
-        <div class="loading-chip">
-          <div class="spinner"></div>
-          <span>Carregando malha geográfica...</span>
-        </div>
+      <div class="nav-label" style="margin-top: 0.8rem">
+        Regulação & Mercado
+      </div>
+      <div class="nav-link" onclick="switchPage('mkt')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M3 3v18h18" />
+          <path d="m19 9-5 5-4-4-3 3" />
+        </svg>
+        Market Share
+      </div>
+      <div class="nav-link" onclick="switchPage('op')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+          <circle cx="9" cy="7" r="4" />
+          <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+          <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+        </svg>
+        Operadoras
+      </div>
+      <div class="nav-link" onclick="switchPage('pl')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+        </svg>
+        Catálogo de Planos
       </div>
 
-      <div class="map-breadcrumb">
-        Brasil <span style="color:var(--text-faint)">/</span>
-        <strong id="breadcrumb-uf">Todos os Estados</strong>
+      <div class="nav-label" style="margin-top: 0.8rem">Demografia & Uso</div>
+      <div class="nav-link" onclick="switchPage('sd')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+        </svg>
+        Perfil Municipal
+      </div>
+      <div class="nav-link" onclick="switchPage('hs')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="12" cy="12" r="10" />
+          <polyline points="12 6 12 12 16 14" />
+        </svg>
+        Consultas Recentes
       </div>
 
-      <div class="map-legend">
-        <div class="legend-title" id="legend-label">Beneficiários</div>
-        <div class="legend-bar"></div>
-        <div class="legend-values">
-          <span id="legend-min">0</span>
-          <span id="legend-max">—</span>
-        </div>
+      <div class="sidebar-card">
+        <h4>
+          <svg
+            width="15"
+            height="15"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="var(--primary-light)"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M12 16v-4" />
+            <path d="M12 8h.01" />
+          </svg>
+          Guia Interativo
+        </h4>
+        Navegue pelas 27 Unidades Federativas clicando no mapa para detalhar
+        cobertura, renda e operadoras líderes.
       </div>
+    </aside>
 
-      <div class="glass-tooltip" id="tooltip"></div>
-    </div>
-
-    <!-- Map Side Drawer -->
-    <div class="map-side-panel">
-      <div class="panel-header">
-        <h3 id="panel-title">Brasil — Panorama Geral</h3>
-        <p id="panel-subtitle">Consolidado Nacional (27 UFs)</p>
-      </div>
-      <div class="panel-scrollable" id="panel-content"></div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 2: VISÃO GERAL -->
-<div id="page-ov" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Estrutura do Modelo de Dados</h2>
-      <p>Métricas consolidadas das 14 entidades do banco relacional</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="metrics-banner" id="overview-metrics"></div>
-    <div class="grid-2col">
-      <div class="card-panel">
-        <div class="card-head">
-          <div class="card-title"><span class="indicator-dot"></span>Volume de Linhas por Entidade</div>
-        </div>
-        <div class="card-body"><div id="overview-bars"></div></div>
-      </div>
-      <div class="card-panel">
-        <div class="card-head">
-          <div class="card-title"><span class="indicator-dot" style="background:var(--accent-teal)"></span>Proporção Relacional</div>
-        </div>
-        <div class="card-body">
-          <div style="height:260px"><canvas id="chart-doughnut"></canvas></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <footer>
-    <span>Milton Analytics · Plataforma de Dados</span>
-    <span id="footer-time"></span>
-  </footer>
-</div>
-
-<!-- PAGE 3: MARKET SHARE -->
-<div id="page-mkt" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Participação e Concentração de Mercado</h2>
-      <p>Operadoras líderes por volume assistencial e fatia de mercado regional</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot"></span>Top Operadoras por Volume de Beneficiários</div>
-      </div>
-      <div class="card-body">
-        <div style="height:270px"><canvas id="chart-market"></canvas></div>
-      </div>
-    </div>
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot" style="background:var(--accent-teal)"></span>Tabela Detalhada de Competência</div>
-      </div>
-      <div class="card-body">
-        <div class="table-toolbar">
-          <div class="search-input-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" class="search-input" id="search-mkt" placeholder="Filtrar por operadora ou cidade..." oninput="filterTable('mkt')">
+    <!-- MAIN APP BODY -->
+    <main>
+      <!-- PAGE 1: MAPA REGIONAL -->
+      <div id="page-map" class="page active">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Distribuição Geográfica da Saúde Suplementar</h2>
+            <p>
+              Explore os indicadores estaduais e a penetração das operadoras de
+              saúde
+            </p>
+          </div>
+          <div class="segmented-control">
+            <button class="seg-btn active" onclick="setMetric('ben', this)">
+              Beneficiários
+            </button>
+            <button class="seg-btn" onclick="setMetric('cob', this)">
+              Cobertura %
+            </button>
+            <button class="seg-btn" onclick="setMetric('idh', this)">
+              IDH
+            </button>
           </div>
         </div>
-        <div class="table-wrapper" id="table-mkt"></div>
-      </div>
-    </div>
-  </div>
-</div>
 
-<!-- PAGE 4: OPERADORAS -->
-<div id="page-op" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Registro de Operadoras (ANS CADOP)</h2>
-      <p>Entidades ativas, modalidades operacionais e planos vigentes</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot" style="background:var(--accent-cyan)"></span>Operadoras Homologadas</div>
-      </div>
-      <div class="card-body">
-        <div class="table-toolbar">
-          <div class="search-input-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" class="search-input" id="search-op" placeholder="Buscar operadora ou modalidade..." oninput="filterTable('op')">
+        <div class="map-layout">
+          <div class="map-viewport" id="map-container">
+            <div class="map-controls">
+              <button class="ctrl-btn" onclick="zoomMap(1.4)" title="Aproximar">
+                +
+              </button>
+              <button class="ctrl-btn" onclick="zoomMap(0.7)" title="Afastar">
+                −
+              </button>
+              <button
+                class="ctrl-btn"
+                onclick="resetMap()"
+                title="Restaurar Visão Geral"
+              >
+                ⌂
+              </button>
+            </div>
+
+            <svg id="map-svg"></svg>
+
+            <div class="map-loading-overlay" id="map-loading">
+              <div class="loading-chip">
+                <div class="spinner"></div>
+                <span>Carregando malha geográfica...</span>
+              </div>
+            </div>
+
+            <div class="map-breadcrumb">
+              Brasil <span style="color: var(--text-faint)">/</span>
+              <strong id="breadcrumb-uf">Todos os Estados</strong>
+            </div>
+
+            <div class="map-legend">
+              <div class="legend-title" id="legend-label">Beneficiários</div>
+              <div class="legend-bar"></div>
+              <div class="legend-values">
+                <span id="legend-min">0</span>
+                <span id="legend-max">—</span>
+              </div>
+            </div>
+
+            <div class="glass-tooltip" id="tooltip"></div>
+          </div>
+
+          <!-- Map Side Drawer -->
+          <div class="map-side-panel">
+            <div class="panel-header">
+              <h3 id="panel-title">Brasil — Panorama Geral</h3>
+              <p id="panel-subtitle">Consolidado Nacional (27 UFs)</p>
+            </div>
+            <div class="panel-scrollable" id="panel-content"></div>
           </div>
         </div>
-        <div class="table-wrapper" id="table-op"></div>
       </div>
-    </div>
-  </div>
-</div>
 
-<!-- PAGE 5: PLANOS -->
-<div id="page-pl" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Portfólio de Planos Assistenciais</h2>
-      <p>Segmentação, modalidade de contratação e amplitude de rede</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot" style="background:var(--primary-light)"></span>Planos e Abrangência Territorial</div>
-      </div>
-      <div class="card-body">
-        <div class="table-toolbar">
-          <div class="search-input-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" class="search-input" id="search-pl" placeholder="Buscar por plano, operadora ou tipo..." oninput="filterTable('pl')">
+      <!-- PAGE 2: VISÃO GERAL -->
+      <div id="page-ov" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Estrutura do Modelo de Dados</h2>
+            <p>Métricas consolidadas das 14 entidades do banco relacional</p>
           </div>
         </div>
-        <div class="table-wrapper" id="table-pl"></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- PAGE 6: SAÚDE PÚBLICA -->
-<div id="page-sd" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Indicadores Socioeconômicos & Demografia</h2>
-      <p>Cruzamento entre IDH Municipal, Cobertura Assistencial e Renda</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="grid-2col" style="margin-bottom:1.4rem">
-      <div class="card-panel">
-        <div class="card-head">
-          <div class="card-title"><span class="indicator-dot"></span>IDH Municipal</div>
-        </div>
-        <div class="card-body"><div style="height:220px"><canvas id="chart-idh"></canvas></div></div>
-      </div>
-      <div class="card-panel">
-        <div class="card-head">
-          <div class="card-title"><span class="indicator-dot" style="background:var(--accent-teal)"></span>Taxa de Cobertura Privada (%)</div>
-        </div>
-        <div class="card-body"><div style="height:220px"><canvas id="chart-cob"></canvas></div></div>
-      </div>
-    </div>
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot" style="background:var(--accent-blue)"></span>Tabela de Indicadores por Município</div>
-      </div>
-      <div class="card-body">
-        <div class="table-toolbar">
-          <div class="search-input-wrapper">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-            <input type="text" class="search-input" id="search-sd" placeholder="Filtrar município ou UF..." oninput="filterTable('sd')">
+        <div class="content-area">
+          <div class="metrics-banner" id="overview-metrics"></div>
+          <div class="grid-2col">
+            <div class="card-panel">
+              <div class="card-head">
+                <div class="card-title">
+                  <span class="indicator-dot"></span>Volume de Linhas por
+                  Entidade
+                </div>
+              </div>
+              <div class="card-body"><div id="overview-bars"></div></div>
+            </div>
+            <div class="card-panel">
+              <div class="card-head">
+                <div class="card-title">
+                  <span
+                    class="indicator-dot"
+                    style="background: var(--accent-teal)"
+                  ></span
+                  >Proporção Relacional
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="height: 260px">
+                  <canvas id="chart-doughnut"></canvas>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="table-wrapper" id="table-sd"></div>
+        <footer>
+          <span>Milton Analytics · Plataforma de Dados</span>
+          <span id="footer-time"></span>
+        </footer>
       </div>
-    </div>
-  </div>
-</div>
 
-<!-- PAGE 7: HISTÓRICO -->
-<div id="page-hs" class="page">
-  <div class="page-head">
-    <div class="page-title-group">
-      <h2>Auditoria de Recomendações</h2>
-      <p>Registro de buscas analíticas processadas pelo motor de recomendação</p>
-    </div>
-  </div>
-  <div class="content-area">
-    <div class="card-panel">
-      <div class="card-head">
-        <div class="card-title"><span class="indicator-dot" style="background:var(--accent-indigo)"></span>Consultas Recentes</div>
+      <!-- PAGE 3: MARKET SHARE -->
+      <div id="page-mkt" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Participação e Concentração de Mercado</h2>
+            <p>
+              Operadoras líderes por volume assistencial e fatia de mercado
+              regional
+            </p>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span class="indicator-dot"></span>Top Operadoras por Volume de
+                Beneficiários
+              </div>
+            </div>
+            <div class="card-body">
+              <div style="height: 270px">
+                <canvas id="chart-market"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span
+                  class="indicator-dot"
+                  style="background: var(--accent-teal)"
+                ></span
+                >Tabela Detalhada de Competência
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-toolbar">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    class="search-input"
+                    id="search-mkt"
+                    placeholder="Filtrar por operadora ou cidade..."
+                    oninput="filterTable('mkt')"
+                  />
+                </div>
+              </div>
+              <div class="table-wrapper" id="table-mkt"></div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="table-wrapper" id="table-hs"></div>
+
+      <!-- PAGE 4: OPERADORAS -->
+      <div id="page-op" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Registro de Operadoras (ANS CADOP)</h2>
+            <p>Entidades ativas, modalidades operacionais e planos vigentes</p>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span
+                  class="indicator-dot"
+                  style="background: var(--accent-cyan)"
+                ></span
+                >Operadoras Homologadas
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-toolbar">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    class="search-input"
+                    id="search-op"
+                    placeholder="Buscar operadora ou modalidade..."
+                    oninput="filterTable('op')"
+                  />
+                </div>
+              </div>
+              <div class="table-wrapper" id="table-op"></div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
-</div>
 
-</main>
+      <!-- PAGE 5: PLANOS -->
+      <div id="page-pl" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Portfólio de Planos Assistenciais</h2>
+            <p>Segmentação, modalidade de contratação e amplitude de rede</p>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span
+                  class="indicator-dot"
+                  style="background: var(--primary-light)"
+                ></span
+                >Planos e Abrangência Territorial
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-toolbar">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    class="search-input"
+                    id="search-pl"
+                    placeholder="Buscar por plano, operadora ou tipo..."
+                    oninput="filterTable('pl')"
+                  />
+                </div>
+              </div>
+              <div class="table-wrapper" id="table-pl"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-<script>
-/* ========================================================
+      <!-- PAGE 6: SAÚDE PÚBLICA -->
+      <div id="page-sd" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Indicadores Socioeconômicos & Demografia</h2>
+            <p>
+              Cruzamento entre IDH Municipal, Cobertura Assistencial e Renda
+            </p>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="grid-2col" style="margin-bottom: 1.4rem">
+            <div class="card-panel">
+              <div class="card-head">
+                <div class="card-title">
+                  <span class="indicator-dot"></span>IDH Municipal
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="height: 220px">
+                  <canvas id="chart-idh"></canvas>
+                </div>
+              </div>
+            </div>
+            <div class="card-panel">
+              <div class="card-head">
+                <div class="card-title">
+                  <span
+                    class="indicator-dot"
+                    style="background: var(--accent-teal)"
+                  ></span
+                  >Taxa de Cobertura Privada (%)
+                </div>
+              </div>
+              <div class="card-body">
+                <div style="height: 220px">
+                  <canvas id="chart-cob"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span
+                  class="indicator-dot"
+                  style="background: var(--accent-blue)"
+                ></span
+                >Tabela de Indicadores por Município
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-toolbar">
+                <div class="search-input-wrapper">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                  <input
+                    type="text"
+                    class="search-input"
+                    id="search-sd"
+                    placeholder="Filtrar município ou UF..."
+                    oninput="filterTable('sd')"
+                  />
+                </div>
+              </div>
+              <div class="table-wrapper" id="table-sd"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 7: HISTÓRICO -->
+      <div id="page-hs" class="page">
+        <div class="page-head">
+          <div class="page-title-group">
+            <h2>Auditoria de Recomendações</h2>
+            <p>
+              Registro de buscas analíticas processadas pelo motor de
+              recomendação
+            </p>
+          </div>
+        </div>
+        <div class="content-area">
+          <div class="card-panel">
+            <div class="card-head">
+              <div class="card-title">
+                <span
+                  class="indicator-dot"
+                  style="background: var(--accent-indigo)"
+                ></span
+                >Consultas Recentes
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-wrapper" id="table-hs"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      /* ========================================================
    IBGE CODES & DATASETS
    ======================================================== */
-const IBGE_UF = {
-  "11":"RO","12":"AC","13":"AM","14":"RR","15":"PA","16":"AP","17":"TO",
-  "21":"MA","22":"PI","23":"CE","24":"RN","25":"PB","26":"PE","27":"AL",
-  "28":"SE","29":"BA","31":"MG","32":"ES","33":"RJ","35":"SP",
-  "41":"PR","42":"SC","43":"RS","50":"MS","51":"MT","52":"GO","53":"DF"
-};
+      const IBGE_UF = {
+        11: "RO",
+        12: "AC",
+        13: "AM",
+        14: "RR",
+        15: "PA",
+        16: "AP",
+        17: "TO",
+        21: "MA",
+        22: "PI",
+        23: "CE",
+        24: "RN",
+        25: "PB",
+        26: "PE",
+        27: "AL",
+        28: "SE",
+        29: "BA",
+        31: "MG",
+        32: "ES",
+        33: "RJ",
+        35: "SP",
+        41: "PR",
+        42: "SC",
+        43: "RS",
+        50: "MS",
+        51: "MT",
+        52: "GO",
+        53: "DF",
+      };
 
-const STATES_DATA = {
-  AC:{nome:"Acre",reg:"Norte",ben:160000,op:6,mun:22,cob:18.2,idh:0.663,renda:1200},
-  AL:{nome:"Alagoas",reg:"Nordeste",ben:410000,op:14,mun:102,cob:12.6,idh:0.631,renda:950},
-  AM:{nome:"Amazonas",reg:"Norte",ben:820000,op:20,mun:62,cob:19.4,idh:0.674,renda:1300},
-  AP:{nome:"Amapá",reg:"Norte",ben:145000,op:5,mun:16,cob:19.5,idh:0.708,renda:1450},
-  BA:{nome:"Bahia",reg:"Nordeste",ben:2100000,op:45,mun:417,cob:14.3,idh:0.660,renda:1200},
-  CE:{nome:"Ceará",reg:"Nordeste",ben:1400000,op:32,mun:184,cob:15.2,idh:0.682,renda:1100},
-  DF:{nome:"Distrito Federal",reg:"Centro-Oeste",ben:1950000,op:55,mun:1,cob:55.3,idh:0.824,renda:4800},
-  ES:{nome:"Espírito Santo",reg:"Sudeste",ben:1100000,op:42,mun:78,cob:30.1,idh:0.740,renda:2050},
-  GO:{nome:"Goiás",reg:"Centro-Oeste",ben:1800000,op:50,mun:246,cob:26.5,idh:0.735,renda:1900},
-  MA:{nome:"Maranhão",reg:"Nordeste",ben:480000,op:15,mun:217,cob:7.2,idh:0.639,renda:820},
-  MG:{nome:"Minas Gerais",reg:"Sudeste",ben:5800000,op:95,mun:853,cob:31.5,idh:0.731,renda:2100},
-  MS:{nome:"Mato Grosso do Sul",reg:"Centro-Oeste",ben:720000,op:25,mun:79,cob:27.3,idh:0.729,renda:1950},
-  MT:{nome:"Mato Grosso",reg:"Centro-Oeste",ben:650000,op:22,mun:141,cob:20.5,idh:0.725,renda:1800},
-  PA:{nome:"Pará",reg:"Norte",ben:760000,op:18,mun:144,cob:9.8,idh:0.646,renda:980},
-  PB:{nome:"Paraíba",reg:"Nordeste",ben:430000,op:14,mun:223,cob:11.4,idh:0.658,renda:1000},
-  PE:{nome:"Pernambuco",reg:"Nordeste",ben:1650000,op:38,mun:185,cob:17.8,idh:0.673,renda:1350},
-  PI:{nome:"Piauí",reg:"Nordeste",ben:320000,op:12,mun:224,cob:9.1,idh:0.646,renda:870},
-  PR:{nome:"Paraná",reg:"Sul",ben:4100000,op:68,mun:399,cob:37.2,idh:0.749,renda:2300},
-  RJ:{nome:"Rio de Janeiro",reg:"Sudeste",ben:7400000,op:85,mun:92,cob:42.1,idh:0.761,renda:2800},
-  RN:{nome:"Rio Grande do Norte",reg:"Nordeste",ben:520000,op:16,mun:167,cob:14.9,idh:0.684,renda:1150},
-  RO:{nome:"Rondônia",reg:"Norte",ben:290000,op:10,mun:52,cob:17.3,idh:0.690,renda:1400},
-  RR:{nome:"Roraima",reg:"Norte",ben:130000,op:4,mun:15,cob:22.1,idh:0.707,renda:1500},
-  RS:{nome:"Rio Grande do Sul",reg:"Sul",ben:4200000,op:70,mun:497,cob:38.4,idh:0.746,renda:2400},
-  SC:{nome:"Santa Catarina",reg:"Sul",ben:3200000,op:60,mun:295,cob:41.8,idh:0.774,renda:2600},
-  SE:{nome:"Sergipe",reg:"Nordeste",ben:380000,op:12,mun:75,cob:16.2,idh:0.665,renda:1100},
-  SP:{nome:"São Paulo",reg:"Sudeste",ben:18500000,op:120,mun:645,cob:48.2,idh:0.783,renda:3200},
-  TO:{nome:"Tocantins",reg:"Norte",ben:240000,op:8,mun:139,cob:15.0,idh:0.699,renda:1350}
-};
+      const STATES_DATA = {
+        AC: {
+          nome: "Acre",
+          reg: "Norte",
+          ben: 160000,
+          op: 6,
+          mun: 22,
+          cob: 18.2,
+          idh: 0.663,
+          renda: 1200,
+        },
+        AL: {
+          nome: "Alagoas",
+          reg: "Nordeste",
+          ben: 410000,
+          op: 14,
+          mun: 102,
+          cob: 12.6,
+          idh: 0.631,
+          renda: 950,
+        },
+        AM: {
+          nome: "Amazonas",
+          reg: "Norte",
+          ben: 820000,
+          op: 20,
+          mun: 62,
+          cob: 19.4,
+          idh: 0.674,
+          renda: 1300,
+        },
+        AP: {
+          nome: "Amapá",
+          reg: "Norte",
+          ben: 145000,
+          op: 5,
+          mun: 16,
+          cob: 19.5,
+          idh: 0.708,
+          renda: 1450,
+        },
+        BA: {
+          nome: "Bahia",
+          reg: "Nordeste",
+          ben: 2100000,
+          op: 45,
+          mun: 417,
+          cob: 14.3,
+          idh: 0.66,
+          renda: 1200,
+        },
+        CE: {
+          nome: "Ceará",
+          reg: "Nordeste",
+          ben: 1400000,
+          op: 32,
+          mun: 184,
+          cob: 15.2,
+          idh: 0.682,
+          renda: 1100,
+        },
+        DF: {
+          nome: "Distrito Federal",
+          reg: "Centro-Oeste",
+          ben: 1950000,
+          op: 55,
+          mun: 1,
+          cob: 55.3,
+          idh: 0.824,
+          renda: 4800,
+        },
+        ES: {
+          nome: "Espírito Santo",
+          reg: "Sudeste",
+          ben: 1100000,
+          op: 42,
+          mun: 78,
+          cob: 30.1,
+          idh: 0.74,
+          renda: 2050,
+        },
+        GO: {
+          nome: "Goiás",
+          reg: "Centro-Oeste",
+          ben: 1800000,
+          op: 50,
+          mun: 246,
+          cob: 26.5,
+          idh: 0.735,
+          renda: 1900,
+        },
+        MA: {
+          nome: "Maranhão",
+          reg: "Nordeste",
+          ben: 480000,
+          op: 15,
+          mun: 217,
+          cob: 7.2,
+          idh: 0.639,
+          renda: 820,
+        },
+        MG: {
+          nome: "Minas Gerais",
+          reg: "Sudeste",
+          ben: 5800000,
+          op: 95,
+          mun: 853,
+          cob: 31.5,
+          idh: 0.731,
+          renda: 2100,
+        },
+        MS: {
+          nome: "Mato Grosso do Sul",
+          reg: "Centro-Oeste",
+          ben: 720000,
+          op: 25,
+          mun: 79,
+          cob: 27.3,
+          idh: 0.729,
+          renda: 1950,
+        },
+        MT: {
+          nome: "Mato Grosso",
+          reg: "Centro-Oeste",
+          ben: 650000,
+          op: 22,
+          mun: 141,
+          cob: 20.5,
+          idh: 0.725,
+          renda: 1800,
+        },
+        PA: {
+          nome: "Pará",
+          reg: "Norte",
+          ben: 760000,
+          op: 18,
+          mun: 144,
+          cob: 9.8,
+          idh: 0.646,
+          renda: 980,
+        },
+        PB: {
+          nome: "Paraíba",
+          reg: "Nordeste",
+          ben: 430000,
+          op: 14,
+          mun: 223,
+          cob: 11.4,
+          idh: 0.658,
+          renda: 1000,
+        },
+        PE: {
+          nome: "Pernambuco",
+          reg: "Nordeste",
+          ben: 1650000,
+          op: 38,
+          mun: 185,
+          cob: 17.8,
+          idh: 0.673,
+          renda: 1350,
+        },
+        PI: {
+          nome: "Piauí",
+          reg: "Nordeste",
+          ben: 320000,
+          op: 12,
+          mun: 224,
+          cob: 9.1,
+          idh: 0.646,
+          renda: 870,
+        },
+        PR: {
+          nome: "Paraná",
+          reg: "Sul",
+          ben: 4100000,
+          op: 68,
+          mun: 399,
+          cob: 37.2,
+          idh: 0.749,
+          renda: 2300,
+        },
+        RJ: {
+          nome: "Rio de Janeiro",
+          reg: "Sudeste",
+          ben: 7400000,
+          op: 85,
+          mun: 92,
+          cob: 42.1,
+          idh: 0.761,
+          renda: 2800,
+        },
+        RN: {
+          nome: "Rio Grande do Norte",
+          reg: "Nordeste",
+          ben: 520000,
+          op: 16,
+          mun: 167,
+          cob: 14.9,
+          idh: 0.684,
+          renda: 1150,
+        },
+        RO: {
+          nome: "Rondônia",
+          reg: "Norte",
+          ben: 290000,
+          op: 10,
+          mun: 52,
+          cob: 17.3,
+          idh: 0.69,
+          renda: 1400,
+        },
+        RR: {
+          nome: "Roraima",
+          reg: "Norte",
+          ben: 130000,
+          op: 4,
+          mun: 15,
+          cob: 22.1,
+          idh: 0.707,
+          renda: 1500,
+        },
+        RS: {
+          nome: "Rio Grande do Sul",
+          reg: "Sul",
+          ben: 4200000,
+          op: 70,
+          mun: 497,
+          cob: 38.4,
+          idh: 0.746,
+          renda: 2400,
+        },
+        SC: {
+          nome: "Santa Catarina",
+          reg: "Sul",
+          ben: 3200000,
+          op: 60,
+          mun: 295,
+          cob: 41.8,
+          idh: 0.774,
+          renda: 2600,
+        },
+        SE: {
+          nome: "Sergipe",
+          reg: "Nordeste",
+          ben: 380000,
+          op: 12,
+          mun: 75,
+          cob: 16.2,
+          idh: 0.665,
+          renda: 1100,
+        },
+        SP: {
+          nome: "São Paulo",
+          reg: "Sudeste",
+          ben: 18500000,
+          op: 120,
+          mun: 645,
+          cob: 48.2,
+          idh: 0.783,
+          renda: 3200,
+        },
+        TO: {
+          nome: "Tocantins",
+          reg: "Norte",
+          ben: 240000,
+          op: 8,
+          mun: 139,
+          cob: 15.0,
+          idh: 0.699,
+          renda: 1350,
+        },
+      };
 
-let STATS = [
-  {t:"produto_saude",n:840},{t:"operadora",n:312},{t:"municipio",n:5570},
-  {t:"market_share",n:2400},{t:"historico_busca",n:180},{t:"usuario",n:95},
-  {t:"perfil_saude_pub",n:1200},{t:"feedback_usuario",n:340},
-  {t:"abrangencia_plano",n:9800},{t:"rede_credenciada",n:1500},
-  {t:"preco_faixa_etaria",n:6720},{t:"estado",n:27},
-  {t:"serie_anual",n:5},{t:"serie_mensal",n:60}
-];
+      let STATS = [
+        { t: "produto_saude", n: 840 },
+        { t: "operadora", n: 312 },
+        { t: "municipio", n: 5570 },
+        { t: "market_share", n: 2400 },
+        { t: "historico_busca", n: 180 },
+        { t: "usuario", n: 95 },
+        { t: "perfil_saude_pub", n: 1200 },
+        { t: "feedback_usuario", n: 340 },
+        { t: "abrangencia_plano", n: 9800 },
+        { t: "rede_credenciada", n: 1500 },
+        { t: "preco_faixa_etaria", n: 6720 },
+        { t: "estado", n: 27 },
+        { t: "serie_anual", n: 5 },
+        { t: "serie_mensal", n: 60 },
+      ];
 
-let RAW_MKT = ["Unimed","Bradesco Saúde","Amil","SulAmérica","Porto Seguro","Hapvida","NotreDame Intermédica","Golden Cross","Prevent Senior","Assim Saúde"].map((op,i)=>({
-  mun:["São Paulo","Rio de Janeiro","Curitiba","Salvador","Fortaleza"][i%5],
-  uf:["SP","RJ","PR","BA","CE"][i%5],
-  op,
-  comp:"2026-07",
-  ben:2800000-i*255000,
-  pct:(32-i*2.9).toFixed(1)
-}));
+      let RAW_MKT = [
+        "Unimed",
+        "Bradesco Saúde",
+        "Amil",
+        "SulAmérica",
+        "Porto Seguro",
+        "Hapvida",
+        "NotreDame Intermédica",
+        "Golden Cross",
+        "Prevent Senior",
+        "Assim Saúde",
+      ].map((op, i) => ({
+        mun: [
+          "São Paulo",
+          "Rio de Janeiro",
+          "Curitiba",
+          "Salvador",
+          "Fortaleza",
+        ][i % 5],
+        uf: ["SP", "RJ", "PR", "BA", "CE"][i % 5],
+        op,
+        comp: "2026-07",
+        ben: 2800000 - i * 255000,
+        pct: (32 - i * 2.9).toFixed(1),
+      }));
 
-let RAW_OPS = ["Unimed do Brasil","Bradesco Saúde","Amil Assistência Médica","SulAmérica Companhia de Seguro","Porto Seguro Saúde","Hapvida Assistência Médica","NotreDame Intermédica","Golden Cross","Prevent Senior","Assim Saúde","Omint Serviços de Saúde","Mediservice"].map((nm,i)=>({
-  nm,
-  mod:["Cooperativa Médica","Medicina de Grupo","Seguradora Especializada","Autogestão"][i%4],
-  uf:["SP","RJ","MG","RS","PR","SP","CE","RJ","SP","SP","SP","SP"][i],
-  pl:80-i*6,
-  ben:3200000-i*250000
-}));
+      let RAW_OPS = [
+        "Unimed do Brasil",
+        "Bradesco Saúde",
+        "Amil Assistência Médica",
+        "SulAmérica Companhia de Seguro",
+        "Porto Seguro Saúde",
+        "Hapvida Assistência Médica",
+        "NotreDame Intermédica",
+        "Golden Cross",
+        "Prevent Senior",
+        "Assim Saúde",
+        "Omint Serviços de Saúde",
+        "Mediservice",
+      ].map((nm, i) => ({
+        nm,
+        mod: [
+          "Cooperativa Médica",
+          "Medicina de Grupo",
+          "Seguradora Especializada",
+          "Autogestão",
+        ][i % 4],
+        uf: [
+          "SP",
+          "RJ",
+          "MG",
+          "RS",
+          "PR",
+          "SP",
+          "CE",
+          "RJ",
+          "SP",
+          "SP",
+          "SP",
+          "SP",
+        ][i],
+        pl: 80 - i * 6,
+        ben: 3200000 - i * 250000,
+      }));
 
-let RAW_PLS = ["Master Hospitalar Nacional","Plus Ambulatorial com Obstetrícia","Empresarial Corporate Total","Referência Brasil","Odonto Exclusivo","Individual Básico","Flex Coletivo por Adesão","Saúde Familiar Prime","Executivo Especial","Solidário Regional","Light Essencial","Regional Sul Avançado"].map((nm,i)=>({
-  nm,
-  op:["Unimed","Amil","Bradesco","SulAmérica","Porto Seguro"][i%5],
-  tipo:["individual","coletivo_empresarial","coletivo_adesao"][i%3],
-  seg:["hospitalar","ambulatorial","odontologico","referencia"][i%4],
-  cob:["Nacional","Regional","Local"][i%3],
-  copart:i%2===0,
-  mun:600-i*45
-}));
+      let RAW_PLS = [
+        "Master Hospitalar Nacional",
+        "Plus Ambulatorial com Obstetrícia",
+        "Empresarial Corporate Total",
+        "Referência Brasil",
+        "Odonto Exclusivo",
+        "Individual Básico",
+        "Flex Coletivo por Adesão",
+        "Saúde Familiar Prime",
+        "Executivo Especial",
+        "Solidário Regional",
+        "Light Essencial",
+        "Regional Sul Avançado",
+      ].map((nm, i) => ({
+        nm,
+        op: ["Unimed", "Amil", "Bradesco", "SulAmérica", "Porto Seguro"][i % 5],
+        tipo: ["individual", "coletivo_empresarial", "coletivo_adesao"][i % 3],
+        seg: ["hospitalar", "ambulatorial", "odontologico", "referencia"][
+          i % 4
+        ],
+        cob: ["Nacional", "Regional", "Local"][i % 3],
+        copart: i % 2 === 0,
+        mun: 600 - i * 45,
+      }));
 
-let RAW_SDS = ["São Paulo","Rio de Janeiro","Belo Horizonte","Porto Alegre","Curitiba","Salvador","Fortaleza","Manaus","Brasília","Recife","Goiânia","Florianópolis"].map((m,i)=>({
-  m,
-  uf:["SP","RJ","MG","RS","PR","BA","CE","AM","DF","PE","GO","SC"][i],
-  pop:12000000-i*800000,
-  idh:0.83-i*0.015,
-  cob:55-i*3.5,
-  renda:3200-i*200,
-  gini:0.52+i*0.01
-}));
+      let RAW_SDS = [
+        "São Paulo",
+        "Rio de Janeiro",
+        "Belo Horizonte",
+        "Porto Alegre",
+        "Curitiba",
+        "Salvador",
+        "Fortaleza",
+        "Manaus",
+        "Brasília",
+        "Recife",
+        "Goiânia",
+        "Florianópolis",
+      ].map((m, i) => ({
+        m,
+        uf: [
+          "SP",
+          "RJ",
+          "MG",
+          "RS",
+          "PR",
+          "BA",
+          "CE",
+          "AM",
+          "DF",
+          "PE",
+          "GO",
+          "SC",
+        ][i],
+        pop: 12000000 - i * 800000,
+        idh: 0.83 - i * 0.015,
+        cob: 55 - i * 3.5,
+        renda: 3200 - i * 200,
+        gini: 0.52 + i * 0.01,
+      }));
 
-let RAW_HST = ["Ana Lima","Carlos Eduardo Souza","Maria Fernanda Oliveira","João Pedro Santos","Pedro Henrique Costa","Lucia Ferreira","Rafael Mendes","Camila Rocha"].map((u,i)=>({
-  u,
-  mun:["São Paulo","Rio de Janeiro","Curitiba","Salvador"][i%4],
-  canal:["web","mobile","api"][i%3],
-  filtros:{tipo:"hospitalar",faixa:`${20+i*5}-${25+i*5}`},
-  feedbacks:i%3,
-  dt:new Date(Date.now()-i*5400000).toISOString()
-}));
+      let RAW_HST = [
+        "Ana Lima",
+        "Carlos Eduardo Souza",
+        "Maria Fernanda Oliveira",
+        "João Pedro Santos",
+        "Pedro Henrique Costa",
+        "Lucia Ferreira",
+        "Rafael Mendes",
+        "Camila Rocha",
+      ].map((u, i) => ({
+        u,
+        mun: ["São Paulo", "Rio de Janeiro", "Curitiba", "Salvador"][i % 4],
+        canal: ["web", "mobile", "api"][i % 3],
+        filtros: { tipo: "hospitalar", faixa: `${20 + i * 5}-${25 + i * 5}` },
+        feedbacks: i % 3,
+        dt: new Date(Date.now() - i * 5400000).toISOString(),
+      }));
 
-const PALETTE = ["#10b981", "#14b8a6", "#06b6d4", "#3b82f6", "#6366f1", "#34d399", "#6ee7b7", "#059669", "#0d9488", "#0284c7"];
+      const PALETTE = [
+        "#4a9e78",
+        "#4a8f8a",
+        "#4a8aa0",
+        "#5c7fa8",
+        "#7a7ea3",
+        "#7fc7a2",
+        "#8fc2bd",
+        "#2f6b4d",
+        "#3d7d78",
+        "#3d6a86",
+      ];
 
-/* ========================================================
+      /* ========================================================
    NAVIGATION & PAGE SWITCHER
    ======================================================== */
-const loadedPages = {};
-let currentMetric = "ben", selectedUF = null;
-let svgElement, gContainer, mapProjection, mapPathGenerator, mapZoom, brazilGeoData = null;
-let chartDoughnut, chartMarket, chartIDH, chartCob;
+      const loadedPages = {};
+      let currentMetric = "ben",
+        selectedUF = null;
+      let svgElement,
+        gContainer,
+        mapProjection,
+        mapPathGenerator,
+        mapZoom,
+        brazilGeoData = null;
+      let chartDoughnut, chartMarket, chartIDH, chartCob;
 
-function toggleSidebar(forceState){
-  const sidebar = document.getElementById('sidebar');
-  const backdrop = document.getElementById('sidebar-backdrop');
-  const isCurrentlyOpen = sidebar.classList.contains('open');
-  const shouldOpen = forceState !== undefined ? forceState : !isCurrentlyOpen;
+      function toggleSidebar(forceState) {
+        const sidebar = document.getElementById("sidebar");
+        const backdrop = document.getElementById("sidebar-backdrop");
+        const isCurrentlyOpen = sidebar.classList.contains("open");
+        const shouldOpen =
+          forceState !== undefined ? forceState : !isCurrentlyOpen;
 
-  if(shouldOpen){
-    sidebar.classList.add('open');
-    backdrop.classList.add('active');
-  } else {
-    sidebar.classList.remove('open');
-    backdrop.classList.remove('active');
-  }
-}
+        if (shouldOpen) {
+          sidebar.classList.add("open");
+          backdrop.classList.add("active");
+        } else {
+          sidebar.classList.remove("open");
+          backdrop.classList.remove("active");
+        }
+      }
 
-function switchPage(pageId){
-  document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  
-  document.querySelector(`.nav-link[onclick="switchPage('${pageId}')"]`)?.classList.add('active');
-  document.getElementById('page-' + pageId)?.classList.add('active');
+      function switchPage(pageId) {
+        document
+          .querySelectorAll(".nav-link")
+          .forEach((link) => link.classList.remove("active"));
+        document
+          .querySelectorAll(".page")
+          .forEach((p) => p.classList.remove("active"));
 
-  toggleSidebar(false);
+        document
+          .querySelector(`.nav-link[onclick="switchPage('${pageId}')"]`)
+          ?.classList.add("active");
+        document.getElementById("page-" + pageId)?.classList.add("active");
 
-  if(!loadedPages[pageId]){
-    loadedPages[pageId] = true;
-    renderPageContent(pageId);
-  }
+        toggleSidebar(false);
 
-  if(pageId === 'map'){
-    setTimeout(resizeMap, 50);
-  }
-}
+        if (!loadedPages[pageId]) {
+          loadedPages[pageId] = true;
+          renderPageContent(pageId);
+        }
 
-function renderPageContent(pageId){
-  ({
-    ov: renderOverview,
-    mkt: renderMarket,
-    op: renderOperadoras,
-    pl: renderPlanos,
-    sd: renderSaude,
-    hs: renderHistorico
-  })[pageId]?.();
-}
+        if (pageId === "map") {
+          setTimeout(resizeMap, 50);
+        }
+      }
 
-/* ========================================================
+      function renderPageContent(pageId) {
+        ({
+          ov: renderOverview,
+          mkt: renderMarket,
+          op: renderOperadoras,
+          pl: renderPlanos,
+          sd: renderSaude,
+          hs: renderHistorico,
+        })[pageId]?.();
+      }
+
+      /* ========================================================
    MAP ENGINE (D3 + EMERALD PALETTE)
    ======================================================== */
-function getFeatureUF(feature){
-  const p = feature.properties || {};
-  const code = (p.codarea || p.cod || p.GEOCODIGO || '').toString().substring(0, 2);
-  return IBGE_UF[code] || p.sigla || p.UF || p.abbrev_state || '';
-}
+      function getFeatureUF(feature) {
+        const p = feature.properties || {};
+        const code = (p.codarea || p.cod || p.GEOCODIGO || "")
+          .toString()
+          .substring(0, 2);
+        return IBGE_UF[code] || p.sigla || p.UF || p.abbrev_state || "";
+      }
 
-function getMetricValue(uf){
-  const s = STATES_DATA[uf];
-  if(!s) return 0;
-  return {ben: s.ben, cob: s.cob, idh: s.idh}[currentMetric] || 0;
-}
+      function getMetricValue(uf) {
+        const s = STATES_DATA[uf];
+        if (!s) return 0;
+        return { ben: s.ben, cob: s.cob, idh: s.idh }[currentMetric] || 0;
+      }
 
-function resizeMap(){
-  const container = document.getElementById('map-container');
-  if(!container || !brazilGeoData) return;
-  
-  const rect = container.getBoundingClientRect();
-  const W = Math.max(rect.width, 280);
-  const H = Math.max(rect.height, 240);
+      function resizeMap() {
+        const container = document.getElementById("map-container");
+        if (!container || !brazilGeoData) return;
 
-  const svgNode = document.getElementById('map-svg');
-  if(svgNode){
-    svgNode.setAttribute('width', W);
-    svgNode.setAttribute('height', H);
-  }
+        const rect = container.getBoundingClientRect();
+        const W = Math.max(rect.width, 280);
+        const H = Math.max(rect.height, 240);
 
-  mapProjection = d3.geoMercator().fitExtent([[20, 20], [W - 20, H - 20]], brazilGeoData);
-  mapPathGenerator = d3.geoPath().projection(mapProjection);
+        const svgNode = document.getElementById("map-svg");
+        if (svgNode) {
+          svgNode.setAttribute("width", W);
+          svgNode.setAttribute("height", H);
+        }
 
-  drawMapFeatures();
-}
+        mapProjection = d3.geoMercator().fitExtent(
+          [
+            [20, 20],
+            [W - 20, H - 20],
+          ],
+          brazilGeoData,
+        );
+        mapPathGenerator = d3.geoPath().projection(mapProjection);
 
-async function initializeMap(){
-  const container = document.getElementById('map-container');
-  await new Promise(r => setTimeout(r, 60));
-  const rect = container.getBoundingClientRect();
-  const W = Math.max(rect.width, 280);
-  const H = Math.max(rect.height, 240);
+        drawMapFeatures();
+      }
 
-  const svgNode = document.getElementById('map-svg');
-  svgNode.setAttribute('width', W);
-  svgNode.setAttribute('height', H);
+      async function initializeMap() {
+        const container = document.getElementById("map-container");
+        await new Promise((r) => setTimeout(r, 60));
+        const rect = container.getBoundingClientRect();
+        const W = Math.max(rect.width, 280);
+        const H = Math.max(rect.height, 240);
 
-  svgElement = d3.select('#map-svg');
-  svgElement.selectAll('*').remove();
-  gContainer = svgElement.append('g');
+        const svgNode = document.getElementById("map-svg");
+        svgNode.setAttribute("width", W);
+        svgNode.setAttribute("height", H);
 
-  mapZoom = d3.zoom().scaleExtent([1, 24]).on('zoom', e => gContainer.attr('transform', e.transform));
-  svgElement.call(mapZoom);
+        svgElement = d3.select("#map-svg");
+        svgElement.selectAll("*").remove();
+        gContainer = svgElement.append("g");
 
-  renderPanelGlobal();
+        mapZoom = d3
+          .zoom()
+          .scaleExtent([1, 24])
+          .on("zoom", (e) => gContainer.attr("transform", e.transform));
+        svgElement.call(mapZoom);
 
-  const GEOJSON_URL = 'https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson';
-  try {
-    const ctrl = new AbortController();
-    const tid = setTimeout(() => ctrl.abort(), 9000);
-    const res = await fetch(GEOJSON_URL, {signal: ctrl.signal});
-    clearTimeout(tid);
-    if(!res.ok) throw new Error('HTTP ' + res.status);
-    const geo = await res.json();
-    brazilGeoData = geo;
+        renderPanelGlobal();
 
-    mapProjection = d3.geoMercator().fitExtent([[20, 20], [W - 20, H - 20]], geo);
-    mapPathGenerator = d3.geoPath().projection(mapProjection);
+        const GEOJSON_URL =
+          "https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/brazil-states.geojson";
+        try {
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 9000);
+          const res = await fetch(GEOJSON_URL, { signal: ctrl.signal });
+          clearTimeout(tid);
+          if (!res.ok) throw new Error("HTTP " + res.status);
+          const geo = await res.json();
+          brazilGeoData = geo;
 
-    document.getElementById('map-loading').style.display = 'none';
-    drawMapFeatures();
-    document.getElementById('status-dot').style.background = '#10b981';
-    document.getElementById('status-text').textContent = 'Base Sincronizada';
-  } catch(e) {
-    document.getElementById('map-loading').innerHTML = `
+          mapProjection = d3.geoMercator().fitExtent(
+            [
+              [20, 20],
+              [W - 20, H - 20],
+            ],
+            geo,
+          );
+          mapPathGenerator = d3.geoPath().projection(mapProjection);
+
+          document.getElementById("map-loading").style.display = "none";
+          drawMapFeatures();
+          document.getElementById("status-dot").style.background = "#4a9e78";
+          document.getElementById("status-text").textContent =
+            "Base Sincronizada";
+        } catch (e) {
+          document.getElementById("map-loading").innerHTML = `
       <div class="loading-chip" style="flex-direction:column;gap:0.5rem;text-align:center">
-        <span style="color:#34d399;font-weight:700">Visualização Pronta</span>
+        <span style="color:#7fc7a2;font-weight:600">Visualização Pronta</span>
         <button class="seg-btn active" onclick="initializeMap()" style="padding:0.3rem 0.8rem">Recarregar Mapa</button>
       </div>`;
-  }
-}
+        }
+      }
 
-function drawMapFeatures(){
-  if(!brazilGeoData || !mapProjection) return;
-  gContainer.selectAll('*').remove();
+      function drawMapFeatures() {
+        if (!brazilGeoData || !mapProjection) return;
+        gContainer.selectAll("*").remove();
 
-  const values = Object.keys(STATES_DATA).map(uf => getMetricValue(uf)).filter(v => v > 0);
-  const minVal = d3.min(values) || 0, maxVal = d3.max(values) || 1;
-  updateLegendValues(minVal, maxVal);
+        const values = Object.keys(STATES_DATA)
+          .map((uf) => getMetricValue(uf))
+          .filter((v) => v > 0);
+        const minVal = d3.min(values) || 0,
+          maxVal = d3.max(values) || 1;
+        updateLegendValues(minVal, maxVal);
 
-  const colorScale = d3.scaleSequential()
-    .domain([minVal, maxVal])
-    .interpolator(d3.interpolateRgbBasis(['#0f2820', '#0a4230', '#059669', '#10b981', '#6ee7b7']));
+        const colorScale = d3
+          .scaleSequential()
+          .domain([minVal, maxVal])
+          .interpolator(
+            d3.interpolateRgbBasis([
+              "#232428",
+              "#274436",
+              "#2f6b4d",
+              "#4a9e78",
+              "#7fc7a2",
+            ]),
+          );
 
-  const tooltipEl = document.getElementById('tooltip');
+        const tooltipEl = document.getElementById("tooltip");
 
-  gContainer.selectAll('.state-feature')
-    .data(brazilGeoData.features)
-    .join('path')
-    .attr('class', d => `state-feature${selectedUF === getFeatureUF(d) ? ' selected' : ''}`)
-    .attr('d', mapPathGenerator)
-    .attr('fill', d => {
-      const v = getMetricValue(getFeatureUF(d));
-      return v > 0 ? colorScale(v) : '#14202b';
-    })
-    .on('mousemove', (ev, d) => {
-      const uf = getFeatureUF(d);
-      const s = STATES_DATA[uf] || {};
-      tooltipEl.innerHTML = `
+        gContainer
+          .selectAll(".state-feature")
+          .data(brazilGeoData.features)
+          .join("path")
+          .attr(
+            "class",
+            (d) =>
+              `state-feature${selectedUF === getFeatureUF(d) ? " selected" : ""}`,
+          )
+          .attr("d", mapPathGenerator)
+          .attr("fill", (d) => {
+            const v = getMetricValue(getFeatureUF(d));
+            return v > 0 ? colorScale(v) : "#1d1e21";
+          })
+          .on("mousemove", (ev, d) => {
+            const uf = getFeatureUF(d);
+            const s = STATES_DATA[uf] || {};
+            tooltipEl.innerHTML = `
         <div class="tooltip-header">
           <span>${s.nome || uf}</span>
           <span class="tag-badge tag-green">${uf}</span>
         </div>
         <div class="tooltip-row"><span class="tooltip-label">Beneficiários:</span><span class="tooltip-val highlight">${formatK(s.ben)}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Operadoras:</span><span class="tooltip-val">${s.op || '—'}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Cobertura:</span><span class="tooltip-val">${s.cob ? s.cob.toFixed(1) + '%' : '—'}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">IDH Médio:</span><span class="tooltip-val">${s.idh ? s.idh.toFixed(3) : '—'}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Região:</span><span class="tooltip-val">${s.reg || '—'}</span></div>
+        <div class="tooltip-row"><span class="tooltip-label">Operadoras:</span><span class="tooltip-val">${s.op || "—"}</span></div>
+        <div class="tooltip-row"><span class="tooltip-label">Cobertura:</span><span class="tooltip-val">${s.cob ? s.cob.toFixed(1) + "%" : "—"}</span></div>
+        <div class="tooltip-row"><span class="tooltip-label">IDH Médio:</span><span class="tooltip-val">${s.idh ? s.idh.toFixed(3) : "—"}</span></div>
+        <div class="tooltip-row"><span class="tooltip-label">Região:</span><span class="tooltip-val">${s.reg || "—"}</span></div>
         <div class="tooltip-action">Clique para isolar análise estadual</div>`;
-      tooltipEl.classList.add('show');
-      
-      const tooltipW = 240;
-      let left = ev.clientX + 16;
-      let top = ev.clientY - 10;
-      if(left + tooltipW > window.innerWidth) left = ev.clientX - tooltipW - 16;
-      if(top + 180 > window.innerHeight) top = window.innerHeight - 190;
-      
-      tooltipEl.style.left = left + 'px';
-      tooltipEl.style.top = Math.max(10, top) + 'px';
-    })
-    .on('mouseleave', () => tooltipEl.classList.remove('show'))
-    .on('click', (ev, d) => {
-      ev.stopPropagation();
-      zoomToState(d);
-    });
+            tooltipEl.classList.add("show");
 
-  gContainer.selectAll('.state-label')
-    .data(brazilGeoData.features)
-    .join('text')
-    .attr('class', 'state-label')
-    .attr('font-size', d => {
-      try {
-        const b = mapPathGenerator.bounds(d);
-        return Math.min(11, Math.max(7, (b[1][0] - b[0][0]) * 0.18)) + 'px';
-      } catch(e) { return '8px'; }
-    })
-    .attr('x', d => { try { return mapPathGenerator.centroid(d)[0]; } catch(e) { return 0; } })
-    .attr('y', d => { try { return mapPathGenerator.centroid(d)[1]; } catch(e) { return 0; } })
-    .text(d => getFeatureUF(d));
-}
+            const tooltipW = 240;
+            let left = ev.clientX + 16;
+            let top = ev.clientY - 10;
+            if (left + tooltipW > window.innerWidth)
+              left = ev.clientX - tooltipW - 16;
+            if (top + 180 > window.innerHeight) top = window.innerHeight - 190;
 
-function zoomToState(feature){
-  const uf = getFeatureUF(feature);
-  try {
-    const [[x0, y0], [x1, y1]] = mapPathGenerator.bounds(feature);
-    const W = +svgElement.attr('width'), H = +svgElement.attr('height');
-    const sc = Math.min(14, 0.8 / Math.max((x1 - x0) / W, (y1 - y0) / H));
-    const tx = W / 2 - sc * (x0 + x1) / 2, ty = H / 2 - sc * (y0 + y1) / 2;
-    selectedUF = uf;
-    drawMapFeatures();
-    svgElement.transition().duration(650).call(mapZoom.transform, d3.zoomIdentity.translate(tx, ty).scale(sc));
-  } catch(e) {
-    selectedUF = uf;
-    drawMapFeatures();
-  }
-  document.getElementById('breadcrumb-uf').textContent = STATES_DATA[uf]?.nome || uf;
-  renderPanelState(uf);
-}
+            tooltipEl.style.left = left + "px";
+            tooltipEl.style.top = Math.max(10, top) + "px";
+          })
+          .on("mouseleave", () => tooltipEl.classList.remove("show"))
+          .on("click", (ev, d) => {
+            ev.stopPropagation();
+            zoomToState(d);
+          });
 
-function zoomMap(factor){ svgElement.transition().duration(280).call(mapZoom.scaleBy, factor); }
+        gContainer
+          .selectAll(".state-label")
+          .data(brazilGeoData.features)
+          .join("text")
+          .attr("class", "state-label")
+          .attr("font-size", (d) => {
+            try {
+              const b = mapPathGenerator.bounds(d);
+              return (
+                Math.min(11, Math.max(7, (b[1][0] - b[0][0]) * 0.18)) + "px"
+              );
+            } catch (e) {
+              return "8px";
+            }
+          })
+          .attr("x", (d) => {
+            try {
+              return mapPathGenerator.centroid(d)[0];
+            } catch (e) {
+              return 0;
+            }
+          })
+          .attr("y", (d) => {
+            try {
+              return mapPathGenerator.centroid(d)[1];
+            } catch (e) {
+              return 0;
+            }
+          })
+          .text((d) => getFeatureUF(d));
+      }
 
-function resetMap(){
-  selectedUF = null;
-  drawMapFeatures();
-  svgElement.transition().duration(550).call(mapZoom.transform, d3.zoomIdentity);
-  document.getElementById('breadcrumb-uf').textContent = 'Todos os Estados';
-  renderPanelGlobal();
-}
+      function zoomToState(feature) {
+        const uf = getFeatureUF(feature);
+        try {
+          const [[x0, y0], [x1, y1]] = mapPathGenerator.bounds(feature);
+          const W = +svgElement.attr("width"),
+            H = +svgElement.attr("height");
+          const sc = Math.min(14, 0.8 / Math.max((x1 - x0) / W, (y1 - y0) / H));
+          const tx = W / 2 - (sc * (x0 + x1)) / 2,
+            ty = H / 2 - (sc * (y0 + y1)) / 2;
+          selectedUF = uf;
+          drawMapFeatures();
+          svgElement
+            .transition()
+            .duration(650)
+            .call(
+              mapZoom.transform,
+              d3.zoomIdentity.translate(tx, ty).scale(sc),
+            );
+        } catch (e) {
+          selectedUF = uf;
+          drawMapFeatures();
+        }
+        document.getElementById("breadcrumb-uf").textContent =
+          STATES_DATA[uf]?.nome || uf;
+        renderPanelState(uf);
+      }
 
-function setMetric(metricKey, btn){
-  currentMetric = metricKey;
-  document.querySelectorAll('.segmented-control .seg-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('legend-label').textContent = {ben: 'Beneficiários', cob: 'Taxa de Cobertura %', idh: 'IDH Estadual'}[metricKey];
-  drawMapFeatures();
-}
+      function zoomMap(factor) {
+        svgElement.transition().duration(280).call(mapZoom.scaleBy, factor);
+      }
 
-function updateLegendValues(minVal, maxVal){
-  document.getElementById('legend-min').textContent = currentMetric === 'ben' ? formatK(minVal) : currentMetric === 'cob' ? minVal.toFixed(1) + '%' : minVal.toFixed(3);
-  document.getElementById('legend-max').textContent = currentMetric === 'ben' ? formatK(maxVal) : currentMetric === 'cob' ? maxVal.toFixed(1) + '%' : maxVal.toFixed(3);
-}
+      function resetMap() {
+        selectedUF = null;
+        drawMapFeatures();
+        svgElement
+          .transition()
+          .duration(550)
+          .call(mapZoom.transform, d3.zoomIdentity);
+        document.getElementById("breadcrumb-uf").textContent =
+          "Todos os Estados";
+        renderPanelGlobal();
+      }
 
-function renderPanelGlobal(){
-  const list = Object.values(STATES_DATA);
-  const totalBeneficiarios = list.reduce((s, d) => s + d.ben, 0);
-  const totalOperadoras = list.reduce((s, d) => s + d.op, 0);
-  const avgCobertura = list.reduce((s, d) => s + d.cob, 0) / list.length;
-  const avgIDH = list.reduce((s, d) => s + d.idh, 0) / list.length;
+      function setMetric(metricKey, btn) {
+        currentMetric = metricKey;
+        document
+          .querySelectorAll(".segmented-control .seg-btn")
+          .forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        document.getElementById("legend-label").textContent = {
+          ben: "Beneficiários",
+          cob: "Taxa de Cobertura %",
+          idh: "IDH Estadual",
+        }[metricKey];
+        drawMapFeatures();
+      }
 
-  document.getElementById('panel-title').textContent = 'Brasil — Panorama Geral';
-  document.getElementById('panel-subtitle').textContent = '27 Unidades Federativas integradas';
+      function updateLegendValues(minVal, maxVal) {
+        document.getElementById("legend-min").textContent =
+          currentMetric === "ben"
+            ? formatK(minVal)
+            : currentMetric === "cob"
+              ? minVal.toFixed(1) + "%"
+              : minVal.toFixed(3);
+        document.getElementById("legend-max").textContent =
+          currentMetric === "ben"
+            ? formatK(maxVal)
+            : currentMetric === "cob"
+              ? maxVal.toFixed(1) + "%"
+              : maxVal.toFixed(3);
+      }
 
-  const topStates = [...list].sort((a, b) => b.ben - a.ben).slice(0, 8);
-  const maxBen = topStates[0].ben;
+      function renderPanelGlobal() {
+        const list = Object.values(STATES_DATA);
+        const totalBeneficiarios = list.reduce((s, d) => s + d.ben, 0);
+        const totalOperadoras = list.reduce((s, d) => s + d.op, 0);
+        const avgCobertura = list.reduce((s, d) => s + d.cob, 0) / list.length;
+        const avgIDH = list.reduce((s, d) => s + d.idh, 0) / list.length;
 
-  document.getElementById('panel-content').innerHTML = `
+        document.getElementById("panel-title").textContent =
+          "Brasil — Panorama Geral";
+        document.getElementById("panel-subtitle").textContent =
+          "27 Unidades Federativas integradas";
+
+        const topStates = [...list].sort((a, b) => b.ben - a.ben).slice(0, 8);
+        const maxBen = topStates[0].ben;
+
+        document.getElementById("panel-content").innerHTML = `
     <div class="stat-grid-2x2">
       <div class="stat-tile">
         <div class="tile-tag">Beneficiários</div>
@@ -1859,26 +2746,32 @@ function renderPanelGlobal(){
       <span>Ranking Estadual</span>
       <span>Beneficiários</span>
     </div>
-    ${topStates.map((s, i) => `
+    ${topStates
+      .map(
+        (s, i) => `
       <div class="ranking-row">
         <div class="ranking-pos">${i + 1}</div>
         <div class="ranking-info">
           <div class="ranking-name">${s.nome}</div>
           <div class="ranking-track">
-            <div class="ranking-fill" style="width:${(s.ben / maxBen * 100).toFixed(1)}%"></div>
+            <div class="ranking-fill" style="width:${((s.ben / maxBen) * 100).toFixed(1)}%"></div>
           </div>
         </div>
         <div class="ranking-val">${formatK(s.ben)}</div>
-      </div>`).join('')}`;
-}
+      </div>`,
+      )
+      .join("")}`;
+      }
 
-function renderPanelState(uf){
-  const s = STATES_DATA[uf];
-  if(!s) return;
-  document.getElementById('panel-title').textContent = `${s.nome} (${uf})`;
-  document.getElementById('panel-subtitle').textContent = `Região ${s.reg} · ${s.mun} municípios integrados`;
+      function renderPanelState(uf) {
+        const s = STATES_DATA[uf];
+        if (!s) return;
+        document.getElementById("panel-title").textContent =
+          `${s.nome} (${uf})`;
+        document.getElementById("panel-subtitle").textContent =
+          `Região ${s.reg} · ${s.mun} municípios integrados`;
 
-  document.getElementById('panel-content').innerHTML = `
+        document.getElementById("panel-content").innerHTML = `
     <div class="stat-grid-2x2">
       <div class="stat-tile">
         <div class="tile-tag">Beneficiários</div>
@@ -1913,306 +2806,481 @@ function renderPanelState(uf){
         ← Voltar ao Panorama Brasil
       </button>
     </div>`;
-}
+      }
 
-/* ========================================================
+      /* ========================================================
    SECTIONS IMPLEMENTATION
    ======================================================== */
-function renderOverview(){
-  document.getElementById('footer-time').textContent = 'Sincronizado: ' + new Date().toLocaleDateString('pt-BR');
-  const highlighted = ['produto_saude','operadora','municipio','market_share','historico_busca','usuario'];
-  const labels = {
-    produto_saude: 'Planos Ativos',
-    operadora: 'Operadoras ANS',
-    municipio: 'Municípios Cobertos',
-    market_share: 'Registros de Quota',
-    historico_busca: 'Consultas Realizadas',
-    usuario: 'Usuários Registrados'
-  };
-  const total = STATS.reduce((s, r) => s + r.n, 0);
+      function renderOverview() {
+        document.getElementById("footer-time").textContent =
+          "Sincronizado: " + new Date().toLocaleDateString("pt-BR");
+        const highlighted = [
+          "produto_saude",
+          "operadora",
+          "municipio",
+          "market_share",
+          "historico_busca",
+          "usuario",
+        ];
+        const labels = {
+          produto_saude: "Planos Ativos",
+          operadora: "Operadoras ANS",
+          municipio: "Municípios Cobertos",
+          market_share: "Registros de Quota",
+          historico_busca: "Consultas Realizadas",
+          usuario: "Usuários Registrados",
+        };
+        const total = STATS.reduce((s, r) => s + r.n, 0);
 
-  document.getElementById('overview-metrics').innerHTML = STATS.filter(r => highlighted.includes(r.t)).map(r => `
+        document.getElementById("overview-metrics").innerHTML =
+          STATS.filter((r) => highlighted.includes(r.t))
+            .map(
+              (r) => `
     <div class="metric-card">
       <div class="metric-label">${labels[r.t] || r.t}</div>
       <div class="metric-value">${formatNumber(r.n)}</div>
       <div class="metric-desc">entidades indexadas</div>
     </div>
-  `).join('') + `
+  `,
+            )
+            .join("") +
+          `
     <div class="metric-card" style="border-color:rgba(16,185,129,0.35)">
       <div class="metric-label" style="color:var(--primary-light)">Total Geral</div>
       <div class="metric-value" style="color:var(--primary-light)">${formatNumber(total)}</div>
       <div class="metric-desc">14 tabelas normalizadas</div>
     </div>`;
 
-  const maxVal = Math.max(...STATS.map(r => r.n));
-  document.getElementById('overview-bars').innerHTML = STATS.map(r => `
+        const maxVal = Math.max(...STATS.map((r) => r.n));
+        document.getElementById("overview-bars").innerHTML = STATS.map(
+          (r) => `
     <div class="progress-row">
-      <div class="progress-label">${r.t.replace(/_/g, ' ')}</div>
+      <div class="progress-label">${r.t.replace(/_/g, " ")}</div>
       <div class="progress-track">
-        <div class="progress-fill" style="width:${(r.n / maxVal * 100).toFixed(1)}%"></div>
+        <div class="progress-fill" style="width:${((r.n / maxVal) * 100).toFixed(1)}%"></div>
       </div>
       <div class="progress-val">${formatNumber(r.n)}</div>
-    </div>`).join('');
+    </div>`,
+        ).join("");
 
-  const ctx = document.getElementById('chart-doughnut').getContext('2d');
-  if(chartDoughnut) chartDoughnut.destroy();
-  chartDoughnut = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: STATS.map(r => r.t.replace(/_/g, ' ')),
-      datasets: [{
-        data: STATS.map(r => r.n),
-        backgroundColor: PALETTE,
-        borderColor: '#121c24',
-        borderWidth: 2
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      cutout: '72%',
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: { color: '#94a3b8', font: { size: 10, family: "'Plus Jakarta Sans'" }, boxWidth: 10, padding: 8 }
-        }
+        const ctx = document.getElementById("chart-doughnut").getContext("2d");
+        if (chartDoughnut) chartDoughnut.destroy();
+        chartDoughnut = new Chart(ctx, {
+          type: "doughnut",
+          data: {
+            labels: STATS.map((r) => r.t.replace(/_/g, " ")),
+            datasets: [
+              {
+                data: STATS.map((r) => r.n),
+                backgroundColor: PALETTE,
+                borderColor: "#17181a",
+                borderWidth: 2,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: "72%",
+            plugins: {
+              legend: {
+                position: "right",
+                labels: {
+                  color: "#9a9da1",
+                  font: { size: 10, family: "'IBM Plex Sans'" },
+                  boxWidth: 10,
+                  padding: 8,
+                },
+              },
+            },
+          },
+        });
       }
-    }
-  });
-}
 
-function renderMarket(){
-  const ctx = document.getElementById('chart-market').getContext('2d');
-  if(chartMarket) chartMarket.destroy();
-  chartMarket = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: RAW_MKT.map(r => `${r.op} (${r.uf})`),
-      datasets: [{
-        label: 'Beneficiários',
-        data: RAW_MKT.map(r => r.ben),
-        backgroundColor: '#10b981',
-        hoverBackgroundColor: '#34d399',
-        borderRadius: 5
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: {
-        x: {
-          ticks: { color: '#64748b', font: { size: 10, family: "'JetBrains Mono'" } },
-          grid: { color: 'rgba(255, 255, 255, 0.04)' }
-        },
-        y: {
-          ticks: { color: '#cbd5e1', font: { size: 10 } },
-          grid: { display: false }
-        }
+      function renderMarket() {
+        const ctx = document.getElementById("chart-market").getContext("2d");
+        if (chartMarket) chartMarket.destroy();
+        chartMarket = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: RAW_MKT.map((r) => `${r.op} (${r.uf})`),
+            datasets: [
+              {
+                label: "Beneficiários",
+                data: RAW_MKT.map((r) => r.ben),
+                backgroundColor: "#4a9e78",
+                hoverBackgroundColor: "#7fc7a2",
+                borderRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            indexAxis: "y",
+            plugins: { legend: { display: false } },
+            scales: {
+              x: {
+                ticks: {
+                  color: "#68696c",
+                  font: { size: 10, family: "'IBM Plex Mono'" },
+                },
+                grid: { color: "rgba(242, 243, 244, 0.05)" },
+              },
+              y: {
+                ticks: { color: "#c9cacd", font: { size: 10 } },
+                grid: { display: false },
+              },
+            },
+          },
+        });
+
+        filterTable("mkt");
       }
-    }
-  });
 
-  filterTable('mkt');
-}
-
-function renderOperadoras(){ filterTable('op'); }
-function renderPlanos(){ filterTable('pl'); }
-
-function renderSaude(){
-  const ctx1 = document.getElementById('chart-idh').getContext('2d');
-  if(chartIDH) chartIDH.destroy();
-  chartIDH = new Chart(ctx1, {
-    type: 'bar',
-    data: {
-      labels: RAW_SDS.map(r => r.m),
-      datasets: [{
-        data: RAW_SDS.map(r => r.idh),
-        backgroundColor: '#10b981',
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { min: 0.6, ticks: { color: '#64748b', font: { size: 10 } }, grid: { color: 'rgba(255, 255, 255, 0.04)' } },
-        x: { ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 40 }, grid: { display: false } }
+      function renderOperadoras() {
+        filterTable("op");
       }
-    }
-  });
-
-  const ctx2 = document.getElementById('chart-cob').getContext('2d');
-  if(chartCob) chartCob.destroy();
-  chartCob = new Chart(ctx2, {
-    type: 'bar',
-    data: {
-      labels: RAW_SDS.map(r => r.m),
-      datasets: [{
-        data: RAW_SDS.map(r => r.cob),
-        backgroundColor: '#14b8a6',
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        y: { ticks: { color: '#64748b', callback: v => v + '%' }, grid: { color: 'rgba(255, 255, 255, 0.04)' } },
-        x: { ticks: { color: '#94a3b8', font: { size: 9 }, maxRotation: 40 }, grid: { display: false } }
+      function renderPlanos() {
+        filterTable("pl");
       }
-    }
-  });
 
-  filterTable('sd');
-}
+      function renderSaude() {
+        const ctx1 = document.getElementById("chart-idh").getContext("2d");
+        if (chartIDH) chartIDH.destroy();
+        chartIDH = new Chart(ctx1, {
+          type: "bar",
+          data: {
+            labels: RAW_SDS.map((r) => r.m),
+            datasets: [
+              {
+                data: RAW_SDS.map((r) => r.idh),
+                backgroundColor: "#4a9e78",
+                borderRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                min: 0.6,
+                ticks: { color: "#68696c", font: { size: 10 } },
+                grid: { color: "rgba(242, 243, 244, 0.05)" },
+              },
+              x: {
+                ticks: { color: "#9a9da1", font: { size: 9 }, maxRotation: 40 },
+                grid: { display: false },
+              },
+            },
+          },
+        });
 
-function renderHistorico(){
-  document.getElementById('table-hs').innerHTML = buildTable(RAW_HST, [
-    {k: 'u', l: 'Usuário'},
-    {k: 'mun', l: 'Município'},
-    {k: 'canal', l: 'Canal', r: v => `<span class="tag-badge ${v === 'mobile' ? 'tag-green' : v === 'api' ? 'tag-teal' : 'tag-blue'}">${v.toUpperCase()}</span>`},
-    {k: 'filtros', l: 'Critérios Filtrados', r: v => {
-      const o = typeof v === 'string' ? JSON.parse(v) : v;
-      return Object.entries(o).map(([k, val]) => `<span class="tag-badge tag-teal" style="margin:0.1rem">${k}: ${val}</span>`).join('');
-    }},
-    {k: 'feedbacks', l: 'Avaliações', r: v => `<span class="tag-badge ${v > 0 ? 'tag-green' : 'tag-amber'}">${v} retorno(s)</span>`},
-    {k: 'dt', l: 'Data do Registro', r: v => v ? `<span style="font-family:var(--font-mono)">${v.replace('T', ' ').slice(0, 16)}</span>` : '—'}
-  ]);
-}
+        const ctx2 = document.getElementById("chart-cob").getContext("2d");
+        if (chartCob) chartCob.destroy();
+        chartCob = new Chart(ctx2, {
+          type: "bar",
+          data: {
+            labels: RAW_SDS.map((r) => r.m),
+            datasets: [
+              {
+                data: RAW_SDS.map((r) => r.cob),
+                backgroundColor: "#4a8f8a",
+                borderRadius: 3,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                ticks: { color: "#68696c", callback: (v) => v + "%" },
+                grid: { color: "rgba(242, 243, 244, 0.05)" },
+              },
+              x: {
+                ticks: { color: "#9a9da1", font: { size: 9 }, maxRotation: 40 },
+                grid: { display: false },
+              },
+            },
+          },
+        });
 
-/* ========================================================
+        filterTable("sd");
+      }
+
+      function renderHistorico() {
+        document.getElementById("table-hs").innerHTML = buildTable(RAW_HST, [
+          { k: "u", l: "Usuário" },
+          { k: "mun", l: "Município" },
+          {
+            k: "canal",
+            l: "Canal",
+            r: (v) =>
+              `<span class="tag-badge ${v === "mobile" ? "tag-green" : v === "api" ? "tag-teal" : "tag-blue"}">${v.toUpperCase()}</span>`,
+          },
+          {
+            k: "filtros",
+            l: "Critérios Filtrados",
+            r: (v) => {
+              const o = typeof v === "string" ? JSON.parse(v) : v;
+              return Object.entries(o)
+                .map(
+                  ([k, val]) =>
+                    `<span class="tag-badge tag-teal" style="margin:0.1rem">${k}: ${val}</span>`,
+                )
+                .join("");
+            },
+          },
+          {
+            k: "feedbacks",
+            l: "Avaliações",
+            r: (v) =>
+              `<span class="tag-badge ${v > 0 ? "tag-green" : "tag-amber"}">${v} retorno(s)</span>`,
+          },
+          {
+            k: "dt",
+            l: "Data do Registro",
+            r: (v) =>
+              v
+                ? `<span style="font-family:var(--font-mono)">${v.replace("T", " ").slice(0, 16)}</span>`
+                : "—",
+          },
+        ]);
+      }
+
+      /* ========================================================
    FILTERABLE TABLES
    ======================================================== */
-function filterTable(type){
-  if(type === 'mkt'){
-    const q = (document.getElementById('search-mkt')?.value || '').toLowerCase();
-    const data = RAW_MKT.filter(r => r.op.toLowerCase().includes(q) || r.mun.toLowerCase().includes(q) || r.uf.toLowerCase().includes(q));
-    document.getElementById('table-mkt').innerHTML = buildTable(data, [
-      {k: 'mun', l: 'Município'},
-      {k: 'uf', l: 'UF'},
-      {k: 'op', l: 'Operadora'},
-      {k: 'comp', l: 'Competência'},
-      {k: 'ben', l: 'Beneficiários', r: v => `<span style="font-family:var(--font-mono);font-weight:600;color:var(--primary-light)">${formatNumber(v)}</span>`},
-      {k: 'pct', l: 'Quota (%)', r: v => `<span class="tag-badge ${+v > 25 ? 'tag-green' : +v > 15 ? 'tag-teal' : 'tag-blue'}">${v}%</span>`}
-    ]);
-  } else if(type === 'op'){
-    const q = (document.getElementById('search-op')?.value || '').toLowerCase();
-    const data = RAW_OPS.filter(r => r.nm.toLowerCase().includes(q) || r.mod.toLowerCase().includes(q) || r.uf.toLowerCase().includes(q));
-    document.getElementById('table-op').innerHTML = buildTable(data, [
-      {k: 'nm', l: 'Razão Social / Nome Fantasia'},
-      {k: 'mod', l: 'Modalidade', r: v => `<span class="tag-badge tag-teal">${v}</span>`},
-      {k: 'uf', l: 'UF Sede'},
-      {k: 'pl', l: 'Planos Registrados', r: v => `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`},
-      {k: 'ben', l: 'Beneficiários Ativos', r: v => `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatNumber(v)}</span>`}
-    ]);
-  } else if(type === 'pl'){
-    const q = (document.getElementById('search-pl')?.value || '').toLowerCase();
-    const data = RAW_PLS.filter(r => r.nm.toLowerCase().includes(q) || r.op.toLowerCase().includes(q) || r.tipo.toLowerCase().includes(q));
-    const tm = {
-      individual: '<span class="tag-badge tag-blue">Individual / Familiar</span>',
-      coletivo_empresarial: '<span class="tag-badge tag-green">Coletivo Empresarial</span>',
-      coletivo_adesao: '<span class="tag-badge tag-teal">Coletivo por Adesão</span>'
-    };
-    const sm = {
-      hospitalar: '<span class="tag-badge tag-blue">Hospitalar c/ Obst.</span>',
-      ambulatorial: '<span class="tag-badge tag-green">Ambulatorial</span>',
-      odontologico: '<span class="tag-badge tag-purple">Odontológico</span>',
-      referencia: '<span class="tag-badge tag-amber">Referência</span>'
-    };
-    document.getElementById('table-pl').innerHTML = buildTable(data, [
-      {k: 'nm', l: 'Plano'},
-      {k: 'op', l: 'Operadora'},
-      {k: 'tipo', l: 'Contratação', r: v => tm[v] || v},
-      {k: 'seg', l: 'Segmentação', r: v => sm[v] || v},
-      {k: 'cob', l: 'Abrangência'},
-      {k: 'copart', l: 'Coparticipação', r: v => `<span class="tag-badge ${v ? 'tag-amber' : 'tag-green'}">${v ? 'Com Copart' : 'Sem Copart'}</span>`},
-      {k: 'mun', l: 'Municípios', r: v => `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`}
-    ]);
-  } else if(type === 'sd'){
-    const q = (document.getElementById('search-sd')?.value || '').toLowerCase();
-    const data = RAW_SDS.filter(r => r.m.toLowerCase().includes(q) || r.uf.toLowerCase().includes(q));
-    document.getElementById('table-sd').innerHTML = buildTable(data, [
-      {k: 'm', l: 'Município'},
-      {k: 'uf', l: 'UF'},
-      {k: 'pop', l: 'População Estimada', r: v => `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`},
-      {k: 'idh', l: 'IDH', r: v => `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${v.toFixed(3)}</span>`},
-      {k: 'cob', l: 'Taxa Cobertura', r: v => `<span class="tag-badge ${v > 40 ? 'tag-green' : v > 25 ? 'tag-teal' : 'tag-amber'}">${v.toFixed(1)}%</span>`},
-      {k: 'renda', l: 'Renda Per Capita', r: v => `<span style="font-family:var(--font-mono)">${formatCurrency(v)}</span>`},
-      {k: 'gini', l: 'Índice GINI', r: v => `<span style="font-family:var(--font-mono)">${v.toFixed(3)}</span>`}
-    ]);
-  }
-}
+      function filterTable(type) {
+        if (type === "mkt") {
+          const q = (
+            document.getElementById("search-mkt")?.value || ""
+          ).toLowerCase();
+          const data = RAW_MKT.filter(
+            (r) =>
+              r.op.toLowerCase().includes(q) ||
+              r.mun.toLowerCase().includes(q) ||
+              r.uf.toLowerCase().includes(q),
+          );
+          document.getElementById("table-mkt").innerHTML = buildTable(data, [
+            { k: "mun", l: "Município" },
+            { k: "uf", l: "UF" },
+            { k: "op", l: "Operadora" },
+            { k: "comp", l: "Competência" },
+            {
+              k: "ben",
+              l: "Beneficiários",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono);font-weight:600;color:var(--primary-light)">${formatNumber(v)}</span>`,
+            },
+            {
+              k: "pct",
+              l: "Quota (%)",
+              r: (v) =>
+                `<span class="tag-badge ${+v > 25 ? "tag-green" : +v > 15 ? "tag-teal" : "tag-blue"}">${v}%</span>`,
+            },
+          ]);
+        } else if (type === "op") {
+          const q = (
+            document.getElementById("search-op")?.value || ""
+          ).toLowerCase();
+          const data = RAW_OPS.filter(
+            (r) =>
+              r.nm.toLowerCase().includes(q) ||
+              r.mod.toLowerCase().includes(q) ||
+              r.uf.toLowerCase().includes(q),
+          );
+          document.getElementById("table-op").innerHTML = buildTable(data, [
+            { k: "nm", l: "Razão Social / Nome Fantasia" },
+            {
+              k: "mod",
+              l: "Modalidade",
+              r: (v) => `<span class="tag-badge tag-teal">${v}</span>`,
+            },
+            { k: "uf", l: "UF Sede" },
+            {
+              k: "pl",
+              l: "Planos Registrados",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`,
+            },
+            {
+              k: "ben",
+              l: "Beneficiários Ativos",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatNumber(v)}</span>`,
+            },
+          ]);
+        } else if (type === "pl") {
+          const q = (
+            document.getElementById("search-pl")?.value || ""
+          ).toLowerCase();
+          const data = RAW_PLS.filter(
+            (r) =>
+              r.nm.toLowerCase().includes(q) ||
+              r.op.toLowerCase().includes(q) ||
+              r.tipo.toLowerCase().includes(q),
+          );
+          const tm = {
+            individual:
+              '<span class="tag-badge tag-blue">Individual / Familiar</span>',
+            coletivo_empresarial:
+              '<span class="tag-badge tag-green">Coletivo Empresarial</span>',
+            coletivo_adesao:
+              '<span class="tag-badge tag-teal">Coletivo por Adesão</span>',
+          };
+          const sm = {
+            hospitalar:
+              '<span class="tag-badge tag-blue">Hospitalar c/ Obst.</span>',
+            ambulatorial:
+              '<span class="tag-badge tag-green">Ambulatorial</span>',
+            odontologico:
+              '<span class="tag-badge tag-purple">Odontológico</span>',
+            referencia: '<span class="tag-badge tag-amber">Referência</span>',
+          };
+          document.getElementById("table-pl").innerHTML = buildTable(data, [
+            { k: "nm", l: "Plano" },
+            { k: "op", l: "Operadora" },
+            { k: "tipo", l: "Contratação", r: (v) => tm[v] || v },
+            { k: "seg", l: "Segmentação", r: (v) => sm[v] || v },
+            { k: "cob", l: "Abrangência" },
+            {
+              k: "copart",
+              l: "Coparticipação",
+              r: (v) =>
+                `<span class="tag-badge ${v ? "tag-amber" : "tag-green"}">${v ? "Com Copart" : "Sem Copart"}</span>`,
+            },
+            {
+              k: "mun",
+              l: "Municípios",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`,
+            },
+          ]);
+        } else if (type === "sd") {
+          const q = (
+            document.getElementById("search-sd")?.value || ""
+          ).toLowerCase();
+          const data = RAW_SDS.filter(
+            (r) =>
+              r.m.toLowerCase().includes(q) || r.uf.toLowerCase().includes(q),
+          );
+          document.getElementById("table-sd").innerHTML = buildTable(data, [
+            { k: "m", l: "Município" },
+            { k: "uf", l: "UF" },
+            {
+              k: "pop",
+              l: "População Estimada",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono)">${formatNumber(v)}</span>`,
+            },
+            {
+              k: "idh",
+              l: "IDH",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${v.toFixed(3)}</span>`,
+            },
+            {
+              k: "cob",
+              l: "Taxa Cobertura",
+              r: (v) =>
+                `<span class="tag-badge ${v > 40 ? "tag-green" : v > 25 ? "tag-teal" : "tag-amber"}">${v.toFixed(1)}%</span>`,
+            },
+            {
+              k: "renda",
+              l: "Renda Per Capita",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono)">${formatCurrency(v)}</span>`,
+            },
+            {
+              k: "gini",
+              l: "Índice GINI",
+              r: (v) =>
+                `<span style="font-family:var(--font-mono)">${v.toFixed(3)}</span>`,
+            },
+          ]);
+        }
+      }
 
-function buildTable(rows, cols){
-  if(!rows.length) return '<div style="padding:2.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem">Nenhum registro correspondente ao filtro aplicado.</div>';
-  return `<table>
+      function buildTable(rows, cols) {
+        if (!rows.length)
+          return '<div style="padding:2.5rem;text-align:center;color:var(--text-muted);font-size:0.85rem">Nenhum registro correspondente ao filtro aplicado.</div>';
+        return `<table>
     <thead>
-      <tr>${cols.map(c => `<th>${c.l}</th>`).join('')}</tr>
+      <tr>${cols.map((c) => `<th>${c.l}</th>`).join("")}</tr>
     </thead>
     <tbody>
-      ${rows.map(r => `<tr>${cols.map(c => `<td>${c.r ? c.r(r[c.k], r) : (r[c.k] ?? '—')}</td>`).join('')}</tr>`).join('')}
+      ${rows.map((r) => `<tr>${cols.map((c) => `<td>${c.r ? c.r(r[c.k], r) : (r[c.k] ?? "—")}</td>`).join("")}</tr>`).join("")}
     </tbody>
   </table>`;
-}
+      }
 
-/* ========================================================
+      /* ========================================================
    HELPERS & BACKEND SYNC
    ======================================================== */
-const formatNumber = n => n == null ? '—' : Number(n).toLocaleString('pt-BR');
-const formatK = n => {
-  if(n == null) return '—';
-  if(n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
-  if(n >= 1e3) return (n / 1e3).toFixed(0) + 'K';
-  return '' + n;
-};
-const formatCurrency = n => n == null ? '—' : `R$ ${Number(n).toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
+      const formatNumber = (n) =>
+        n == null ? "—" : Number(n).toLocaleString("pt-BR");
+      const formatK = (n) => {
+        if (n == null) return "—";
+        if (n >= 1e6) return (n / 1e6).toFixed(1) + "M";
+        if (n >= 1e3) return (n / 1e3).toFixed(0) + "K";
+        return "" + n;
+      };
+      const formatCurrency = (n) =>
+        n == null
+          ? "—"
+          : `R$ ${Number(n).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
 
-async function syncBackendData(){
-  try {
-    const res = await fetch('/api/stats');
-    if(res.ok){
-      const data = await res.json();
-      if(data?.length){
-        STATS = data.map(r => ({t: r.tabela, n: parseInt(r.linhas)}));
+      async function syncBackendData() {
+        try {
+          const res = await fetch("/api/stats");
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.length) {
+              STATS = data.map((r) => ({ t: r.tabela, n: parseInt(r.linhas) }));
+            }
+          }
+        } catch (e) {}
+
+        try {
+          const resEst = await fetch("/api/estados-summary");
+          if (resEst.ok) {
+            const dataEst = await resEst.json();
+            dataEst.forEach((st) => {
+              if (STATES_DATA[st.uf]) {
+                STATES_DATA[st.uf].ben =
+                  st.total_beneficiarios || STATES_DATA[st.uf].ben;
+                STATES_DATA[st.uf].op =
+                  st.total_operadoras || STATES_DATA[st.uf].op;
+                STATES_DATA[st.uf].cob =
+                  st.cobertura_media_pct || STATES_DATA[st.uf].cob;
+                STATES_DATA[st.uf].idh = st.idh_medio || STATES_DATA[st.uf].idh;
+                STATES_DATA[st.uf].renda =
+                  st.renda_media || STATES_DATA[st.uf].renda;
+              }
+            });
+            if (brazilGeoData) drawMapFeatures();
+          }
+        } catch (e) {}
       }
-    }
-  } catch(e) {}
 
-  try {
-    const resEst = await fetch('/api/estados-summary');
-    if(resEst.ok){
-      const dataEst = await resEst.json();
-      dataEst.forEach(st => {
-        if(STATES_DATA[st.uf]){
-          STATES_DATA[st.uf].ben = st.total_beneficiarios || STATES_DATA[st.uf].ben;
-          STATES_DATA[st.uf].op = st.total_operadoras || STATES_DATA[st.uf].op;
-          STATES_DATA[st.uf].cob = st.cobertura_media_pct || STATES_DATA[st.uf].cob;
-          STATES_DATA[st.uf].idh = st.idh_medio || STATES_DATA[st.uf].idh;
-          STATES_DATA[st.uf].renda = st.renda_media || STATES_DATA[st.uf].renda;
-        }
+      /* RESIZE LISTENER */
+      let resizeTimeout;
+      window.addEventListener("resize", () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(resizeMap, 150);
       });
-      if(brazilGeoData) drawMapFeatures();
-    }
-  } catch(e) {}
-}
 
-/* RESIZE LISTENER */
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(resizeMap, 150);
-});
-
-/* STARTUP */
-loadedPages['map'] = true;
-window.addEventListener('load', () => {
-  initializeMap();
-  syncBackendData();
-});
-</script>
-</body>
+      /* STARTUP */
+      loadedPages["map"] = true;
+      window.addEventListener("load", () => {
+        initializeMap();
+        syncBackendData();
+      });
+    </script>
+  </body>
 </html>
