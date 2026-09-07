@@ -451,9 +451,9 @@
 
       .page-title-group h2 {
         font-family: var(--font-display);
-        font-size: 1.4rem;
+        font-size: 1.6rem;
         font-weight: 500;
-        letter-spacing: -0.01em;
+        letter-spacing: -0.02em;
         color: var(--text-main);
         display: flex;
         align-items: center;
@@ -468,11 +468,8 @@
 
       .segmented-control {
         display: inline-flex;
-        background: var(--bg-sidebar);
-        border: 1px solid var(--border-default);
-        padding: 0.25rem;
-        border-radius: var(--radius-pill);
-        gap: 0.25rem;
+        border-bottom: 1px solid var(--border-subtle);
+        gap: 0;
         flex-shrink: 0;
       }
 
@@ -480,11 +477,11 @@
         display: inline-flex;
         align-items: center;
         gap: 0.4rem;
-        padding: 0.4rem 0.95rem;
-        border-radius: var(--radius-pill);
+        padding: 0.5rem 0.95rem;
         border: none;
+        border-bottom: 2px solid transparent;
         background: transparent;
-        color: var(--text-muted);
+        color: var(--text-faint);
         font-size: 0.78rem;
         font-weight: 600;
         font-family: inherit;
@@ -494,7 +491,6 @@
 
       .seg-btn:hover {
         color: var(--text-main);
-        background: var(--bg-surface);
       }
 
       .seg-btn:active {
@@ -502,8 +498,8 @@
       }
 
       .seg-btn.active {
-        background: var(--primary);
-        color: #06170f;
+        border-bottom-color: var(--primary);
+        color: var(--text-main);
         font-weight: 600;
       }
 
@@ -645,10 +641,15 @@
       }
 
       .legend-bar {
-        height: 5px;
-        border-radius: 3px;
-        background: linear-gradient(90deg, #232428, #2f6b4d, #4a9e78, #7fc7a2);
+        display: flex;
+        gap: 3px;
         margin-bottom: 0.35rem;
+      }
+
+      .legend-swatch {
+        width: 10px;
+        height: 10px;
+        flex-shrink: 0;
       }
 
       .legend-values {
@@ -780,22 +781,26 @@
       .stat-tile {
         background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-sm);
+        border-left: 2px solid var(--primary);
+        border-radius: var(--radius-xs);
         padding: 0.85rem 0.95rem;
         transition: all 0.2s var(--ease-spring);
       }
 
       .stat-tile:hover {
         border-color: var(--border-active);
+        border-left-width: 2px;
         background: var(--bg-surface-elevated);
         transform: translateY(-2px);
       }
 
       .tile-tag {
-        font-size: 0.74rem;
-        font-weight: 500;
+        font-size: 0.7rem;
+        font-weight: 600;
         color: var(--text-faint);
         margin-bottom: 0.35rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
 
       .tile-number {
@@ -904,43 +909,35 @@
       .metric-card {
         background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
-        border-radius: var(--radius-md);
+        border-left: 2px solid var(--primary);
+        border-radius: var(--radius-xs);
         padding: 1.15rem 1.25rem;
         position: relative;
         overflow: hidden;
         transition: all 0.24s var(--ease-spring);
-        box-shadow: var(--shadow-card);
       }
 
-      .metric-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 3px;
-        height: 100%;
-        background: var(--primary);
-        opacity: 0;
-        transition: opacity 0.2s ease;
+      .metric-card.accent-amber {
+        border-left-color: var(--accent-amber);
+      }
+
+      .metric-card.accent-rose {
+        border-left-color: var(--accent-rose);
       }
 
       .metric-card:hover {
         border-color: var(--border-active);
+        border-left-width: 2px;
         transform: translateY(-3px);
-        box-shadow:
-          0 1px 2px rgba(0, 0, 0, 0.4),
-          0 12px 24px -10px rgba(0, 0, 0, 0.55);
-      }
-
-      .metric-card:hover::before {
-        opacity: 1;
       }
 
       .metric-label {
-        font-size: 0.76rem;
-        font-weight: 500;
+        font-size: 0.7rem;
+        font-weight: 600;
         color: var(--text-faint);
         margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
       }
 
       .metric-value {
@@ -949,6 +946,11 @@
         font-weight: 600;
         color: var(--text-main);
         line-height: 1.1;
+      }
+
+      .metric-value .unit {
+        color: var(--text-faint);
+        font-size: 0.85em;
       }
 
       .metric-desc {
@@ -960,10 +962,10 @@
       .card-panel {
         background: var(--bg-surface);
         border: 1px solid var(--border-subtle);
+        border-top: 1px solid var(--primary);
         border-radius: var(--radius-md);
         overflow: hidden;
         margin-bottom: 1.5rem;
-        box-shadow: var(--shadow-card);
       }
 
       .card-head {
@@ -1470,11 +1472,38 @@
         line-height: 1.3;
       }
 
+      /* SWAP VIEW BUTTON */
+      .swap-view-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 11;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: var(--bg-sidebar);
+        border: 1px solid var(--border-default);
+        color: var(--text-main);
+        padding: 0.5rem 0.8rem;
+        border-radius: var(--radius-sm);
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: var(--shadow-card);
+        transition: all 0.2s var(--ease-spring);
+      }
+      .swap-view-btn:hover {
+        background: var(--bg-surface-elevated);
+        border-color: var(--border-active);
+        transform: translateY(-2px);
+      }
+
       /* FLOATING MAP LAYER SELECTOR */
       .map-layer-selector {
         position: absolute;
         top: 1rem;
-        right: 1rem;
+        left: 1rem;
         z-index: 10;
         background: rgba(17, 18, 20, 0.88);
         backdrop-filter: blur(10px);
@@ -1503,30 +1532,29 @@
 
       .layer-pills {
         display: flex;
-        gap: 0.25rem;
+        gap: 0;
+        border-bottom: 1px solid var(--border-subtle);
       }
 
       .layer-pill-btn {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid transparent;
-        color: var(--text-muted);
+        background: transparent;
+        border: none;
+        border-bottom: 2px solid transparent;
+        color: var(--text-faint);
         font-family: var(--font-sans);
         font-size: 0.72rem;
         font-weight: 500;
         padding: 4px 9px;
-        border-radius: var(--radius-sm);
         cursor: pointer;
         transition: all 0.18s ease;
       }
 
       .layer-pill-btn:hover {
         color: var(--text-main);
-        background: rgba(255, 255, 255, 0.09);
       }
 
       .layer-pill-btn.active {
-        background: var(--primary-subtle);
-        border-color: var(--primary);
+        border-bottom-color: var(--primary);
         color: var(--primary-light);
         font-weight: 600;
       }
@@ -1560,20 +1588,16 @@
       .granularity-notice {
         display: flex;
         align-items: center;
-        gap: 0.6rem;
-        padding: 0.7rem 0.85rem;
+        justify-content: center;
+        padding: 1.2rem 0.85rem;
         margin: 0.8rem 0;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px dashed var(--border-default);
-        border-radius: var(--radius-sm);
+        background: transparent;
+        border: 1px dashed var(--border-subtle);
+        border-radius: var(--radius-xs);
         font-size: 0.75rem;
-        color: var(--text-muted);
+        color: var(--text-faint);
         line-height: 1.4;
-      }
-
-      .granularity-notice .lock-icon {
-        font-size: 1rem;
-        opacity: 0.85;
+        text-align: center;
       }
 
       .granularity-badge-btn {
@@ -2197,6 +2221,15 @@
               <div class="layer-pills" id="layer-pills-container"></div>
             </div>
 
+            <!-- Swap Map/Table Button -->
+            <button class="swap-view-btn" id="swap-view-btn" onclick="swapView()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                <path d="M14 3h7v7M10 21H3v-7"/>
+              </svg>
+              <span id="swap-view-label">Ver tabela</span>
+            </button>
+
             <svg id="map-svg"></svg>
 
             <div class="map-loading-overlay" id="map-loading">
@@ -2217,10 +2250,7 @@
             <div class="map-legend">
               <div class="legend-title" id="legend-label">Beneficiários</div>
               <div class="legend-bar"></div>
-              <div class="legend-values">
-                <span id="legend-min">0</span>
-                <span id="legend-max">—</span>
-              </div>
+              <div class="legend-values"></div>
             </div>
 
             <div class="glass-tooltip" id="tooltip"></div>
@@ -2302,17 +2332,7 @@
           </div>
         </div>
 
-        <!-- PICTURE-IN-PICTURE SWAP CARD -->
-        <div
-          class="pip-card"
-          id="pip-card"
-          onclick="handlePipClick()"
-          role="button"
-          tabindex="0"
-          aria-label="Alternar entre mapa e tabela"
-        >
-          <div class="pip-card-inner" id="pip-card-inner"></div>
-        </div>
+
       </div>
 
       <!-- PAGE 2: VISÃO GERAL -->
@@ -2634,6 +2654,26 @@
         52: "GO",
         53: "DF",
       };
+
+      /*
+       * ══════════════════════════════════════════════════════
+       *  MAPEAMENTO: TABELA → PERSONA → NÍVEL GEOGRÁFICO
+       * ══════════════════════════════════════════════════════
+       *  Tabela                        | Persona Principal      | Nível Nativo
+       *  estado                        | Shared                 | Estado
+       *  municipio                     | Shared                 | Município
+       *  operadora                     | Setor Privado          | Estado
+       *  produto_saude                 | Setor Privado / Comum  | Município
+       *  abrangencia_plano             | Setor Privado / Comum  | Município
+       *  preco_faixa_etaria            | Setor Privado / Comum  | Município
+       *  market_share                  | Setor Privado          | Município
+       *  rede_credenciada_sintetica    | Comum / Privado        | Município
+       *  perfil_saude_publica          | Shared / Público       | Município
+       *  usuario                       | Comum                  | Município
+       *  historico_busca_recomendacao   | Comum                  | Município
+       *  feedback_usuario              | Comum                  | Município
+       * ══════════════════════════════════════════════════════
+       */
 
       const STATES_DATA = {
         AC: {
@@ -3089,16 +3129,17 @@
         pessoa_comum: {
           label: "Pessoa Comum",
           icon: "👤",
-          description: "Consumidor de planos de saúde e cobertura assistencial",
-          pageHeading: "Encontre o plano de saúde certo para você",
+          description: "Cidadão buscando entender saúde na sua região",
+          pageHeading: "Saúde na Sua Região",
           pageSubheading:
-            "Compare cobertura, coparticipação e abrangência entre operadoras",
+            "Unidades de saúde, cobertura e indicadores da sua cidade",
           searchPlaceholder:
-            "🔍 Busque por nome do plano, operadora (ex: Unimed, Amil) ou tipo...",
-          pages: ["map", "pl", "sd"], // Mapa, Catálogo de Planos, Perfil Municipal
+            "🔍 Busque por nome do plano, operadora ou tipo...",
+          pages: ["map", "pl", "sd"],
           mapLayers: [
-            { key: "ben", label: "Beneficiários" },
-            { key: "cob", label: "Cobertura %" },
+            { key: "cob", label: "Cobertura de Plano" },
+            { key: "idh", label: "Cobertura Vacinal" },
+            { key: "ben", label: "Alertas Ativos" },
           ],
           detailTableCols: [
             "plano",
@@ -3113,16 +3154,16 @@
           label: "Setor Público",
           icon: "🏛️",
           description:
-            "Gestores públicos, secretarias de saúde e regulação assistencial",
-          pageHeading: "Vazios Assistenciais & Vulnerabilidade Social",
+            "Gestores municipais/estaduais e servidores de saúde pública",
+          pageHeading: "Gestão de Saúde Pública",
           pageSubheading:
-            "Cruzamento entre cobertura suplementar, IDH e capacidade de infraestrutura médica",
+            "Cobertura APS, leitos SUS, profissionais e fluxo de pacientes",
           searchPlaceholder: "🔍 Filtrar município ou UF...",
-          pages: ["map", "ov", "sd", "hs"], // Mapa, Visão Geral, Perfil Municipal, Consultas Recentes
+          pages: ["map", "ov", "sd", "hs"],
           mapLayers: [
-            { key: "idh", label: "IDH Municipal" },
-            { key: "cob", label: "Cobertura %" },
-            { key: "ben", label: "Beneficiários" },
+            { key: "cob", label: "Cobertura APS" },
+            { key: "ben", label: "Leitos SUS" },
+            { key: "idh", label: "Profissionais/hab" },
           ],
           detailTableCols: [
             "municipio",
@@ -3138,16 +3179,16 @@
         setor_privado: {
           label: "Setor Privado",
           icon: "🏢",
-          description: "Operadoras de saúde, planos corporativos e seguradoras",
+          description: "Operadoras de saúde, clínicas e investidores do setor",
           pageHeading: "Inteligência Competitiva & Penetração de Mercado",
           pageSubheading:
-            "Market share, vidas reguladas e oportunidades de expansão por UF",
+            "Market share, beneficiários ANS e oportunidades de expansão por UF",
           searchPlaceholder: "🔍 Buscar operadora, modalidade ou UF...",
-          pages: ["map", "mkt", "op", "pl"], // Mapa, Market Share, Operadoras, Catálogo de Planos
+          pages: ["map", "mkt", "op", "pl"],
           mapLayers: [
-            { key: "ben", label: "Beneficiários" },
-            { key: "cob", label: "Cobertura %" },
-            { key: "idh", label: "IDH" },
+            { key: "ben", label: "Beneficiários ANS" },
+            { key: "cob", label: "Estabelecimentos Privados" },
+            { key: "idh", label: "Market Share" },
           ],
           detailTableCols: [
             "operadora",
@@ -3171,13 +3212,17 @@
 
       const DATA_GEO_RULES = {
         estabelecimentos_medicos: GEO_LEVELS.MUNICIPAL,
+        unidades_saude_detalhe: GEO_LEVELS.MUNICIPAL,
         market_share_detalhe: GEO_LEVELS.MUNICIPAL,
+        fluxo_intermunicipal: GEO_LEVELS.ESTADUAL,
         operadoras_ranking: GEO_LEVELS.ESTADUAL,
+        idsus: GEO_LEVELS.ESTADUAL,
+        alertas_epidemio: GEO_LEVELS.ESTADUAL,
+        planos_catalogo: GEO_LEVELS.ESTADUAL,
         beneficiarios_resumo: GEO_LEVELS.NACIONAL,
         cobertura_resumo: GEO_LEVELS.NACIONAL,
         idh_resumo: GEO_LEVELS.NACIONAL,
         perfil_municipal: GEO_LEVELS.MUNICIPAL,
-        planos_catalogo: GEO_LEVELS.ESTADUAL,
       };
 
       let activePersona = "pessoa_comum";
@@ -3452,14 +3497,12 @@
       /* ========================================================
          PICTURE-IN-PICTURE (PIP) SWAP SYSTEM
          ======================================================== */
-      function handlePipClick() {
-        swapView(currentView === "map" ? "table" : "map");
-      }
 
       function swapView(target) {
         currentView = target || (currentView === "map" ? "table" : "map");
         const mapLayout = document.getElementById("map-layout-el");
         const tableContainer = document.getElementById("swap-table-container");
+        const swapBtnLabel = document.getElementById("swap-view-label");
 
         if (currentView === "table") {
           if (mapLayout) mapLayout.style.display = "none";
@@ -3467,6 +3510,7 @@
             tableContainer.style.display = "block";
             playViewAnim(tableContainer);
           }
+          if (swapBtnLabel) swapBtnLabel.textContent = "Ver mapa";
           initSwapUFFilter();
           renderSwapTable();
         } else {
@@ -3475,9 +3519,9 @@
             playViewAnim(mapLayout);
           }
           if (tableContainer) tableContainer.style.display = "none";
+          if (swapBtnLabel) swapBtnLabel.textContent = "Ver tabela";
           setTimeout(resizeMap, 50);
         }
-        renderPipContent();
       }
 
       function playViewAnim(el) {
@@ -3487,99 +3531,7 @@
         el.classList.add("view-anim");
       }
 
-      function renderPipContent() {
-        const inner = document.getElementById("pip-card-inner");
-        const pipCard = document.getElementById("pip-card");
-        if (!inner || !pipCard) return;
 
-        if (currentView === "map") {
-          // Modo 1 (foco no mapa): PIP mostra prévia da tabela
-          const p = PERSONAS[activePersona];
-          const recordCount = getPersonaRecordCount();
-          inner.innerHTML = `
-            <div class="pip-label">📊 Ver Tabela Detalhada</div>
-            <div class="pip-mini-table">
-              <div class="pip-mini-row header"></div>
-              <div class="pip-mini-row"></div>
-              <div class="pip-mini-row"></div>
-              <div class="pip-mini-row"></div>
-            </div>
-            <div class="pip-count-badge">${recordCount} registros · ${p.label}</div>`;
-        } else {
-          // Modo 2 (foco na tabela): PIP mostra minimapa interativo
-          inner.innerHTML = `
-            <div class="pip-label">🗺️ Voltar ao Mapa</div>
-            <div class="pip-mini-map-container" id="pip-mini-map-container"></div>
-            <div class="pip-sub">${selectedUF ? STATES_DATA[selectedUF]?.nome || selectedUF : "Visão Nacional · " + (PERSONAS[activePersona]?.mapLayers.find((l) => l.key === currentMetric)?.label || currentMetric)}</div>`;
-          requestAnimationFrame(drawPipMiniMap);
-        }
-      }
-
-      function getPersonaRecordCount() {
-        if (activePersona === "pessoa_comum") return RAW_PLS.length;
-        if (activePersona === "setor_publico") return RAW_SDS.length;
-        return RAW_OPS.length;
-      }
-
-      function drawPipMiniMap() {
-        const container = document.getElementById("pip-mini-map-container");
-        if (!container || !brazilGeoData) return;
-        const W = container.clientWidth || 200;
-        const H = container.clientHeight || 108;
-
-        d3.select(container).selectAll("svg").remove();
-        const svg = d3
-          .select(container)
-          .append("svg")
-          .attr("width", W)
-          .attr("height", H);
-
-        const proj = d3.geoMercator().fitExtent(
-          [
-            [4, 4],
-            [W - 4, H - 4],
-          ],
-          brazilGeoData,
-        );
-        const path = d3.geoPath().projection(proj);
-
-        const values = Object.keys(STATES_DATA)
-          .map((uf) => getMetricValue(uf))
-          .filter((v) => v > 0);
-        const minVal = d3.min(values) || 0,
-          maxVal = d3.max(values) || 1;
-        const colorScale = d3
-          .scaleSequential()
-          .domain([minVal, maxVal])
-          .interpolator(
-            d3.interpolateRgbBasis([
-              "#232428",
-              "#274436",
-              "#2f6b4d",
-              "#4a9e78",
-              "#7fc7a2",
-            ]),
-          );
-
-        svg
-          .selectAll("path")
-          .data(brazilGeoData.features)
-          .join("path")
-          .attr("d", path)
-          .attr("fill", (d) => {
-            const uf = getFeatureUF(d);
-            const v = getMetricValue(uf);
-            return v > 0 ? colorScale(v) : "#1d1e21";
-          })
-          .attr("stroke", (d) =>
-            getFeatureUF(d) === selectedUF
-              ? "#eef4f0"
-              : "rgba(255,255,255,0.09)",
-          )
-          .attr("stroke-width", (d) =>
-            getFeatureUF(d) === selectedUF ? 1.6 : 0.4,
-          );
-      }
 
       /* ========================================================
          SWAP TABLE: UF FILTER & FILTER SEARCH
@@ -3616,8 +3568,32 @@
         renderPipContent();
       }
 
-      function filterSwapTable() {
+      let swapTableConfig = {
+        page: 1,
+        limit: 20,
+        sortCol: null,
+        sortAsc: true
+      };
+
+      function setSwapTableSort(col) {
+        if (swapTableConfig.sortCol === col) {
+          swapTableConfig.sortAsc = !swapTableConfig.sortAsc;
+        } else {
+          swapTableConfig.sortCol = col;
+          swapTableConfig.sortAsc = true;
+        }
+        swapTableConfig.page = 1;
         renderSwapTable();
+      }
+
+      function filterSwapTable() {
+        swapTableConfig.page = 1;
+        renderSwapTable();
+      }
+
+      function getSortIcon(col) {
+        if (swapTableConfig.sortCol !== col) return '';
+        return swapTableConfig.sortAsc ? ' ▲' : ' ▼';
       }
 
       function renderSwapTable() {
@@ -3630,13 +3606,22 @@
         const tbody = document.getElementById("swap-table-body");
         const countEl = document.getElementById("swap-table-count");
         const searchInput = document.getElementById("swap-search-input");
+        
+        let paginationEl = document.getElementById("swap-pagination");
+        if (!paginationEl && tbody) {
+           paginationEl = document.createElement("div");
+           paginationEl.id = "swap-pagination";
+           paginationEl.style.cssText = "display:flex;justify-content:center;gap:1rem;margin-top:1rem;align-items:center;";
+           tbody.parentElement.parentElement.appendChild(paginationEl);
+        }
+
         if (searchInput) searchInput.placeholder = p.searchPlaceholder;
         const query = (searchInput?.value || "").toLowerCase().trim();
         const ufFilter = document.getElementById("swap-uf-filter")?.value || "";
 
         if (tagEl) tagEl.textContent = `Persona Ativa: ${p.label}`;
 
-        // Banner explicativo da regra de granularidade geográfica
+        // Banner
         if (bannerEl) {
           if (activePersona === "setor_publico") {
             if (canShowData("estabelecimentos_medicos")) {
@@ -3661,188 +3646,176 @@
           }
         }
 
+        let filtered = [];
+        let renderRow = () => '';
+
         if (activePersona === "pessoa_comum") {
-          if (titleEl)
-            titleEl.textContent = "Catálogo Comparativo de Planos de Saúde";
-          if (subEl)
-            subEl.textContent =
-              "Planos individuais e coletivos aprovados pela ANS para contratação";
+          if (titleEl) titleEl.textContent = "Catálogo Comparativo de Planos de Saúde";
+          if (subEl) subEl.textContent = "Planos individuais e coletivos aprovados pela ANS para contratação";
 
           if (thead) {
             thead.innerHTML = `
               <tr>
-                <th>Nome do Plano</th>
-                <th>Operadora</th>
-                <th>Tipo</th>
-                <th>Abrangência</th>
-                <th>Coparticipação</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('nm')">Nome do Plano${getSortIcon('nm')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('op')">Operadora${getSortIcon('op')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('tipo')">Tipo${getSortIcon('tipo')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('cob')">Abrangência${getSortIcon('cob')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('copart')">Coparticipação${getSortIcon('copart')}</th>
               </tr>`;
           }
 
-          const filtered = RAW_PLS.filter((pl) => {
-            const matchesQuery =
-              !query ||
-              pl.nm.toLowerCase().includes(query) ||
-              pl.op.toLowerCase().includes(query) ||
-              pl.tipo.toLowerCase().includes(query);
-            return matchesQuery;
+          filtered = RAW_PLS.filter((pl) => {
+            return !query || pl.nm.toLowerCase().includes(query) || pl.op.toLowerCase().includes(query) || pl.tipo.toLowerCase().includes(query);
           });
-
-          if (tbody) {
-            if (filtered.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum plano encontrado para os critérios.</td></tr>`;
-            } else {
-              const tm = {
-                individual: "Individual",
-                coletivo_empresarial: "Empresarial",
-                coletivo_adesao: "Familiar (Adesão)",
-              };
-              tbody.innerHTML = filtered
-                .map(
-                  (pl) => `
-                <tr>
-                  <td><strong>${pl.nm}</strong></td>
-                  <td><span class="badge-tag">${pl.op}</span></td>
-                  <td>${tm[pl.tipo] || pl.tipo}</td>
-                  <td><span class="badge-tag ${pl.cob === "Nacional" ? "green" : pl.cob === "Regional" ? "blue" : ""}">${pl.cob}</span></td>
-                  <td>${pl.copart ? '<span class="badge-tag amber">Sim</span>' : '<span class="badge-tag green">Não</span>'}</td>
-                </tr>`,
-                )
-                .join("");
-            }
+          
+          if (swapTableConfig.sortCol) {
+            filtered.sort((a,b) => {
+              let valA = a[swapTableConfig.sortCol]; let valB = b[swapTableConfig.sortCol];
+              if (valA < valB) return swapTableConfig.sortAsc ? -1 : 1;
+              if (valA > valB) return swapTableConfig.sortAsc ? 1 : -1;
+              return 0;
+            });
           }
-          if (countEl)
-            countEl.textContent = `${filtered.length} planos exibidos`;
+
+          const tm = { individual: "Individual", coletivo_empresarial: "Empresarial", coletivo_adesao: "Familiar (Adesão)" };
+          renderRow = (pl) => `
+            <tr>
+              <td><strong>${pl.nm}</strong></td>
+              <td><span class="badge-tag">${pl.op}</span></td>
+              <td>${tm[pl.tipo] || pl.tipo}</td>
+              <td><span class="badge-tag ${pl.cob === 'Nacional' ? 'green' : pl.cob === 'Regional' ? 'blue' : ''}">${pl.cob}</span></td>
+              <td>${pl.copart ? '<span class="badge-tag amber">Sim</span>' : '<span class="badge-tag green">Não</span>'}</td>
+            </tr>`;
+            
         } else if (activePersona === "setor_publico") {
-          if (titleEl)
-            titleEl.textContent =
-              "Painel de Saúde Pública & Indicadores Municipais";
-          if (subEl)
-            subEl.textContent =
-              "Vulnerabilidade social, cobertura suplementar e capacidade hospitalar";
+          if (titleEl) titleEl.textContent = "Painel de Saúde Pública & Indicadores Municipais";
+          if (subEl) subEl.textContent = "Vulnerabilidade social, cobertura suplementar e capacidade hospitalar";
 
           if (thead) {
             thead.innerHTML = `
               <tr>
-                <th>Município</th>
-                <th>UF</th>
-                <th>População</th>
-                <th>IDH</th>
-                <th>Cobertura %</th>
-                <th>Renda p/ Cap.</th>
-                <th>GINI</th>
-                <th>Estabelecimentos Médicos (Regra Geo)</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('m')">Município${getSortIcon('m')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('uf')">UF${getSortIcon('uf')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('pop')">População${getSortIcon('pop')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('idh')">IDH${getSortIcon('idh')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('cob')">Cobertura %${getSortIcon('cob')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('renda')">Renda p/ Cap.${getSortIcon('renda')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('gini')">GINI${getSortIcon('gini')}</th>
+                <th>Estabelecimentos Médicos</th>
               </tr>`;
           }
 
-          const filtered = RAW_SDS.filter((sd) => {
+          filtered = RAW_SDS.filter((sd) => {
             const matchesUF = !ufFilter || sd.uf === ufFilter;
-            const matchesQuery =
-              !query ||
-              sd.m.toLowerCase().includes(query) ||
-              sd.uf.toLowerCase().includes(query);
+            const matchesQuery = !query || sd.m.toLowerCase().includes(query) || sd.uf.toLowerCase().includes(query);
             return matchesUF && matchesQuery;
           });
-
-          if (tbody) {
-            if (filtered.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum município encontrado para o filtro.</td></tr>`;
-            } else {
-              tbody.innerHTML = filtered
-                .map((sd) => {
-                  const hospCount = Math.round(sd.pop / 15000) + 12;
-                  const canViewFine = canShowData("estabelecimentos_medicos");
-                  return `
-                  <tr>
-                    <td><strong>${sd.m}</strong></td>
-                    <td><span class="badge-tag">${sd.uf}</span></td>
-                    <td style="font-family:var(--font-mono)">${formatNumber(sd.pop)}</td>
-                    <td style="font-family:var(--font-mono);color:var(--primary-light)">${sd.idh.toFixed(3)}</td>
-                    <td style="font-family:var(--font-mono);font-weight:600">${sd.cob.toFixed(1)}%</td>
-                    <td style="font-family:var(--font-mono)">${formatCurrency(sd.renda)}</td>
-                    <td style="font-family:var(--font-mono)">${sd.gini.toFixed(3)}</td>
-                    <td>
-                      ${
-                        canViewFine
-                          ? `<span class="badge-tag green">🏥 ${hospCount} Estabelecimentos</span>`
-                          : `<span class="badge-tag locked" title="Requer nível geográfico Municipal para detalhamento">🔒 Zoom Municipal req.</span>`
-                      }
-                    </td>
-                  </tr>`;
-                })
-                .join("");
-            }
+          
+          if (swapTableConfig.sortCol) {
+            filtered.sort((a,b) => {
+              let valA = a[swapTableConfig.sortCol]; let valB = b[swapTableConfig.sortCol];
+              if (valA < valB) return swapTableConfig.sortAsc ? -1 : 1;
+              if (valA > valB) return swapTableConfig.sortAsc ? 1 : -1;
+              return 0;
+            });
           }
-          if (countEl)
-            countEl.textContent = `${filtered.length} municípios exibidos`;
+
+          renderRow = (sd) => {
+            const hospCount = Math.round(sd.pop / 15000) + 12;
+            const canViewFine = canShowData("estabelecimentos_medicos");
+            return `
+            <tr>
+              <td><strong>${sd.m}</strong></td>
+              <td><span class="badge-tag">${sd.uf}</span></td>
+              <td style="font-family:var(--font-mono)">${formatNumber(sd.pop)}</td>
+              <td style="font-family:var(--font-mono);color:var(--primary-light)">${sd.idh.toFixed(3)}</td>
+              <td style="font-family:var(--font-mono);font-weight:600">${sd.cob.toFixed(1)}%</td>
+              <td style="font-family:var(--font-mono)">${formatCurrency(sd.renda)}</td>
+              <td style="font-family:var(--font-mono)">${sd.gini.toFixed(3)}</td>
+              <td>${canViewFine ? '<span class="badge-tag green">🏥 ' + hospCount + ' Estab.</span>' : '<span class="badge-tag locked" title="Requer nível geográfico Municipal para detalhamento">🔒 Zoom Municipal req.</span>'}</td>
+            </tr>`;
+          };
+
         } else {
           // setor_privado
-          if (titleEl)
-            titleEl.textContent =
-              "Inteligência de Mercado & Participação das Operadoras";
-          if (subEl)
-            subEl.textContent =
-              "Ranking de penetração mercadológica, produtos ativos e carteira regulada";
+          if (titleEl) titleEl.textContent = "Inteligência de Mercado & Participação das Operadoras";
+          if (subEl) subEl.textContent = "Ranking de penetração mercadológica, produtos ativos e carteira regulada";
 
           if (thead) {
             thead.innerHTML = `
               <tr>
-                <th>Operadora</th>
-                <th>Modalidade</th>
-                <th>UF Sede</th>
-                <th>Beneficiários</th>
-                <th>% Market Share</th>
-                <th>Planos Ativos</th>
-                <th>Situação Cadastral</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('nm')">Operadora${getSortIcon('nm')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('mod')">Modalidade${getSortIcon('mod')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('uf')">UF Sede${getSortIcon('uf')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('ben')">Beneficiários${getSortIcon('ben')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('pct')">% Market Share${getSortIcon('pct')}</th>
+                <th style="cursor:pointer" onclick="setSwapTableSort('pl')">Planos Ativos${getSortIcon('pl')}</th>
+                <th>Situação</th>
               </tr>`;
           }
 
-          const list = RAW_OPS.map((op, idx) => {
-            const mkt =
-              RAW_MKT.find((m) => m.op.includes(op.nm.split(" ")[0])) ||
-              RAW_MKT[idx % RAW_MKT.length];
-            return {
-              ...op,
-              pct: mkt ? mkt.pct : (18.5 - idx * 1.1).toFixed(1),
-            };
-          })
-            .filter((op) => {
-              const matchesUF = !ufFilter || op.uf === ufFilter;
-              const matchesQuery =
-                !query ||
-                op.nm.toLowerCase().includes(query) ||
-                op.mod.toLowerCase().includes(query) ||
-                op.uf.toLowerCase().includes(query);
-              return matchesUF && matchesQuery;
-            })
-            .sort((a, b) => +b.pct - +a.pct);
-
-          if (tbody) {
-            if (list.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhuma operadora encontrada para o filtro.</td></tr>`;
-            } else {
-              tbody.innerHTML = list
-                .map(
-                  (op) => `
-                <tr>
-                  <td><strong>${op.nm}</strong></td>
-                  <td>${op.mod}</td>
-                  <td><span class="badge-tag">${op.uf}</span></td>
-                  <td style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatK(op.ben)}</td>
-                  <td style="font-family:var(--font-mono);font-weight:700">${op.pct}%</td>
-                  <td style="font-family:var(--font-mono)">${op.pl} planos</td>
-                  <td><span class="badge-tag green">Ativa ANS</span></td>
-                </tr>`,
-                )
-                .join("");
-            }
+          filtered = RAW_OPS.map((op, idx) => {
+            const mkt = RAW_MKT.find((m) => m.op.includes(op.nm.split(" ")[0])) || RAW_MKT[idx % RAW_MKT.length];
+            return { ...op, pct: parseFloat(mkt ? mkt.pct : (18.5 - idx * 1.1).toFixed(1)) };
+          }).filter((op) => {
+            const matchesUF = !ufFilter || op.uf === ufFilter;
+            const matchesQuery = !query || op.nm.toLowerCase().includes(query) || op.mod.toLowerCase().includes(query) || op.uf.toLowerCase().includes(query);
+            return matchesUF && matchesQuery;
+          });
+          
+          if (swapTableConfig.sortCol) {
+            filtered.sort((a,b) => {
+              let valA = a[swapTableConfig.sortCol]; let valB = b[swapTableConfig.sortCol];
+              if (valA < valB) return swapTableConfig.sortAsc ? -1 : 1;
+              if (valA > valB) return swapTableConfig.sortAsc ? 1 : -1;
+              return 0;
+            });
+          } else {
+            filtered.sort((a, b) => b.pct - a.pct); // default sort
           }
-          if (countEl)
-            countEl.textContent = `${list.length} operadoras listadas`;
+
+          renderRow = (op) => `
+            <tr>
+              <td><strong>${op.nm}</strong></td>
+              <td>${op.mod}</td>
+              <td><span class="badge-tag">${op.uf}</span></td>
+              <td style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatK(op.ben)}</td>
+              <td style="font-family:var(--font-mono);font-weight:700">${op.pct}%</td>
+              <td style="font-family:var(--font-mono)">${op.pl} planos</td>
+              <td><span class="badge-tag green">Ativa ANS</span></td>
+            </tr>`;
         }
 
-        renderPipContent();
+        // Apply Pagination
+        const totalItems = filtered.length;
+        const totalPages = Math.ceil(totalItems / swapTableConfig.limit) || 1;
+        if (swapTableConfig.page > totalPages) swapTableConfig.page = totalPages;
+        
+        const startIndex = (swapTableConfig.page - 1) * swapTableConfig.limit;
+        const endIndex = startIndex + swapTableConfig.limit;
+        const paginatedItems = filtered.slice(startIndex, endIndex);
+
+        if (tbody) {
+          if (paginatedItems.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum registro encontrado.</td></tr>`;
+          } else {
+            tbody.innerHTML = paginatedItems.map(renderRow).join("");
+          }
+        }
+        
+        if (countEl) countEl.textContent = `${totalItems} registros totais`;
+        
+        if (paginationEl) {
+           paginationEl.innerHTML = `
+             <button class="granularity-badge-btn" onclick="swapTableConfig.page--; renderSwapTable();" ${swapTableConfig.page <= 1 ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>Anterior</button>
+             <span style="font-size:0.75rem;color:var(--text-muted)">Página ${swapTableConfig.page} de ${totalPages}</span>
+             <button class="granularity-badge-btn" onclick="swapTableConfig.page++; renderSwapTable();" ${swapTableConfig.page >= totalPages ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>Próxima</button>
+           `;
+           paginationEl.style.display = totalPages > 1 ? 'flex' : 'none';
+        }
       }
+
+     }
 
       /* ========================================================
    NAVIGATION & PAGE SWITCHER
@@ -4225,18 +4198,26 @@
       }
 
       function updateLegendValues(minVal, maxVal) {
-        document.getElementById("legend-min").textContent =
-          currentMetric === "ben"
-            ? formatK(minVal)
+        const bar = document.querySelector(".legend-bar");
+        const valsEl = document.querySelector(".legend-values");
+        if (!bar || !valsEl) return;
+
+        const stops = 5;
+        const colors = ["#1d1e21", "#2a4a3a", "#3a6b53", "#4a9e78", "#7fc7a2"];
+        let swatchHTML = "";
+        let labelsHTML = "";
+        for (let i = 0; i < stops; i++) {
+          const v = minVal + (maxVal - minVal) * (i / (stops - 1));
+          const label = currentMetric === "ben"
+            ? formatK(v)
             : currentMetric === "cob"
-              ? minVal.toFixed(1) + "%"
-              : minVal.toFixed(3);
-        document.getElementById("legend-max").textContent =
-          currentMetric === "ben"
-            ? formatK(maxVal)
-            : currentMetric === "cob"
-              ? maxVal.toFixed(1) + "%"
-              : maxVal.toFixed(3);
+              ? v.toFixed(0) + "%"
+              : v.toFixed(2);
+          swatchHTML += `<div class="legend-swatch" style="background:${colors[i]}"></div>`;
+          labelsHTML += `<span>${label}</span>`;
+        }
+        bar.innerHTML = swatchHTML;
+        valsEl.innerHTML = labelsHTML;
       }
 
       function renderPanelGlobal() {
