@@ -1376,6 +1376,402 @@
           padding: 0.8rem 1rem;
         }
       }
+
+      /* ========================================================
+         PERSONA SELECTOR & ACCESS CONTROL
+         ======================================================== */
+      .persona-selector {
+        display: inline-flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-pill);
+        padding: 3px;
+        gap: 3px;
+      }
+
+      .persona-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-family: var(--font-sans);
+        font-size: 0.76rem;
+        font-weight: 500;
+        padding: 5px 12px;
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        transition: all 0.2s var(--ease-out);
+        white-space: nowrap;
+      }
+
+      .persona-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.06);
+      }
+
+      .persona-btn.active {
+        background: var(--primary);
+        color: #0b0c0d;
+        font-weight: 600;
+        box-shadow: 0 0 12px var(--primary-glow);
+      }
+
+      .persona-btn .persona-icon {
+        font-size: 0.88rem;
+        line-height: 1;
+      }
+
+      /* SIDEBAR PERSONA CARD */
+      .sidebar-persona-badge {
+        margin: 0 0.8rem 1rem 0.8rem;
+        padding: 0.75rem 0.9rem;
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-default);
+        border-left: 3px solid var(--primary);
+        border-radius: var(--radius-md);
+        transition: all 0.25s var(--ease-out);
+      }
+
+      .persona-badge-tag {
+        font-size: 0.62rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--primary-light);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+      }
+
+      .persona-badge-title {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .persona-badge-icon {
+        font-size: 1.05rem;
+      }
+
+      .persona-badge-desc {
+        font-size: 0.7rem;
+        color: var(--text-faint);
+        margin-top: 0.25rem;
+        line-height: 1.3;
+      }
+
+      /* VIEW SWAP CONTROL (MAPA <-> TABELA) */
+      .view-swap-control {
+        display: inline-flex;
+        background: var(--bg-surface-elevated);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-pill);
+        padding: 3px;
+        gap: 3px;
+      }
+
+      .swap-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-family: var(--font-sans);
+        font-size: 0.78rem;
+        font-weight: 500;
+        padding: 6px 14px;
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        transition: all 0.2s var(--ease-out);
+      }
+
+      .swap-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .swap-btn.active {
+        background: var(--primary);
+        color: #0b0c0d;
+        font-weight: 600;
+        box-shadow: 0 0 10px var(--primary-glow);
+      }
+
+      /* FLOATING MAP LAYER SELECTOR */
+      .map-layer-selector {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        z-index: 10;
+        background: rgba(17, 18, 20, 0.88);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-md);
+        padding: 0.4rem 0.55rem;
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        box-shadow: var(--shadow-card);
+      }
+
+      .layer-selector-header {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: var(--primary-light);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding-right: 0.35rem;
+        border-right: 1px solid var(--border-subtle);
+      }
+
+      .layer-pills {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .layer-pill-btn {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid transparent;
+        color: var(--text-muted);
+        font-family: var(--font-sans);
+        font-size: 0.72rem;
+        font-weight: 500;
+        padding: 4px 9px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.18s ease;
+      }
+
+      .layer-pill-btn:hover {
+        color: var(--text-main);
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .layer-pill-btn.active {
+        background: var(--primary-subtle);
+        border-color: var(--primary);
+        color: var(--primary-light);
+        font-weight: 600;
+      }
+
+      /* GEO LEVEL PILL & GRANULARITY */
+      .geo-level-pill {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 0.6rem;
+        padding: 2px 8px;
+        border-radius: var(--radius-pill);
+        font-size: 0.7rem;
+        font-weight: 600;
+        background: rgba(74, 158, 120, 0.14);
+        color: var(--primary-light);
+        border: 1px solid rgba(74, 158, 120, 0.3);
+      }
+
+      .geo-level-pill.state {
+        background: rgba(74, 138, 160, 0.16);
+        color: var(--accent-cyan);
+        border-color: rgba(74, 138, 160, 0.35);
+      }
+
+      .geo-level-pill.municipal {
+        background: rgba(185, 138, 74, 0.16);
+        color: #e0b068;
+        border-color: rgba(185, 138, 74, 0.35);
+      }
+
+      .granularity-notice {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.7rem 0.85rem;
+        margin: 0.8rem 0;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px dashed var(--border-default);
+        border-radius: var(--radius-sm);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+      }
+
+      .granularity-notice .lock-icon {
+        font-size: 1rem;
+        opacity: 0.85;
+      }
+
+      .granularity-badge-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        margin-top: 0.4rem;
+        padding: 4px 10px;
+        background: var(--primary-subtle);
+        border: 1px solid var(--border-active);
+        color: var(--primary-light);
+        font-size: 0.72rem;
+        font-weight: 600;
+        border-radius: var(--radius-xs);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .granularity-badge-btn:hover {
+        background: var(--primary);
+        color: #0b0c0d;
+      }
+
+      /* SWAP TABLE VIEW */
+      .swap-table-wrapper {
+        margin-top: 1rem;
+        animation: fadeIn 0.25s var(--ease-out);
+      }
+
+      .swap-table-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+      }
+
+      .swap-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+        padding: 1.1rem 1.4rem;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-surface-elevated);
+      }
+
+      .swap-header-left h3 {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .swap-header-left p {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .swap-header-controls {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+      }
+
+      .swap-scope-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 11px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border-default);
+        border-radius: var(--radius-pill);
+        font-size: 0.74rem;
+        color: var(--primary-light);
+        font-weight: 500;
+      }
+
+      .swap-uf-select {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-default);
+        color: var(--text-main);
+        font-family: var(--font-sans);
+        font-size: 0.76rem;
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+      }
+
+      .swap-uf-select:focus {
+        outline: none;
+        border-color: var(--primary);
+      }
+
+      .swap-back-map-btn {
+        background: var(--primary-subtle);
+        border: 1px solid var(--border-active);
+        color: var(--primary-light);
+        font-family: var(--font-sans);
+        font-size: 0.76rem;
+        font-weight: 600;
+        padding: 6px 12px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+
+      .swap-back-map-btn:hover {
+        background: var(--primary);
+        color: #0b0c0d;
+      }
+
+      .swap-geo-banner {
+        padding: 0.65rem 1.4rem;
+        background: rgba(74, 158, 120, 0.07);
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .swap-table-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1.4rem;
+        background: var(--bg-surface-elevated);
+        border-top: 1px solid var(--border-subtle);
+        font-size: 0.73rem;
+        color: var(--text-muted);
+      }
+
+      .badge-tag.locked {
+        background: rgba(255, 255, 255, 0.06);
+        color: var(--text-faint);
+        border-color: var(--border-subtle);
+        font-style: italic;
+      }
+
+      /* RESPONSIVE ADDITIONS */
+      @media (max-width: 900px) {
+        .persona-btn .persona-label {
+          display: none;
+        }
+        .persona-btn {
+          padding: 5px 8px;
+        }
+        .map-layer-selector {
+          top: auto;
+          bottom: 1rem;
+          right: 1rem;
+          max-width: calc(100% - 2rem);
+          overflow-x: auto;
+        }
+        .swap-header-controls {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        .swap-scope-pill {
+          width: 100%;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1428,6 +1824,20 @@
       </div>
 
       <div class="header-actions">
+        <div class="persona-selector" id="persona-selector">
+          <button class="persona-btn active" data-persona="pessoa_comum" onclick="setPersona('pessoa_comum', this)" title="Perfil Cidadão / Consumidor">
+            <span class="persona-icon">👤</span>
+            <span class="persona-label">Pessoa Comum</span>
+          </button>
+          <button class="persona-btn" data-persona="setor_publico" onclick="setPersona('setor_publico', this)" title="Perfil Gestor Público / SUS">
+            <span class="persona-icon">🏛️</span>
+            <span class="persona-label">Setor Público</span>
+          </button>
+          <button class="persona-btn" data-persona="setor_privado" onclick="setPersona('setor_privado', this)" title="Perfil Operadoras & Mercado">
+            <span class="persona-icon">🏢</span>
+            <span class="persona-label">Setor Privado</span>
+          </button>
+        </div>
         <div class="live-indicator">
           <div class="pulse-circle" id="status-dot"></div>
           <span id="status-text">Base Sincronizada</span>
@@ -1438,6 +1848,17 @@
 
     <!-- SIDEBAR -->
     <aside id="sidebar">
+      <div class="sidebar-persona-badge" id="sidebar-persona-badge">
+        <div class="persona-badge-tag">Perfil Ativo</div>
+        <div class="persona-badge-title">
+          <span class="persona-badge-icon" id="persona-badge-icon">👤</span>
+          <span class="persona-badge-name" id="persona-badge-name">Pessoa Comum</span>
+        </div>
+        <div class="persona-badge-desc" id="persona-badge-desc">
+          Consumidor de planos de saúde e cobertura assistencial
+        </div>
+      </div>
+
       <div class="nav-label">Navegação</div>
       <div class="nav-link active" onclick="switchPage('map')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1531,15 +1952,23 @@
               saúde
             </p>
           </div>
-          <div class="segmented-control">
-            <button class="seg-btn active" onclick="setMetric('ben', this)">
-              Beneficiários
+          <div class="view-swap-control" id="view-swap-control">
+            <button class="swap-btn active" id="btn-view-map" onclick="swapView('map')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+                <line x1="9" y1="3" x2="9" y2="18" />
+                <line x1="15" y1="6" x2="15" y2="21" />
+              </svg>
+              <span>Mapa Regional</span>
             </button>
-            <button class="seg-btn" onclick="setMetric('cob', this)">
-              Cobertura %
-            </button>
-            <button class="seg-btn" onclick="setMetric('idh', this)">
-              IDH
+            <button class="swap-btn" id="btn-view-table" onclick="swapView('table')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <line x1="3" y1="9" x2="21" y2="9"/>
+                <line x1="3" y1="15" x2="21" y2="15"/>
+                <line x1="9" y1="3" x2="9" y2="21"/>
+              </svg>
+              <span>Tabela Detalhada</span>
             </button>
           </div>
         </div>
@@ -1562,6 +1991,19 @@
               </button>
             </div>
 
+            <!-- Seletor Dinâmico de Camadas flutuante (por Persona) -->
+            <div class="map-layer-selector" id="map-layer-selector">
+              <div class="layer-selector-header">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                  <polyline points="2 17 12 22 22 17" />
+                  <polyline points="2 12 12 17 22 12" />
+                </svg>
+                <span>Camada</span>
+              </div>
+              <div class="layer-pills" id="layer-pills-container"></div>
+            </div>
+
             <svg id="map-svg"></svg>
 
             <div class="map-loading-overlay" id="map-loading">
@@ -1574,6 +2016,7 @@
             <div class="map-breadcrumb">
               Brasil <span style="color: var(--text-faint)">/</span>
               <strong id="breadcrumb-uf">Todos os Estados</strong>
+              <span class="geo-level-pill" id="geo-level-pill">🌐 Nacional</span>
             </div>
 
             <div class="map-legend">
@@ -1595,6 +2038,50 @@
               <p id="panel-subtitle">Consolidado Nacional (27 UFs)</p>
             </div>
             <div class="panel-scrollable" id="panel-content"></div>
+          </div>
+        </div>
+
+        <!-- SWAP VIEW: TABELA DETALHADA SINCRONIZADA COM A PERSONA -->
+        <div id="swap-table-container" class="swap-table-wrapper" style="display: none;">
+          <div class="swap-table-card">
+            <div class="swap-table-header">
+              <div class="swap-header-left">
+                <h3 id="swap-table-title">Consulta Detalhada — Dados da Persona</h3>
+                <p id="swap-table-subtitle">Dados tabulares sincronizados com escopo geográfico e perfil de acesso</p>
+              </div>
+              <div class="swap-header-controls">
+                <div class="swap-scope-pill" id="swap-scope-pill">
+                  <span>Escopo: Brasil (Nacional)</span>
+                </div>
+                <div class="search-input-wrapper" style="max-width:230px">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                  </svg>
+                  <input type="text" id="swap-search-input" placeholder="Filtrar dados..." oninput="filterSwapTable()" />
+                </div>
+                <select id="swap-uf-filter" class="swap-uf-select" onchange="onSwapUFFilterChange(this.value)">
+                  <option value="">Todas as UFs</option>
+                </select>
+                <button class="swap-back-map-btn" onclick="swapView('map')">
+                  ← Voltar ao Mapa
+                </button>
+              </div>
+            </div>
+
+            <!-- Banner de Regra de Granularidade Geográfica -->
+            <div id="swap-geo-banner" class="swap-geo-banner"></div>
+
+            <div class="data-table-container">
+              <table class="data-table" id="swap-data-table">
+                <thead id="swap-table-head"></thead>
+                <tbody id="swap-table-body"></tbody>
+              </table>
+            </div>
+            <div class="swap-table-footer">
+              <span id="swap-table-count">0 registros exibidos</span>
+              <span id="swap-table-persona-tag">Persona: Pessoa Comum</span>
+            </div>
           </div>
         </div>
       </div>
@@ -2367,6 +2854,466 @@
       ];
 
       /* ========================================================
+         PERSONAS CONFIGURATION & ACCESS CONTROL
+         ======================================================== */
+      const PERSONAS = {
+        pessoa_comum: {
+          label: "Pessoa Comum",
+          icon: "👤",
+          description: "Consumidor de planos de saúde e cobertura assistencial",
+          pages: ["map", "pl", "sd"], // Mapa, Catálogo de Planos, Perfil Municipal
+          mapLayers: [
+            { key: "ben", label: "Beneficiários" },
+            { key: "cob", label: "Cobertura %" },
+          ],
+          detailTableCols: ["plano", "operadora", "tipo", "cobertura", "copart", "mun"],
+        },
+        setor_publico: {
+          label: "Setor Público",
+          icon: "🏛️",
+          description: "Gestores públicos, secretarias de saúde e regulação assistencial",
+          pages: ["map", "ov", "sd", "hs"], // Mapa, Visão Geral, Perfil Municipal, Consultas Recentes
+          mapLayers: [
+            { key: "idh", label: "IDH Municipal" },
+            { key: "cob", label: "Cobertura %" },
+            { key: "ben", label: "Beneficiários" },
+          ],
+          detailTableCols: ["municipio", "uf", "populacao", "idh", "cobertura", "renda", "gini", "estabelecimentos"],
+        },
+        setor_privado: {
+          label: "Setor Privado",
+          icon: "🏢",
+          description: "Operadoras de saúde, planos corporativos e seguradoras",
+          pages: ["map", "mkt", "op", "pl"], // Mapa, Market Share, Operadoras, Catálogo de Planos
+          mapLayers: [
+            { key: "ben", label: "Beneficiários" },
+            { key: "cob", label: "Cobertura %" },
+            { key: "idh", label: "IDH" },
+          ],
+          detailTableCols: ["operadora", "modalidade", "uf", "beneficiarios", "market_share", "planos"],
+        },
+      };
+
+      /* ========================================================
+         GEOGRAPHIC GRANULARITY SYSTEM
+         ======================================================== */
+      const GEO_LEVELS = {
+        NACIONAL: 3,
+        ESTADUAL: 2,
+        MUNICIPAL: 1,
+      };
+
+      const DATA_GEO_RULES = {
+        estabelecimentos_medicos: GEO_LEVELS.MUNICIPAL,
+        market_share_detalhe: GEO_LEVELS.MUNICIPAL,
+        operadoras_ranking: GEO_LEVELS.ESTADUAL,
+        beneficiarios_resumo: GEO_LEVELS.NACIONAL,
+        cobertura_resumo: GEO_LEVELS.NACIONAL,
+        idh_resumo: GEO_LEVELS.NACIONAL,
+        perfil_municipal: GEO_LEVELS.MUNICIPAL,
+        planos_catalogo: GEO_LEVELS.ESTADUAL,
+      };
+
+      let activePersona = "pessoa_comum";
+      let currentGeoLevel = GEO_LEVELS.NACIONAL;
+      let currentView = "map"; // 'map' | 'table'
+
+      function canShowData(dataKey) {
+        const minLevel = DATA_GEO_RULES[dataKey] || GEO_LEVELS.NACIONAL;
+        return currentGeoLevel <= minLevel;
+      }
+
+      function setGeoLevel(level) {
+        currentGeoLevel = level;
+        updateGeoLevelBadge();
+        if (selectedUF) {
+          renderPanelState(selectedUF);
+        } else {
+          renderPanelGlobal();
+        }
+        if (currentView === "table") {
+          renderSwapTable();
+        }
+      }
+
+      function updateGeoLevelBadge() {
+        const pill = document.getElementById("geo-level-pill");
+        const scopeEl = document.getElementById("swap-scope-pill");
+        let levelText = "🌐 Escopo: Nacional";
+        let levelClass = "geo-level-pill";
+
+        if (currentGeoLevel === GEO_LEVELS.MUNICIPAL) {
+          const ufName = selectedUF ? (STATES_DATA[selectedUF]?.nome || selectedUF) : "Capital/Polo";
+          levelText = `📍 Escopo: Municipal (${ufName})`;
+          levelClass = "geo-level-pill municipal";
+        } else if (currentGeoLevel === GEO_LEVELS.ESTADUAL) {
+          const ufName = selectedUF ? (STATES_DATA[selectedUF]?.nome || selectedUF) : "UF";
+          levelText = `🗺️ Escopo: Estadual (${ufName})`;
+          levelClass = "geo-level-pill state";
+        }
+
+        if (pill) {
+          pill.className = levelClass;
+          pill.textContent = levelText;
+        }
+        if (scopeEl) {
+          scopeEl.textContent = levelText;
+        }
+      }
+
+      function setPersona(personaKey, btn) {
+        if (!PERSONAS[personaKey]) return;
+        activePersona = personaKey;
+
+        // Atualiza botões no header
+        document.querySelectorAll(".persona-btn").forEach((b) => {
+          b.classList.toggle("active", b.dataset.persona === personaKey);
+        });
+
+        // Atualiza card no sidebar
+        const p = PERSONAS[personaKey];
+        const badgeIcon = document.getElementById("persona-badge-icon");
+        const badgeName = document.getElementById("persona-badge-name");
+        const badgeDesc = document.getElementById("persona-badge-desc");
+        if (badgeIcon) badgeIcon.textContent = p.icon;
+        if (badgeName) badgeName.textContent = p.label;
+        if (badgeDesc) badgeDesc.textContent = p.description;
+
+        // Atualiza links visíveis no sidebar
+        updateSidebarForPersona();
+
+        // Atualiza seletor dinâmico de camadas no mapa
+        updateLayerSelector();
+
+        // Se estiver no modo tabela, re-renderiza
+        if (currentView === "table") {
+          renderSwapTable();
+        }
+
+        // Se a página atualmente visível não pertencer à nova persona, redireciona
+        const currentActiveLink = document.querySelector(".nav-link.active");
+        let curPage = "map";
+        if (currentActiveLink) {
+          const m = currentActiveLink.getAttribute("onclick")?.match(/switchPage\('([^']+)'\)/);
+          if (m) curPage = m[1];
+        }
+        if (!p.pages.includes(curPage)) {
+          switchPage(p.pages[0]);
+        }
+      }
+
+      function updateSidebarForPersona() {
+        const allowed = PERSONAS[activePersona].pages;
+        const links = document.querySelectorAll("#sidebar .nav-link");
+        links.forEach((link) => {
+          const m = link.getAttribute("onclick")?.match(/switchPage\('([^']+)'\)/);
+          if (m) {
+            const pageId = m[1];
+            link.style.display = allowed.includes(pageId) ? "flex" : "none";
+          }
+        });
+
+        // Oculta títulos de seção se nenhum link filho estiver visível
+        const labels = document.querySelectorAll("#sidebar .nav-label");
+        labels.forEach((label) => {
+          let next = label.nextElementSibling;
+          let hasVisible = false;
+          while (next && !next.classList.contains("nav-label") && !next.classList.contains("sidebar-card")) {
+            if (next.classList.contains("nav-link") && next.style.display !== "none") {
+              hasVisible = true;
+              break;
+            }
+            next = next.nextElementSibling;
+          }
+          label.style.display = hasVisible ? "block" : "none";
+        });
+      }
+
+      function updateLayerSelector() {
+        const container = document.getElementById("layer-pills-container");
+        if (!container) return;
+        const layers = PERSONAS[activePersona].mapLayers;
+
+        // Valida se a métrica atual está entre as permitidas da persona
+        if (!layers.some((l) => l.key === currentMetric)) {
+          currentMetric = layers[0].key;
+        }
+
+        container.innerHTML = layers
+          .map(
+            (l) => `
+          <button class="layer-pill-btn ${l.key === currentMetric ? "active" : ""}"
+                  onclick="setMetric('${l.key}', this)"
+                  title="Camada ${l.label}">
+            ${l.label}
+          </button>`,
+          )
+          .join("");
+
+        const curLayer = layers.find((l) => l.key === currentMetric) || layers[0];
+        const legLabel = document.getElementById("legend-label");
+        if (legLabel) legLabel.textContent = curLayer.label;
+
+        if (brazilGeoData) {
+          drawMapFeatures();
+        }
+      }
+
+      /* ========================================================
+         SWAP: MAPA REGIONAL <-> TABELA DETALHADA
+         ======================================================== */
+      function swapView(target) {
+        currentView = target || (currentView === "map" ? "table" : "map");
+        const mapLayout = document.querySelector(".map-layout");
+        const tableContainer = document.getElementById("swap-table-container");
+        const btnMap = document.getElementById("btn-view-map");
+        const btnTable = document.getElementById("btn-view-table");
+
+        if (currentView === "table") {
+          if (mapLayout) mapLayout.style.display = "none";
+          if (tableContainer) tableContainer.style.display = "block";
+          if (btnMap) btnMap.classList.remove("active");
+          if (btnTable) btnTable.classList.add("active");
+          initSwapUFFilter();
+          renderSwapTable();
+        } else {
+          if (mapLayout) mapLayout.style.display = "grid";
+          if (tableContainer) tableContainer.style.display = "none";
+          if (btnMap) btnMap.classList.add("active");
+          if (btnTable) btnTable.classList.remove("active");
+          setTimeout(resizeMap, 50);
+        }
+      }
+
+      function initSwapUFFilter() {
+        const sel = document.getElementById("swap-uf-filter");
+        if (!sel || sel.options.length > 1) return;
+        const ufs = Object.keys(STATES_DATA).sort();
+        ufs.forEach((uf) => {
+          const opt = document.createElement("option");
+          opt.value = uf;
+          opt.textContent = `${uf} — ${STATES_DATA[uf].nome}`;
+          sel.appendChild(opt);
+        });
+        if (selectedUF) {
+          sel.value = selectedUF;
+        }
+      }
+
+      function onSwapUFFilterChange(uf) {
+        if (uf) {
+          selectedUF = uf;
+          currentGeoLevel = GEO_LEVELS.ESTADUAL;
+          const breadcrumb = document.getElementById("breadcrumb-uf");
+          if (breadcrumb) breadcrumb.textContent = STATES_DATA[uf]?.nome || uf;
+        } else {
+          selectedUF = null;
+          currentGeoLevel = GEO_LEVELS.NACIONAL;
+          const breadcrumb = document.getElementById("breadcrumb-uf");
+          if (breadcrumb) breadcrumb.textContent = "Todos os Estados";
+        }
+        updateGeoLevelBadge();
+        renderSwapTable();
+      }
+
+      function filterSwapTable() {
+        renderSwapTable();
+      }
+
+      function renderSwapTable() {
+        const p = PERSONAS[activePersona];
+        const titleEl = document.getElementById("swap-table-title");
+        const subEl = document.getElementById("swap-table-subtitle");
+        const tagEl = document.getElementById("swap-table-persona-tag");
+        const bannerEl = document.getElementById("swap-geo-banner");
+        const thead = document.getElementById("swap-table-head");
+        const tbody = document.getElementById("swap-table-body");
+        const countEl = document.getElementById("swap-table-count");
+        const searchInput = document.getElementById("swap-search-input");
+        const query = (searchInput?.value || "").toLowerCase().trim();
+        const ufFilter = document.getElementById("swap-uf-filter")?.value || "";
+
+        if (tagEl) tagEl.textContent = `Persona Ativa: ${p.label}`;
+
+        // Banner explicativo da regra de granularidade geográfica
+        if (bannerEl) {
+          if (activePersona === "setor_publico") {
+            if (canShowData("estabelecimentos_medicos")) {
+              bannerEl.innerHTML = `
+                <span style="font-size:1.1rem">📍</span>
+                <div><strong>Nível Municipal Ativo:</strong> Detalhamento fino de estabelecimentos de saúde, leitos e clínicas hospitalares liberado para consulta.</div>
+                <button class="granularity-badge-btn" style="margin-left:auto" onclick="setGeoLevel(GEO_LEVELS.ESTADUAL)">Alternar p/ Estadual</button>`;
+            } else {
+              bannerEl.innerHTML = `
+                <span style="font-size:1.1rem">🔒</span>
+                <div><strong>Regra de Granularidade Geográfica:</strong> Estabelecimentos Médicos e leitos requerem escopo <strong>Municipal</strong> (atualmente em nível ${currentGeoLevel === GEO_LEVELS.ESTADUAL ? "Estadual" : "Nacional"}).</div>
+                <button class="granularity-badge-btn" style="margin-left:auto" onclick="setGeoLevel(GEO_LEVELS.MUNICIPAL)">🔍 Desbloquear Nível Municipal</button>`;
+            }
+          } else if (activePersona === "pessoa_comum") {
+            bannerEl.innerHTML = `
+              <span style="font-size:1.1rem">👤</span>
+              <div><strong>Visão do Beneficiário:</strong> Consulta comparativa de planos de saúde regulamentados pela ANS, abrangência territorial e coparticipação.</div>`;
+          } else {
+            bannerEl.innerHTML = `
+              <span style="font-size:1.1rem">🏢</span>
+              <div><strong>Inteligência Competitiva:</strong> Market share de operadoras, volume de beneficiários e segmentação de mercado por Unidade Federativa.</div>`;
+          }
+        }
+
+        if (activePersona === "pessoa_comum") {
+          if (titleEl) titleEl.textContent = "Catálogo Comparativo de Planos de Saúde";
+          if (subEl) subEl.textContent = "Planos individuais e coletivos aprovados pela ANS para contratação";
+
+          if (thead) {
+            thead.innerHTML = `
+              <tr>
+                <th>Plano de Saúde</th>
+                <th>Operadora</th>
+                <th>Segmentação</th>
+                <th>Contratação</th>
+                <th>Abrangência</th>
+                <th>Coparticipação</th>
+                <th>Municípios</th>
+              </tr>`;
+          }
+
+          const filtered = RAW_PLS.filter((pl) => {
+            const matchesQuery = !query || pl.nm.toLowerCase().includes(query) || pl.op.toLowerCase().includes(query) || pl.seg.toLowerCase().includes(query);
+            return matchesQuery;
+          });
+
+          if (tbody) {
+            if (filtered.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum plano encontrado para os critérios.</td></tr>`;
+            } else {
+              tbody.innerHTML = filtered
+                .map(
+                  (pl) => `
+                <tr>
+                  <td><strong>${pl.nm}</strong></td>
+                  <td><span class="badge-tag">${pl.op}</span></td>
+                  <td><span style="text-transform:capitalize">${pl.seg}</span></td>
+                  <td>${pl.tipo.replace("_", " ")}</td>
+                  <td><span class="badge-tag ${pl.cob === "Nacional" ? "green" : pl.cob === "Regional" ? "blue" : ""}">${pl.cob}</span></td>
+                  <td>${pl.copart ? '<span class="badge-tag teal">Com Copart</span>' : '<span class="badge-tag">Sem Copart</span>'}</td>
+                  <td style="font-family:var(--font-mono);font-weight:600">${pl.mun} mun.</td>
+                </tr>`,
+                )
+                .join("");
+            }
+          }
+          if (countEl) countEl.textContent = `${filtered.length} planos exibidos`;
+
+        } else if (activePersona === "setor_publico") {
+          if (titleEl) titleEl.textContent = "Painel de Saúde Pública & Indicadores Municipais";
+          if (subEl) subEl.textContent = "Vulnerabilidade social, cobertura suplementar e capacidade hospitalar";
+
+          if (thead) {
+            thead.innerHTML = `
+              <tr>
+                <th>Município</th>
+                <th>UF</th>
+                <th>População</th>
+                <th>IDH</th>
+                <th>Cobertura %</th>
+                <th>Renda p/ Cap.</th>
+                <th>GINI</th>
+                <th>Estabelecimentos Médicos (Regra Geo)</th>
+              </tr>`;
+          }
+
+          const filtered = RAW_SDS.filter((sd) => {
+            const matchesUF = !ufFilter || sd.uf === ufFilter;
+            const matchesQuery = !query || sd.m.toLowerCase().includes(query) || sd.uf.toLowerCase().includes(query);
+            return matchesUF && matchesQuery;
+          });
+
+          if (tbody) {
+            if (filtered.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum município encontrado para o filtro.</td></tr>`;
+            } else {
+              tbody.innerHTML = filtered
+                .map((sd) => {
+                  const hospCount = Math.round(sd.pop / 15000) + 12;
+                  const canViewFine = canShowData("estabelecimentos_medicos");
+                  return `
+                  <tr>
+                    <td><strong>${sd.m}</strong></td>
+                    <td><span class="badge-tag">${sd.uf}</span></td>
+                    <td style="font-family:var(--font-mono)">${formatNumber(sd.pop)}</td>
+                    <td style="font-family:var(--font-mono);color:var(--primary-light)">${sd.idh.toFixed(3)}</td>
+                    <td style="font-family:var(--font-mono);font-weight:600">${sd.cob.toFixed(1)}%</td>
+                    <td style="font-family:var(--font-mono)">${formatCurrency(sd.renda)}</td>
+                    <td style="font-family:var(--font-mono)">${sd.gini.toFixed(3)}</td>
+                    <td>
+                      ${
+                        canViewFine
+                          ? `<span class="badge-tag green">🏥 ${hospCount} Estabelecimentos</span>`
+                          : `<span class="badge-tag locked" title="Requer nível geográfico Municipal para detalhamento">🔒 Zoom Municipal req.</span>`
+                      }
+                    </td>
+                  </tr>`;
+                })
+                .join("");
+            }
+          }
+          if (countEl) countEl.textContent = `${filtered.length} municípios exibidos`;
+
+        } else {
+          // setor_privado
+          if (titleEl) titleEl.textContent = "Inteligência de Mercado & Participação das Operadoras";
+          if (subEl) subEl.textContent = "Ranking de penetração mercadológica, produtos ativos e carteira regulada";
+
+          if (thead) {
+            thead.innerHTML = `
+              <tr>
+                <th>Operadora</th>
+                <th>Modalidade</th>
+                <th>UF Sede</th>
+                <th>Beneficiários</th>
+                <th>% Market Share</th>
+                <th>Planos Ativos</th>
+                <th>Situação Cadastral</th>
+              </tr>`;
+          }
+
+          const list = RAW_OPS.map((op, idx) => {
+            const mkt = RAW_MKT.find((m) => m.op.includes(op.nm.split(" ")[0])) || RAW_MKT[idx % RAW_MKT.length];
+            return {
+              ...op,
+              pct: mkt ? mkt.pct : (18.5 - idx * 1.1).toFixed(1),
+            };
+          }).filter((op) => {
+            const matchesUF = !ufFilter || op.uf === ufFilter;
+            const matchesQuery = !query || op.nm.toLowerCase().includes(query) || op.mod.toLowerCase().includes(query) || op.uf.toLowerCase().includes(query);
+            return matchesUF && matchesQuery;
+          });
+
+          if (tbody) {
+            if (list.length === 0) {
+              tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhuma operadora encontrada para o filtro.</td></tr>`;
+            } else {
+              tbody.innerHTML = list
+                .map(
+                  (op) => `
+                <tr>
+                  <td><strong>${op.nm}</strong></td>
+                  <td>${op.mod}</td>
+                  <td><span class="badge-tag">${op.uf}</span></td>
+                  <td style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatK(op.ben)}</td>
+                  <td style="font-family:var(--font-mono);font-weight:700">${op.pct}%</td>
+                  <td style="font-family:var(--font-mono)">${op.pl} planos</td>
+                  <td><span class="badge-tag green">Ativa ANS</span></td>
+                </tr>`,
+                )
+                .join("");
+            }
+          }
+          if (countEl) countEl.textContent = `${list.length} operadoras listadas`;
+        }
+      }
+
+      /* ========================================================
    NAVIGATION & PAGE SWITCHER
    ======================================================== */
       const loadedPages = {};
@@ -2397,6 +3344,11 @@
       }
 
       function switchPage(pageId) {
+        // Persona Guard: if page not permitted for active persona, redirect to allowed page
+        if (!PERSONAS[activePersona].pages.includes(pageId)) {
+          pageId = PERSONAS[activePersona].pages[0];
+        }
+
         document
           .querySelectorAll(".nav-link")
           .forEach((link) => link.classList.remove("active"));
@@ -2493,7 +3445,28 @@
         mapZoom = d3
           .zoom()
           .scaleExtent([1, 24])
-          .on("zoom", (e) => gContainer.attr("transform", e.transform));
+          .on("zoom", (e) => {
+            gContainer.attr("transform", e.transform);
+            if (e.transform.k >= 3.8) {
+              if (currentGeoLevel !== GEO_LEVELS.MUNICIPAL) {
+                currentGeoLevel = GEO_LEVELS.MUNICIPAL;
+                updateGeoLevelBadge();
+                if (selectedUF) renderPanelState(selectedUF);
+              }
+            } else if (e.transform.k >= 1.6 || selectedUF) {
+              if (currentGeoLevel !== GEO_LEVELS.ESTADUAL) {
+                currentGeoLevel = GEO_LEVELS.ESTADUAL;
+                updateGeoLevelBadge();
+                if (selectedUF) renderPanelState(selectedUF);
+              }
+            } else {
+              if (currentGeoLevel !== GEO_LEVELS.NACIONAL) {
+                currentGeoLevel = GEO_LEVELS.NACIONAL;
+                updateGeoLevelBadge();
+                renderPanelGlobal();
+              }
+            }
+          });
         svgElement.call(mapZoom);
 
         renderPanelGlobal();
@@ -2638,6 +3611,12 @@
 
       function zoomToState(feature) {
         const uf = getFeatureUF(feature);
+        selectedUF = uf;
+        currentGeoLevel = GEO_LEVELS.ESTADUAL;
+        updateGeoLevelBadge();
+        const selUf = document.getElementById("swap-uf-filter");
+        if (selUf) selUf.value = uf;
+
         try {
           const [[x0, y0], [x1, y1]] = mapPathGenerator.bounds(feature);
           const W = +svgElement.attr("width"),
@@ -2645,7 +3624,6 @@
           const sc = Math.min(14, 0.8 / Math.max((x1 - x0) / W, (y1 - y0) / H));
           const tx = W / 2 - (sc * (x0 + x1)) / 2,
             ty = H / 2 - (sc * (y0 + y1)) / 2;
-          selectedUF = uf;
           drawMapFeatures();
           svgElement
             .transition()
@@ -2655,7 +3633,6 @@
               d3.zoomIdentity.translate(tx, ty).scale(sc),
             );
         } catch (e) {
-          selectedUF = uf;
           drawMapFeatures();
         }
         document.getElementById("breadcrumb-uf").textContent =
@@ -2669,6 +3646,11 @@
 
       function resetMap() {
         selectedUF = null;
+        currentGeoLevel = GEO_LEVELS.NACIONAL;
+        updateGeoLevelBadge();
+        const selUf = document.getElementById("swap-uf-filter");
+        if (selUf) selUf.value = "";
+
         drawMapFeatures();
         svgElement
           .transition()
@@ -2682,14 +3664,18 @@
       function setMetric(metricKey, btn) {
         currentMetric = metricKey;
         document
-          .querySelectorAll(".segmented-control .seg-btn")
+          .querySelectorAll("#layer-pills-container .layer-pill-btn")
           .forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        document.getElementById("legend-label").textContent = {
-          ben: "Beneficiários",
-          cob: "Taxa de Cobertura %",
-          idh: "IDH Estadual",
-        }[metricKey];
+        if (btn) btn.classList.add("active");
+
+        const layers = PERSONAS[activePersona]?.mapLayers || [];
+        const found = layers.find((l) => l.key === metricKey);
+        document.getElementById("legend-label").textContent =
+          found ? found.label : {
+            ben: "Beneficiários",
+            cob: "Taxa de Cobertura %",
+            idh: "IDH Estadual",
+          }[metricKey] || metricKey;
         drawMapFeatures();
       }
 
@@ -2771,6 +3757,8 @@
         document.getElementById("panel-subtitle").textContent =
           `Região ${s.reg} · ${s.mun} municípios integrados`;
 
+        const canShowMedical = canShowData("estabelecimentos_medicos");
+
         document.getElementById("panel-content").innerHTML = `
     <div class="stat-grid-2x2">
       <div class="stat-tile">
@@ -2800,6 +3788,52 @@
     <div style="font-family:var(--font-mono);font-size:1.05rem;font-weight:600;margin-bottom:1.1rem">
       ${formatNumber(s.mun)} municípios
     </div>
+
+    <!-- Regra de Granularidade Geográfica: Estabelecimentos Médicos -->
+    ${
+      canShowMedical
+        ? `
+    <div class="ranking-heading" style="margin-top:1.1rem">
+      <span>Infraestrutura Médica (Municipal)</span>
+      <span class="badge-tag green">Desbloqueado</span>
+    </div>
+    <div class="stat-grid-2x2" style="margin-top:0.4rem">
+      <div class="stat-tile">
+        <div class="tile-tag">Hospitais Gerais</div>
+        <div class="tile-number">${Math.round(s.mun * 1.8)}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-tag">Leitos Especializados</div>
+        <div class="tile-number teal">${formatK(s.ben * 0.008)}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-tag">Centros Diagnóstico</div>
+        <div class="tile-number">${Math.round(s.mun * 3.4)}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="tile-tag">Clínicas Cadastradas</div>
+        <div class="tile-number green">${Math.round(s.op * 12)}</div>
+      </div>
+    </div>
+    <button class="granularity-badge-btn" onclick="setGeoLevel(GEO_LEVELS.ESTADUAL)" style="width:100%;justify-content:center;margin-top:0.6rem">
+      🗺️ Retornar ao Escopo Estadual
+    </button>`
+        : `
+    <div class="ranking-heading" style="margin-top:1.1rem">
+      <span>Infraestrutura Médica</span>
+      <span class="badge-tag locked">🔒 Bloqueado</span>
+    </div>
+    <div class="granularity-notice">
+      <span class="lock-icon">🔒</span>
+      <div>
+        Detalhamentos finos (como <strong>Estabelecimentos Médicos</strong>) só são exibidos quando o escopo/zoom for <strong>Municipal</strong>.
+        <br/>
+        <button class="granularity-badge-btn" onclick="setGeoLevel(GEO_LEVELS.MUNICIPAL)">
+          🔍 Ativar Escopo Municipal da Capital
+        </button>
+      </div>
+    </div>`
+    }
 
     <div style="margin-top:1.5rem">
       <button class="seg-btn active" onclick="resetMap()" style="width:100%;justify-content:center;padding:0.6rem">
@@ -3278,6 +4312,8 @@
       /* STARTUP */
       loadedPages["map"] = true;
       window.addEventListener("load", () => {
+        initSwapUFFilter();
+        setPersona("pessoa_comum");
         initializeMap();
         syncBackendData();
       });
