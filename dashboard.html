@@ -67,6 +67,12 @@
         --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
         --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
         --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+        /* PIP / Glassmorphism tokens */
+        --glass-bg: rgba(23, 24, 26, 0.72);
+        --glass-bg-strong: rgba(17, 18, 20, 0.86);
+        --glass-border: rgba(255, 255, 255, 0.14);
+        --glass-blur: 18px;
       }
 
       html {
@@ -1464,44 +1470,6 @@
         line-height: 1.3;
       }
 
-      /* VIEW SWAP CONTROL (MAPA <-> TABELA) */
-      .view-swap-control {
-        display: inline-flex;
-        background: var(--bg-surface-elevated);
-        border: 1px solid var(--border-default);
-        border-radius: var(--radius-pill);
-        padding: 3px;
-        gap: 3px;
-      }
-
-      .swap-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        background: transparent;
-        border: none;
-        color: var(--text-muted);
-        font-family: var(--font-sans);
-        font-size: 0.78rem;
-        font-weight: 500;
-        padding: 6px 14px;
-        border-radius: var(--radius-pill);
-        cursor: pointer;
-        transition: all 0.2s var(--ease-out);
-      }
-
-      .swap-btn:hover {
-        color: var(--text-main);
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .swap-btn.active {
-        background: var(--primary);
-        color: #0b0c0d;
-        font-weight: 600;
-        box-shadow: 0 0 10px var(--primary-glow);
-      }
-
       /* FLOATING MAP LAYER SELECTOR */
       .map-layer-selector {
         position: absolute;
@@ -1749,6 +1717,199 @@
         font-style: italic;
       }
 
+      /* ========================================================
+         PERSONA INSIGHT CARDS (per-audience highlight row)
+         ======================================================== */
+      .insight-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.9rem;
+        padding: 1.1rem 1.85rem 0;
+        flex-shrink: 0;
+      }
+
+      .insight-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 1rem 1.15rem;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-card);
+        transition: all 0.24s var(--ease-spring);
+      }
+
+      .insight-card:hover {
+        border-color: var(--border-active);
+        transform: translateY(-2px);
+      }
+
+      .insight-icon {
+        font-size: 1.15rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+      }
+
+      .insight-label {
+        font-size: 0.76rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin-bottom: 0.3rem;
+        line-height: 1.3;
+      }
+
+      .insight-value {
+        font-family: var(--font-mono);
+        font-size: 1.35rem;
+        font-weight: 600;
+        color: var(--text-main);
+      }
+
+      .insight-sub {
+        font-size: 0.72rem;
+        color: var(--text-faint);
+        margin-top: 0.3rem;
+      }
+
+      /* ========================================================
+         PICTURE-IN-PICTURE (PIP) SWAP CARD
+         ======================================================== */
+      .pip-card {
+        position: fixed;
+        bottom: 1.6rem;
+        right: 1.6rem;
+        width: 236px;
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+        -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
+        border: 1px solid var(--glass-border);
+        border-radius: var(--radius-lg);
+        box-shadow:
+          var(--shadow-card),
+          0 0 0 1px rgba(255, 255, 255, 0.02);
+        cursor: pointer;
+        z-index: 95;
+        overflow: hidden;
+        transition:
+          transform 0.4s var(--ease-spring),
+          box-shadow 0.4s var(--ease-spring),
+          border-color 0.3s ease,
+          opacity 0.3s ease;
+      }
+
+      .pip-card:hover {
+        transform: translateY(-4px) scale(1.02);
+        border-color: var(--border-active);
+        box-shadow:
+          var(--shadow-card),
+          0 0 26px var(--primary-glow);
+      }
+
+      .pip-card:active {
+        transform: translateY(-2px) scale(0.99);
+      }
+
+      .pip-card-inner {
+        padding: 0.7rem 0.8rem 0.85rem;
+      }
+
+      .pip-label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.74rem;
+        font-weight: 600;
+        color: var(--text-main);
+        margin-bottom: 0.55rem;
+      }
+
+      .pip-sub {
+        font-size: 0.68rem;
+        color: var(--text-faint);
+        margin-top: 0.4rem;
+        text-align: center;
+      }
+
+      .pip-mini-map-container {
+        width: 100%;
+        height: 108px;
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.25);
+        border: 1px solid var(--border-subtle);
+      }
+
+      .pip-mini-map-container svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .pip-mini-table {
+        border-radius: var(--radius-sm);
+        overflow: hidden;
+        border: 1px solid var(--border-subtle);
+        background: rgba(0, 0, 0, 0.2);
+        padding: 0.55rem 0.6rem;
+      }
+
+      .pip-mini-row {
+        height: 9px;
+        border-radius: 3px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.1),
+          rgba(255, 255, 255, 0.04)
+        );
+        margin-bottom: 6px;
+      }
+
+      .pip-mini-row.header {
+        background: linear-gradient(
+          90deg,
+          var(--primary-subtle),
+          rgba(255, 255, 255, 0.03)
+        );
+        width: 60%;
+      }
+
+      .pip-mini-row:nth-child(2) {
+        width: 92%;
+      }
+      .pip-mini-row:nth-child(3) {
+        width: 78%;
+      }
+      .pip-mini-row:nth-child(4) {
+        width: 85%;
+      }
+      .pip-mini-row:last-child {
+        margin-bottom: 0;
+      }
+
+      .pip-count-badge {
+        display: inline-flex;
+        margin-top: 0.55rem;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: var(--primary-light);
+      }
+
+      @keyframes viewTransitionIn {
+        from {
+          opacity: 0;
+          transform: scale(0.985);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .view-anim {
+        animation: viewTransitionIn 0.45s var(--ease-spring);
+      }
+
       /* RESPONSIVE ADDITIONS */
       @media (max-width: 900px) {
         .persona-btn .persona-label {
@@ -1757,10 +1918,15 @@
         .persona-btn {
           padding: 5px 8px;
         }
+        .insight-row {
+          grid-template-columns: 1fr;
+          padding: 1rem 1.25rem 0;
+        }
         .map-layer-selector {
           top: auto;
           bottom: 1rem;
-          right: 1rem;
+          left: 1rem;
+          right: auto;
           max-width: calc(100% - 2rem);
           overflow-x: auto;
         }
@@ -1770,6 +1936,22 @@
         }
         .swap-scope-pill {
           width: 100%;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .pip-card {
+          bottom: 0.75rem;
+          right: 0.75rem;
+          left: 0.75rem;
+          width: auto;
+          border-radius: var(--radius-md);
+        }
+        .pip-mini-map-container {
+          height: 78px;
+        }
+        .pip-card-inner {
+          padding: 0.6rem 0.7rem 0.7rem;
         }
       }
     </style>
@@ -1825,15 +2007,30 @@
 
       <div class="header-actions">
         <div class="persona-selector" id="persona-selector">
-          <button class="persona-btn active" data-persona="pessoa_comum" onclick="setPersona('pessoa_comum', this)" title="Perfil Cidadão / Consumidor">
+          <button
+            class="persona-btn active"
+            data-persona="pessoa_comum"
+            onclick="setPersona('pessoa_comum', this)"
+            title="Perfil Cidadão / Consumidor"
+          >
             <span class="persona-icon">👤</span>
             <span class="persona-label">Pessoa Comum</span>
           </button>
-          <button class="persona-btn" data-persona="setor_publico" onclick="setPersona('setor_publico', this)" title="Perfil Gestor Público / SUS">
+          <button
+            class="persona-btn"
+            data-persona="setor_publico"
+            onclick="setPersona('setor_publico', this)"
+            title="Perfil Gestor Público / SUS"
+          >
             <span class="persona-icon">🏛️</span>
             <span class="persona-label">Setor Público</span>
           </button>
-          <button class="persona-btn" data-persona="setor_privado" onclick="setPersona('setor_privado', this)" title="Perfil Operadoras & Mercado">
+          <button
+            class="persona-btn"
+            data-persona="setor_privado"
+            onclick="setPersona('setor_privado', this)"
+            title="Perfil Operadoras & Mercado"
+          >
             <span class="persona-icon">🏢</span>
             <span class="persona-label">Setor Privado</span>
           </button>
@@ -1852,7 +2049,9 @@
         <div class="persona-badge-tag">Perfil Ativo</div>
         <div class="persona-badge-title">
           <span class="persona-badge-icon" id="persona-badge-icon">👤</span>
-          <span class="persona-badge-name" id="persona-badge-name">Pessoa Comum</span>
+          <span class="persona-badge-name" id="persona-badge-name"
+            >Pessoa Comum</span
+          >
         </div>
         <div class="persona-badge-desc" id="persona-badge-desc">
           Consumidor de planos de saúde e cobertura assistencial
@@ -1936,7 +2135,8 @@
           Guia Interativo
         </h4>
         Navegue pelas 27 Unidades Federativas clicando no mapa para detalhar
-        cobertura, renda e operadoras líderes.
+        cobertura, renda e operadoras líderes. Use o card flutuante no canto
+        inferior direito para alternar entre o mapa e a tabela detalhada.
       </div>
     </aside>
 
@@ -1946,34 +2146,20 @@
       <div id="page-map" class="page active">
         <div class="page-head">
           <div class="page-title-group">
-            <h2>Distribuição Geográfica da Saúde Suplementar</h2>
-            <p>
+            <h2 id="map-page-heading">
+              Distribuição Geográfica da Saúde Suplementar
+            </h2>
+            <p id="map-page-subheading">
               Explore os indicadores estaduais e a penetração das operadoras de
               saúde
             </p>
           </div>
-          <div class="view-swap-control" id="view-swap-control">
-            <button class="swap-btn active" id="btn-view-map" onclick="swapView('map')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-                <line x1="9" y1="3" x2="9" y2="18" />
-                <line x1="15" y1="6" x2="15" y2="21" />
-              </svg>
-              <span>Mapa Regional</span>
-            </button>
-            <button class="swap-btn" id="btn-view-table" onclick="swapView('table')">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <line x1="3" y1="9" x2="21" y2="9"/>
-                <line x1="3" y1="15" x2="21" y2="15"/>
-                <line x1="9" y1="3" x2="9" y2="21"/>
-              </svg>
-              <span>Tabela Detalhada</span>
-            </button>
-          </div>
         </div>
 
-        <div class="map-layout">
+        <!-- PERSONA INSIGHT CARDS -->
+        <div class="insight-row" id="insight-row"></div>
+
+        <div class="map-layout" id="map-layout-el">
           <div class="map-viewport" id="map-container">
             <div class="map-controls">
               <button class="ctrl-btn" onclick="zoomMap(1.4)" title="Aproximar">
@@ -1994,7 +2180,14 @@
             <!-- Seletor Dinâmico de Camadas flutuante (por Persona) -->
             <div class="map-layer-selector" id="map-layer-selector">
               <div class="layer-selector-header">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
                   <polygon points="12 2 2 7 12 12 22 7 12 2" />
                   <polyline points="2 17 12 22 22 17" />
                   <polyline points="2 12 12 17 22 12" />
@@ -2016,7 +2209,9 @@
             <div class="map-breadcrumb">
               Brasil <span style="color: var(--text-faint)">/</span>
               <strong id="breadcrumb-uf">Todos os Estados</strong>
-              <span class="geo-level-pill" id="geo-level-pill">🌐 Nacional</span>
+              <span class="geo-level-pill" id="geo-level-pill"
+                >🌐 Nacional</span
+              >
             </div>
 
             <div class="map-legend">
@@ -2042,30 +2237,52 @@
         </div>
 
         <!-- SWAP VIEW: TABELA DETALHADA SINCRONIZADA COM A PERSONA -->
-        <div id="swap-table-container" class="swap-table-wrapper" style="display: none;">
+        <div
+          id="swap-table-container"
+          class="swap-table-wrapper"
+          style="display: none"
+        >
           <div class="swap-table-card">
             <div class="swap-table-header">
               <div class="swap-header-left">
-                <h3 id="swap-table-title">Consulta Detalhada — Dados da Persona</h3>
-                <p id="swap-table-subtitle">Dados tabulares sincronizados com escopo geográfico e perfil de acesso</p>
+                <h3 id="swap-table-title">
+                  Consulta Detalhada — Dados da Persona
+                </h3>
+                <p id="swap-table-subtitle">
+                  Dados tabulares sincronizados com escopo geográfico e perfil
+                  de acesso
+                </p>
               </div>
               <div class="swap-header-controls">
                 <div class="swap-scope-pill" id="swap-scope-pill">
                   <span>Escopo: Brasil (Nacional)</span>
                 </div>
-                <div class="search-input-wrapper" style="max-width:230px">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                <div class="search-input-wrapper" style="max-width: 230px">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
                   </svg>
-                  <input type="text" id="swap-search-input" placeholder="Filtrar dados..." oninput="filterSwapTable()" />
+                  <input
+                    type="text"
+                    id="swap-search-input"
+                    placeholder="Filtrar dados..."
+                    oninput="filterSwapTable()"
+                  />
                 </div>
-                <select id="swap-uf-filter" class="swap-uf-select" onchange="onSwapUFFilterChange(this.value)">
+                <select
+                  id="swap-uf-filter"
+                  class="swap-uf-select"
+                  onchange="onSwapUFFilterChange(this.value)"
+                >
                   <option value="">Todas as UFs</option>
                 </select>
-                <button class="swap-back-map-btn" onclick="swapView('map')">
-                  ← Voltar ao Mapa
-                </button>
               </div>
             </div>
 
@@ -2083,6 +2300,18 @@
               <span id="swap-table-persona-tag">Persona: Pessoa Comum</span>
             </div>
           </div>
+        </div>
+
+        <!-- PICTURE-IN-PICTURE SWAP CARD -->
+        <div
+          class="pip-card"
+          id="pip-card"
+          onclick="handlePipClick()"
+          role="button"
+          tabindex="0"
+          aria-label="Alternar entre mapa e tabela"
+        >
+          <div class="pip-card-inner" id="pip-card-inner"></div>
         </div>
       </div>
 
@@ -2861,36 +3090,73 @@
           label: "Pessoa Comum",
           icon: "👤",
           description: "Consumidor de planos de saúde e cobertura assistencial",
+          pageHeading: "Encontre o plano de saúde certo para você",
+          pageSubheading:
+            "Compare cobertura, coparticipação e abrangência entre operadoras",
+          searchPlaceholder:
+            "🔍 Busque por nome do plano, operadora (ex: Unimed, Amil) ou tipo...",
           pages: ["map", "pl", "sd"], // Mapa, Catálogo de Planos, Perfil Municipal
           mapLayers: [
             { key: "ben", label: "Beneficiários" },
             { key: "cob", label: "Cobertura %" },
           ],
-          detailTableCols: ["plano", "operadora", "tipo", "cobertura", "copart", "mun"],
+          detailTableCols: [
+            "plano",
+            "operadora",
+            "tipo",
+            "cobertura",
+            "copart",
+            "mun",
+          ],
         },
         setor_publico: {
           label: "Setor Público",
           icon: "🏛️",
-          description: "Gestores públicos, secretarias de saúde e regulação assistencial",
+          description:
+            "Gestores públicos, secretarias de saúde e regulação assistencial",
+          pageHeading: "Vazios Assistenciais & Vulnerabilidade Social",
+          pageSubheading:
+            "Cruzamento entre cobertura suplementar, IDH e capacidade de infraestrutura médica",
+          searchPlaceholder: "🔍 Filtrar município ou UF...",
           pages: ["map", "ov", "sd", "hs"], // Mapa, Visão Geral, Perfil Municipal, Consultas Recentes
           mapLayers: [
             { key: "idh", label: "IDH Municipal" },
             { key: "cob", label: "Cobertura %" },
             { key: "ben", label: "Beneficiários" },
           ],
-          detailTableCols: ["municipio", "uf", "populacao", "idh", "cobertura", "renda", "gini", "estabelecimentos"],
+          detailTableCols: [
+            "municipio",
+            "uf",
+            "populacao",
+            "idh",
+            "cobertura",
+            "renda",
+            "gini",
+            "estabelecimentos",
+          ],
         },
         setor_privado: {
           label: "Setor Privado",
           icon: "🏢",
           description: "Operadoras de saúde, planos corporativos e seguradoras",
+          pageHeading: "Inteligência Competitiva & Penetração de Mercado",
+          pageSubheading:
+            "Market share, vidas reguladas e oportunidades de expansão por UF",
+          searchPlaceholder: "🔍 Buscar operadora, modalidade ou UF...",
           pages: ["map", "mkt", "op", "pl"], // Mapa, Market Share, Operadoras, Catálogo de Planos
           mapLayers: [
             { key: "ben", label: "Beneficiários" },
             { key: "cob", label: "Cobertura %" },
             { key: "idh", label: "IDH" },
           ],
-          detailTableCols: ["operadora", "modalidade", "uf", "beneficiarios", "market_share", "planos"],
+          detailTableCols: [
+            "operadora",
+            "modalidade",
+            "uf",
+            "beneficiarios",
+            "market_share",
+            "planos",
+          ],
         },
       };
 
@@ -2934,6 +3200,7 @@
         if (currentView === "table") {
           renderSwapTable();
         }
+        renderPipContent();
       }
 
       function updateGeoLevelBadge() {
@@ -2943,11 +3210,15 @@
         let levelClass = "geo-level-pill";
 
         if (currentGeoLevel === GEO_LEVELS.MUNICIPAL) {
-          const ufName = selectedUF ? (STATES_DATA[selectedUF]?.nome || selectedUF) : "Capital/Polo";
+          const ufName = selectedUF
+            ? STATES_DATA[selectedUF]?.nome || selectedUF
+            : "Capital/Polo";
           levelText = `📍 Escopo: Municipal (${ufName})`;
           levelClass = "geo-level-pill municipal";
         } else if (currentGeoLevel === GEO_LEVELS.ESTADUAL) {
-          const ufName = selectedUF ? (STATES_DATA[selectedUF]?.nome || selectedUF) : "UF";
+          const ufName = selectedUF
+            ? STATES_DATA[selectedUF]?.nome || selectedUF
+            : "UF";
           levelText = `🗺️ Escopo: Estadual (${ufName})`;
           levelClass = "geo-level-pill state";
         }
@@ -2979,22 +3250,36 @@
         if (badgeName) badgeName.textContent = p.label;
         if (badgeDesc) badgeDesc.textContent = p.description;
 
+        // Atualiza título/subtítulo da página de mapa
+        const mapHeading = document.getElementById("map-page-heading");
+        const mapSub = document.getElementById("map-page-subheading");
+        if (mapHeading) mapHeading.textContent = p.pageHeading;
+        if (mapSub) mapSub.textContent = p.pageSubheading;
+
         // Atualiza links visíveis no sidebar
         updateSidebarForPersona();
 
         // Atualiza seletor dinâmico de camadas no mapa
         updateLayerSelector();
 
+        // Atualiza cards de insight direcionados à persona
+        renderPersonaInsights();
+
         // Se estiver no modo tabela, re-renderiza
         if (currentView === "table") {
           renderSwapTable();
         }
 
+        // Atualiza o card PIP flutuante
+        renderPipContent();
+
         // Se a página atualmente visível não pertencer à nova persona, redireciona
         const currentActiveLink = document.querySelector(".nav-link.active");
         let curPage = "map";
         if (currentActiveLink) {
-          const m = currentActiveLink.getAttribute("onclick")?.match(/switchPage\('([^']+)'\)/);
+          const m = currentActiveLink
+            .getAttribute("onclick")
+            ?.match(/switchPage\('([^']+)'\)/);
           if (m) curPage = m[1];
         }
         if (!p.pages.includes(curPage)) {
@@ -3006,7 +3291,9 @@
         const allowed = PERSONAS[activePersona].pages;
         const links = document.querySelectorAll("#sidebar .nav-link");
         links.forEach((link) => {
-          const m = link.getAttribute("onclick")?.match(/switchPage\('([^']+)'\)/);
+          const m = link
+            .getAttribute("onclick")
+            ?.match(/switchPage\('([^']+)'\)/);
           if (m) {
             const pageId = m[1];
             link.style.display = allowed.includes(pageId) ? "flex" : "none";
@@ -3018,8 +3305,15 @@
         labels.forEach((label) => {
           let next = label.nextElementSibling;
           let hasVisible = false;
-          while (next && !next.classList.contains("nav-label") && !next.classList.contains("sidebar-card")) {
-            if (next.classList.contains("nav-link") && next.style.display !== "none") {
+          while (
+            next &&
+            !next.classList.contains("nav-label") &&
+            !next.classList.contains("sidebar-card")
+          ) {
+            if (
+              next.classList.contains("nav-link") &&
+              next.style.display !== "none"
+            ) {
               hasVisible = true;
               break;
             }
@@ -3050,7 +3344,8 @@
           )
           .join("");
 
-        const curLayer = layers.find((l) => l.key === currentMetric) || layers[0];
+        const curLayer =
+          layers.find((l) => l.key === currentMetric) || layers[0];
         const legLabel = document.getElementById("legend-label");
         if (legLabel) legLabel.textContent = curLayer.label;
 
@@ -3060,31 +3355,235 @@
       }
 
       /* ========================================================
-         SWAP: MAPA REGIONAL <-> TABELA DETALHADA
+         PERSONA INSIGHT CARDS (highlight row above the map)
          ======================================================== */
-      function swapView(target) {
-        currentView = target || (currentView === "map" ? "table" : "map");
-        const mapLayout = document.querySelector(".map-layout");
-        const tableContainer = document.getElementById("swap-table-container");
-        const btnMap = document.getElementById("btn-view-map");
-        const btnTable = document.getElementById("btn-view-table");
+      function renderPersonaInsights() {
+        const row = document.getElementById("insight-row");
+        if (!row) return;
+        const list = Object.values(STATES_DATA);
 
-        if (currentView === "table") {
-          if (mapLayout) mapLayout.style.display = "none";
-          if (tableContainer) tableContainer.style.display = "block";
-          if (btnMap) btnMap.classList.remove("active");
-          if (btnTable) btnTable.classList.add("active");
-          initSwapUFFilter();
-          renderSwapTable();
+        if (activePersona === "pessoa_comum") {
+          const semCopart = RAW_PLS.filter((p) => !p.copart).length;
+          const nacional = RAW_PLS.filter((p) => p.cob === "Nacional").length;
+          const topOp = [...RAW_MKT].sort((a, b) => +b.pct - +a.pct)[0];
+
+          row.innerHTML = `
+            <div class="insight-card">
+              <span class="insight-icon">💚</span>
+              <div class="insight-label">Planos Sem Coparticipação</div>
+              <div class="insight-value">${semCopart}</div>
+              <div class="insight-sub">de ${RAW_PLS.length} planos no catálogo atual</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">🌎</span>
+              <div class="insight-label">Planos com Abrangência Nacional</div>
+              <div class="insight-value">${nacional}</div>
+              <div class="insight-sub">cobertura válida em todo o território</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">⭐</span>
+              <div class="insight-label">Operadora Mais Confiável</div>
+              <div class="insight-value" style="font-size:1.05rem">${topOp ? topOp.op : "—"}</div>
+              <div class="insight-sub">${topOp ? topOp.pct + "% de participação avaliada" : ""}</div>
+            </div>`;
+        } else if (activePersona === "setor_publico") {
+          const desassistidos = list.reduce(
+            (s, d) => s + Math.round(d.ben > 0 ? 0 : 0),
+            0,
+          );
+          // população desassistida ~ estimativa a partir da % não coberta
+          const totalPopProxy = list.reduce((s, d) => s + d.mun * 45000, 0);
+          const desassistidaEstimada = list.reduce(
+            (s, d) => s + Math.round(d.mun * 45000 * (1 - d.cob / 100)),
+            0,
+          );
+          const avgCobertura =
+            list.reduce((s, d) => s + d.cob, 0) / list.length;
+          const alerta = list.filter((d) => d.idh < 0.68).length;
+
+          row.innerHTML = `
+            <div class="insight-card">
+              <span class="insight-icon">🩺</span>
+              <div class="insight-label">População 100% Dependente do SUS (estimativa)</div>
+              <div class="insight-value">${formatK(desassistidaEstimada)}</div>
+              <div class="insight-sub">sem cobertura suplementar privada</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">📈</span>
+              <div class="insight-label">Cobertura Suplementar Média</div>
+              <div class="insight-value">${avgCobertura.toFixed(1)}%</div>
+              <div class="insight-sub">média nacional entre as 27 UFs</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">🚨</span>
+              <div class="insight-label">Estados em Alerta Social</div>
+              <div class="insight-value">${alerta}</div>
+              <div class="insight-sub">IDH abaixo de 0.680</div>
+            </div>`;
         } else {
-          if (mapLayout) mapLayout.style.display = "grid";
-          if (tableContainer) tableContainer.style.display = "none";
-          if (btnMap) btnMap.classList.add("active");
-          if (btnTable) btnTable.classList.remove("active");
-          setTimeout(resizeMap, 50);
+          const leader = [...RAW_MKT].sort((a, b) => +b.pct - +a.pct)[0];
+          const vidasTotais = list.reduce((s, d) => s + d.ben, 0);
+          const oportunidades = list.filter(
+            (d) => d.idh > 0.72 && d.cob < 25,
+          ).length;
+
+          row.innerHTML = `
+            <div class="insight-card">
+              <span class="insight-icon">🏆</span>
+              <div class="insight-label">Líder de Market Share</div>
+              <div class="insight-value" style="font-size:1.05rem">${leader ? leader.op : "—"}</div>
+              <div class="insight-sub">${leader ? leader.pct + "% de participação" : ""}</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">👥</span>
+              <div class="insight-label">Vidas Reguladas Totais</div>
+              <div class="insight-value">${formatK(vidasTotais)}</div>
+              <div class="insight-sub">beneficiários ativos no país</div>
+            </div>
+            <div class="insight-card">
+              <span class="insight-icon">🚀</span>
+              <div class="insight-label">Oportunidades de Expansão</div>
+              <div class="insight-value">${oportunidades}</div>
+              <div class="insight-sub">UFs com Alto IDH e baixa cobertura</div>
+            </div>`;
         }
       }
 
+      /* ========================================================
+         PICTURE-IN-PICTURE (PIP) SWAP SYSTEM
+         ======================================================== */
+      function handlePipClick() {
+        swapView(currentView === "map" ? "table" : "map");
+      }
+
+      function swapView(target) {
+        currentView = target || (currentView === "map" ? "table" : "map");
+        const mapLayout = document.getElementById("map-layout-el");
+        const tableContainer = document.getElementById("swap-table-container");
+
+        if (currentView === "table") {
+          if (mapLayout) mapLayout.style.display = "none";
+          if (tableContainer) {
+            tableContainer.style.display = "block";
+            playViewAnim(tableContainer);
+          }
+          initSwapUFFilter();
+          renderSwapTable();
+        } else {
+          if (mapLayout) {
+            mapLayout.style.display = "grid";
+            playViewAnim(mapLayout);
+          }
+          if (tableContainer) tableContainer.style.display = "none";
+          setTimeout(resizeMap, 50);
+        }
+        renderPipContent();
+      }
+
+      function playViewAnim(el) {
+        if (!el) return;
+        el.classList.remove("view-anim");
+        void el.offsetWidth;
+        el.classList.add("view-anim");
+      }
+
+      function renderPipContent() {
+        const inner = document.getElementById("pip-card-inner");
+        const pipCard = document.getElementById("pip-card");
+        if (!inner || !pipCard) return;
+
+        if (currentView === "map") {
+          // Modo 1 (foco no mapa): PIP mostra prévia da tabela
+          const p = PERSONAS[activePersona];
+          const recordCount = getPersonaRecordCount();
+          inner.innerHTML = `
+            <div class="pip-label">📊 Ver Tabela Detalhada</div>
+            <div class="pip-mini-table">
+              <div class="pip-mini-row header"></div>
+              <div class="pip-mini-row"></div>
+              <div class="pip-mini-row"></div>
+              <div class="pip-mini-row"></div>
+            </div>
+            <div class="pip-count-badge">${recordCount} registros · ${p.label}</div>`;
+        } else {
+          // Modo 2 (foco na tabela): PIP mostra minimapa interativo
+          inner.innerHTML = `
+            <div class="pip-label">🗺️ Voltar ao Mapa</div>
+            <div class="pip-mini-map-container" id="pip-mini-map-container"></div>
+            <div class="pip-sub">${selectedUF ? STATES_DATA[selectedUF]?.nome || selectedUF : "Visão Nacional · " + (PERSONAS[activePersona]?.mapLayers.find((l) => l.key === currentMetric)?.label || currentMetric)}</div>`;
+          requestAnimationFrame(drawPipMiniMap);
+        }
+      }
+
+      function getPersonaRecordCount() {
+        if (activePersona === "pessoa_comum") return RAW_PLS.length;
+        if (activePersona === "setor_publico") return RAW_SDS.length;
+        return RAW_OPS.length;
+      }
+
+      function drawPipMiniMap() {
+        const container = document.getElementById("pip-mini-map-container");
+        if (!container || !brazilGeoData) return;
+        const W = container.clientWidth || 200;
+        const H = container.clientHeight || 108;
+
+        d3.select(container).selectAll("svg").remove();
+        const svg = d3
+          .select(container)
+          .append("svg")
+          .attr("width", W)
+          .attr("height", H);
+
+        const proj = d3.geoMercator().fitExtent(
+          [
+            [4, 4],
+            [W - 4, H - 4],
+          ],
+          brazilGeoData,
+        );
+        const path = d3.geoPath().projection(proj);
+
+        const values = Object.keys(STATES_DATA)
+          .map((uf) => getMetricValue(uf))
+          .filter((v) => v > 0);
+        const minVal = d3.min(values) || 0,
+          maxVal = d3.max(values) || 1;
+        const colorScale = d3
+          .scaleSequential()
+          .domain([minVal, maxVal])
+          .interpolator(
+            d3.interpolateRgbBasis([
+              "#232428",
+              "#274436",
+              "#2f6b4d",
+              "#4a9e78",
+              "#7fc7a2",
+            ]),
+          );
+
+        svg
+          .selectAll("path")
+          .data(brazilGeoData.features)
+          .join("path")
+          .attr("d", path)
+          .attr("fill", (d) => {
+            const uf = getFeatureUF(d);
+            const v = getMetricValue(uf);
+            return v > 0 ? colorScale(v) : "#1d1e21";
+          })
+          .attr("stroke", (d) =>
+            getFeatureUF(d) === selectedUF
+              ? "#eef4f0"
+              : "rgba(255,255,255,0.09)",
+          )
+          .attr("stroke-width", (d) =>
+            getFeatureUF(d) === selectedUF ? 1.6 : 0.4,
+          );
+      }
+
+      /* ========================================================
+         SWAP TABLE: UF FILTER & FILTER SEARCH
+         ======================================================== */
       function initSwapUFFilter() {
         const sel = document.getElementById("swap-uf-filter");
         if (!sel || sel.options.length > 1) return;
@@ -3114,6 +3613,7 @@
         }
         updateGeoLevelBadge();
         renderSwapTable();
+        renderPipContent();
       }
 
       function filterSwapTable() {
@@ -3130,6 +3630,7 @@
         const tbody = document.getElementById("swap-table-body");
         const countEl = document.getElementById("swap-table-count");
         const searchInput = document.getElementById("swap-search-input");
+        if (searchInput) searchInput.placeholder = p.searchPlaceholder;
         const query = (searchInput?.value || "").toLowerCase().trim();
         const ufFilter = document.getElementById("swap-uf-filter")?.value || "";
 
@@ -3161,52 +3662,64 @@
         }
 
         if (activePersona === "pessoa_comum") {
-          if (titleEl) titleEl.textContent = "Catálogo Comparativo de Planos de Saúde";
-          if (subEl) subEl.textContent = "Planos individuais e coletivos aprovados pela ANS para contratação";
+          if (titleEl)
+            titleEl.textContent = "Catálogo Comparativo de Planos de Saúde";
+          if (subEl)
+            subEl.textContent =
+              "Planos individuais e coletivos aprovados pela ANS para contratação";
 
           if (thead) {
             thead.innerHTML = `
               <tr>
-                <th>Plano de Saúde</th>
+                <th>Nome do Plano</th>
                 <th>Operadora</th>
-                <th>Segmentação</th>
-                <th>Contratação</th>
+                <th>Tipo</th>
                 <th>Abrangência</th>
                 <th>Coparticipação</th>
-                <th>Municípios</th>
               </tr>`;
           }
 
           const filtered = RAW_PLS.filter((pl) => {
-            const matchesQuery = !query || pl.nm.toLowerCase().includes(query) || pl.op.toLowerCase().includes(query) || pl.seg.toLowerCase().includes(query);
+            const matchesQuery =
+              !query ||
+              pl.nm.toLowerCase().includes(query) ||
+              pl.op.toLowerCase().includes(query) ||
+              pl.tipo.toLowerCase().includes(query);
             return matchesQuery;
           });
 
           if (tbody) {
             if (filtered.length === 0) {
-              tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum plano encontrado para os critérios.</td></tr>`;
+              tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-faint)">Nenhum plano encontrado para os critérios.</td></tr>`;
             } else {
+              const tm = {
+                individual: "Individual",
+                coletivo_empresarial: "Empresarial",
+                coletivo_adesao: "Familiar (Adesão)",
+              };
               tbody.innerHTML = filtered
                 .map(
                   (pl) => `
                 <tr>
                   <td><strong>${pl.nm}</strong></td>
                   <td><span class="badge-tag">${pl.op}</span></td>
-                  <td><span style="text-transform:capitalize">${pl.seg}</span></td>
-                  <td>${pl.tipo.replace("_", " ")}</td>
+                  <td>${tm[pl.tipo] || pl.tipo}</td>
                   <td><span class="badge-tag ${pl.cob === "Nacional" ? "green" : pl.cob === "Regional" ? "blue" : ""}">${pl.cob}</span></td>
-                  <td>${pl.copart ? '<span class="badge-tag teal">Com Copart</span>' : '<span class="badge-tag">Sem Copart</span>'}</td>
-                  <td style="font-family:var(--font-mono);font-weight:600">${pl.mun} mun.</td>
+                  <td>${pl.copart ? '<span class="badge-tag amber">Sim</span>' : '<span class="badge-tag green">Não</span>'}</td>
                 </tr>`,
                 )
                 .join("");
             }
           }
-          if (countEl) countEl.textContent = `${filtered.length} planos exibidos`;
-
+          if (countEl)
+            countEl.textContent = `${filtered.length} planos exibidos`;
         } else if (activePersona === "setor_publico") {
-          if (titleEl) titleEl.textContent = "Painel de Saúde Pública & Indicadores Municipais";
-          if (subEl) subEl.textContent = "Vulnerabilidade social, cobertura suplementar e capacidade hospitalar";
+          if (titleEl)
+            titleEl.textContent =
+              "Painel de Saúde Pública & Indicadores Municipais";
+          if (subEl)
+            subEl.textContent =
+              "Vulnerabilidade social, cobertura suplementar e capacidade hospitalar";
 
           if (thead) {
             thead.innerHTML = `
@@ -3224,7 +3737,10 @@
 
           const filtered = RAW_SDS.filter((sd) => {
             const matchesUF = !ufFilter || sd.uf === ufFilter;
-            const matchesQuery = !query || sd.m.toLowerCase().includes(query) || sd.uf.toLowerCase().includes(query);
+            const matchesQuery =
+              !query ||
+              sd.m.toLowerCase().includes(query) ||
+              sd.uf.toLowerCase().includes(query);
             return matchesUF && matchesQuery;
           });
 
@@ -3257,12 +3773,16 @@
                 .join("");
             }
           }
-          if (countEl) countEl.textContent = `${filtered.length} municípios exibidos`;
-
+          if (countEl)
+            countEl.textContent = `${filtered.length} municípios exibidos`;
         } else {
           // setor_privado
-          if (titleEl) titleEl.textContent = "Inteligência de Mercado & Participação das Operadoras";
-          if (subEl) subEl.textContent = "Ranking de penetração mercadológica, produtos ativos e carteira regulada";
+          if (titleEl)
+            titleEl.textContent =
+              "Inteligência de Mercado & Participação das Operadoras";
+          if (subEl)
+            subEl.textContent =
+              "Ranking de penetração mercadológica, produtos ativos e carteira regulada";
 
           if (thead) {
             thead.innerHTML = `
@@ -3278,16 +3798,24 @@
           }
 
           const list = RAW_OPS.map((op, idx) => {
-            const mkt = RAW_MKT.find((m) => m.op.includes(op.nm.split(" ")[0])) || RAW_MKT[idx % RAW_MKT.length];
+            const mkt =
+              RAW_MKT.find((m) => m.op.includes(op.nm.split(" ")[0])) ||
+              RAW_MKT[idx % RAW_MKT.length];
             return {
               ...op,
               pct: mkt ? mkt.pct : (18.5 - idx * 1.1).toFixed(1),
             };
-          }).filter((op) => {
-            const matchesUF = !ufFilter || op.uf === ufFilter;
-            const matchesQuery = !query || op.nm.toLowerCase().includes(query) || op.mod.toLowerCase().includes(query) || op.uf.toLowerCase().includes(query);
-            return matchesUF && matchesQuery;
-          });
+          })
+            .filter((op) => {
+              const matchesUF = !ufFilter || op.uf === ufFilter;
+              const matchesQuery =
+                !query ||
+                op.nm.toLowerCase().includes(query) ||
+                op.mod.toLowerCase().includes(query) ||
+                op.uf.toLowerCase().includes(query);
+              return matchesUF && matchesQuery;
+            })
+            .sort((a, b) => +b.pct - +a.pct);
 
           if (tbody) {
             if (list.length === 0) {
@@ -3309,8 +3837,11 @@
                 .join("");
             }
           }
-          if (countEl) countEl.textContent = `${list.length} operadoras listadas`;
+          if (countEl)
+            countEl.textContent = `${list.length} operadoras listadas`;
         }
+
+        renderPipContent();
       }
 
       /* ========================================================
@@ -3362,6 +3893,11 @@
         document.getElementById("page-" + pageId)?.classList.add("active");
 
         toggleSidebar(false);
+
+        // O card PIP flutuante só faz sentido na página do mapa
+        const pipCard = document.getElementById("pip-card");
+        if (pipCard)
+          pipCard.style.display = pageId === "map" ? "block" : "none";
 
         if (!loadedPages[pageId]) {
           loadedPages[pageId] = true;
@@ -3607,6 +4143,11 @@
             }
           })
           .text((d) => getFeatureUF(d));
+
+        // Sincroniza minimapa PIP quando o mapa principal for redesenhado
+        if (currentView === "table") {
+          drawPipMiniMap();
+        }
       }
 
       function zoomToState(feature) {
@@ -3638,6 +4179,7 @@
         document.getElementById("breadcrumb-uf").textContent =
           STATES_DATA[uf]?.nome || uf;
         renderPanelState(uf);
+        renderPipContent();
       }
 
       function zoomMap(factor) {
@@ -3659,6 +4201,7 @@
         document.getElementById("breadcrumb-uf").textContent =
           "Todos os Estados";
         renderPanelGlobal();
+        renderPipContent();
       }
 
       function setMetric(metricKey, btn) {
@@ -3670,13 +4213,15 @@
 
         const layers = PERSONAS[activePersona]?.mapLayers || [];
         const found = layers.find((l) => l.key === metricKey);
-        document.getElementById("legend-label").textContent =
-          found ? found.label : {
-            ben: "Beneficiários",
-            cob: "Taxa de Cobertura %",
-            idh: "IDH Estadual",
-          }[metricKey] || metricKey;
+        document.getElementById("legend-label").textContent = found
+          ? found.label
+          : {
+              ben: "Beneficiários",
+              cob: "Taxa de Cobertura %",
+              idh: "IDH Estadual",
+            }[metricKey] || metricKey;
         drawMapFeatures();
+        renderPipContent();
       }
 
       function updateLegendValues(minVal, maxVal) {
@@ -4298,6 +4843,7 @@
               }
             });
             if (brazilGeoData) drawMapFeatures();
+            renderPersonaInsights();
           }
         } catch (e) {}
       }
@@ -4306,7 +4852,21 @@
       let resizeTimeout;
       window.addEventListener("resize", () => {
         clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(resizeMap, 150);
+        resizeTimeout = setTimeout(() => {
+          if (currentView === "map") resizeMap();
+          else drawPipMiniMap();
+        }, 150);
+      });
+
+      /* KEYBOARD ACCESSIBILITY FOR PIP CARD */
+      document.addEventListener("keydown", (e) => {
+        if (
+          (e.key === "Enter" || e.key === " ") &&
+          document.activeElement?.id === "pip-card"
+        ) {
+          e.preventDefault();
+          handlePipClick();
+        }
       });
 
       /* STARTUP */
@@ -4314,6 +4874,8 @@
       window.addEventListener("load", () => {
         initSwapUFFilter();
         setPersona("pessoa_comum");
+        renderPersonaInsights();
+        renderPipContent();
         initializeMap();
         syncBackendData();
       });
