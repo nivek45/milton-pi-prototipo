@@ -647,9 +647,9 @@
       }
 
       .legend-swatch {
-        width: 10px;
-        height: 10px;
-        flex-shrink: 0;
+        flex: 1;
+        height: 8px;
+        border-radius: 1px;
       }
 
       .legend-values {
@@ -1503,7 +1503,8 @@
       .map-layer-selector {
         position: absolute;
         top: 1rem;
-        left: 1rem;
+        left: 50%;
+        transform: translateX(-50%);
         z-index: 10;
         background: rgba(17, 18, 20, 0.88);
         backdrop-filter: blur(10px);
@@ -3814,8 +3815,6 @@
            paginationEl.style.display = totalPages > 1 ? 'flex' : 'none';
         }
       }
-
-     }
 
       /* ========================================================
    NAVIGATION & PAGE SWITCHER
