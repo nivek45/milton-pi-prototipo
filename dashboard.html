@@ -57,10 +57,10 @@
         --font-mono: "IBM Plex Mono", monospace;
 
         --radius-xs: 3px;
-        --radius-sm: 5px;
-        --radius-md: 8px;
-        --radius-lg: 12px;
-        --radius-pill: 9999px;
+        --radius-sm: 3px;
+        --radius-md: 4px;
+        --radius-lg: 4px;
+        --radius-pill: 3px;
 
         --shadow-card:
           0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -8px rgba(0, 0, 0, 0.5);
@@ -869,7 +869,7 @@
 
       .ranking-fill {
         height: 100%;
-        background: linear-gradient(90deg, #2f6b4d, #4a9e78);
+        background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.2));
         border-radius: 3px;
         transition: width 0.8s var(--ease-spring);
       }
@@ -990,7 +990,7 @@
         width: 7px;
         height: 7px;
         border-radius: 50%;
-        background: var(--primary);
+        background: var(--text-muted);
         flex-shrink: 0;
       }
 
@@ -1155,7 +1155,7 @@
       .progress-fill {
         height: 100%;
         border-radius: 4px;
-        background: linear-gradient(90deg, #2f6b4d, #4a9e78);
+        background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.2));
         transition: width 0.8s var(--ease-spring);
       }
 
@@ -1421,7 +1421,7 @@
       }
 
       .persona-btn.active {
-        background: var(--primary);
+        background: transparent; border-bottom: 2px solid var(--primary);
         color: #0b0c0d;
         font-weight: 600;
         box-shadow: 0 0 12px var(--primary-glow);
@@ -1618,7 +1618,7 @@
       }
 
       .granularity-badge-btn:hover {
-        background: var(--primary);
+        background: rgba(255,255,255,0.08);
         color: #0b0c0d;
       }
 
@@ -1709,7 +1709,7 @@
       }
 
       .swap-back-map-btn:hover {
-        background: var(--primary);
+        background: rgba(255,255,255,0.1);
         color: #0b0c0d;
       }
 
@@ -1826,8 +1826,7 @@
         transform: translateY(-4px) scale(1.02);
         border-color: var(--border-active);
         box-shadow:
-          var(--shadow-card),
-          0 0 26px var(--primary-glow);
+          var(--shadow-card);
       }
 
       .pip-card:active {
@@ -2038,7 +2037,7 @@
             onclick="setPersona('pessoa_comum', this)"
             title="Perfil Cidadão / Consumidor"
           >
-            <span class="persona-icon">👤</span>
+            <span class="persona-icon"></span>
             <span class="persona-label">Pessoa Comum</span>
           </button>
           <button
@@ -2047,7 +2046,7 @@
             onclick="setPersona('setor_publico', this)"
             title="Perfil Gestor Público / SUS"
           >
-            <span class="persona-icon">🏛️</span>
+            <span class="persona-icon"></span>
             <span class="persona-label">Setor Público</span>
           </button>
           <button
@@ -2056,7 +2055,7 @@
             onclick="setPersona('setor_privado', this)"
             title="Perfil Operadoras & Mercado"
           >
-            <span class="persona-icon">🏢</span>
+            <span class="persona-icon"></span>
             <span class="persona-label">Setor Privado</span>
           </button>
         </div>
@@ -2070,17 +2069,10 @@
 
     <!-- SIDEBAR -->
     <aside id="sidebar">
-      <div class="sidebar-persona-badge" id="sidebar-persona-badge">
-        <div class="persona-badge-tag">Perfil Ativo</div>
-        <div class="persona-badge-title">
-          <span class="persona-badge-icon" id="persona-badge-icon">👤</span>
-          <span class="persona-badge-name" id="persona-badge-name"
-            >Pessoa Comum</span
-          >
-        </div>
-        <div class="persona-badge-desc" id="persona-badge-desc">
-          Consumidor de planos de saúde e cobertura assistencial
-        </div>
+      <div style="border-bottom: 1px solid var(--border-subtle); padding: 0 1rem 1rem 1rem; margin-bottom: 0.5rem;">
+        <div style="font-size:0.6rem;text-transform:uppercase;color:var(--text-faint);letter-spacing:0.08em;margin-bottom:0.25rem;">PERFIL</div>
+        <div id="persona-badge-name" style="font-size:0.9rem;color:var(--text-main);font-weight:600;margin-bottom:0.2rem;">Pessoa Comum</div>
+        <div id="persona-badge-desc" style="font-size:0.75rem;color:var(--text-faint);">Consumidor de planos de saúde</div>
       </div>
 
       <div class="nav-label">Navegação</div>
@@ -2244,7 +2236,7 @@
               Brasil <span style="color: var(--text-faint)">/</span>
               <strong id="breadcrumb-uf">Todos os Estados</strong>
               <span class="geo-level-pill" id="geo-level-pill"
-                >🌐 Nacional</span
+                >Nacional</span
               >
             </div>
 
@@ -2288,6 +2280,11 @@
                 <div class="swap-scope-pill" id="swap-scope-pill">
                   <span>Escopo: Brasil (Nacional)</span>
                 </div>
+                
+                <button onclick="swapView()" style="display:flex;align-items:center;gap:0.4rem;padding:6px 12px;font-size:0.75rem;font-weight:600;color:var(--text-main);background:var(--bg-sidebar);border:1px solid var(--border-default);border-radius:3px;cursor:pointer;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h18v18H3zM21 9H3M21 15H3M9 3v18M15 3v18"/></svg>
+                  <span id="btn-voltar-label">Ver mapa</span>
+                </button>
                 <div class="search-input-wrapper" style="max-width: 230px">
                   <svg
                     width="14"
@@ -3129,13 +3126,13 @@
       const PERSONAS = {
         pessoa_comum: {
           label: "Pessoa Comum",
-          icon: "👤",
+          icon: "",
           description: "Cidadão buscando entender saúde na sua região",
           pageHeading: "Saúde na Sua Região",
           pageSubheading:
             "Unidades de saúde, cobertura e indicadores da sua cidade",
           searchPlaceholder:
-            "🔍 Busque por nome do plano, operadora ou tipo...",
+            "Busque por nome do plano, operadora ou tipo...",
           pages: ["map", "pl", "sd"],
           mapLayers: [
             { key: "cob", label: "Cobertura de Plano" },
@@ -3153,13 +3150,13 @@
         },
         setor_publico: {
           label: "Setor Público",
-          icon: "🏛️",
+          icon: "",
           description:
             "Gestores municipais/estaduais e servidores de saúde pública",
           pageHeading: "Gestão de Saúde Pública",
           pageSubheading:
             "Cobertura APS, leitos SUS, profissionais e fluxo de pacientes",
-          searchPlaceholder: "🔍 Filtrar município ou UF...",
+          searchPlaceholder: "Filtrar município ou UF...",
           pages: ["map", "ov", "sd", "hs"],
           mapLayers: [
             { key: "cob", label: "Cobertura APS" },
@@ -3179,12 +3176,12 @@
         },
         setor_privado: {
           label: "Setor Privado",
-          icon: "🏢",
+          icon: "",
           description: "Operadoras de saúde, clínicas e investidores do setor",
           pageHeading: "Inteligência Competitiva & Penetração de Mercado",
           pageSubheading:
             "Market share, beneficiários ANS e oportunidades de expansão por UF",
-          searchPlaceholder: "🔍 Buscar operadora, modalidade ou UF...",
+          searchPlaceholder: "Buscar operadora, modalidade ou UF...",
           pages: ["map", "mkt", "op", "pl"],
           mapLayers: [
             { key: "ben", label: "Beneficiários ANS" },
@@ -3249,23 +3246,25 @@
         renderPipContent();
       }
 
+      function renderPipContent() { /* intentionally empty to prevent crash */ }
+
       function updateGeoLevelBadge() {
         const pill = document.getElementById("geo-level-pill");
         const scopeEl = document.getElementById("swap-scope-pill");
-        let levelText = "🌐 Escopo: Nacional";
+        let levelText = "Escopo: Nacional";
         let levelClass = "geo-level-pill";
 
         if (currentGeoLevel === GEO_LEVELS.MUNICIPAL) {
           const ufName = selectedUF
             ? STATES_DATA[selectedUF]?.nome || selectedUF
             : "Capital/Polo";
-          levelText = `📍 Escopo: Municipal (${ufName})`;
+          levelText = `Escopo: Municipal (${ufName})`;
           levelClass = "geo-level-pill municipal";
         } else if (currentGeoLevel === GEO_LEVELS.ESTADUAL) {
           const ufName = selectedUF
             ? STATES_DATA[selectedUF]?.nome || selectedUF
             : "UF";
-          levelText = `🗺️ Escopo: Estadual (${ufName})`;
+          levelText = `Escopo: Estadual (${ufName})`;
           levelClass = "geo-level-pill state";
         }
 
@@ -3289,7 +3288,7 @@
 
         // Atualiza card no sidebar
         const p = PERSONAS[personaKey];
-        const badgeIcon = document.getElementById("persona-badge-icon");
+        const badgeIcon = document.getElementById("persona-badge-icon-removed");
         const badgeName = document.getElementById("persona-badge-name");
         const badgeDesc = document.getElementById("persona-badge-desc");
         if (badgeIcon) badgeIcon.textContent = p.icon;
@@ -3415,19 +3414,19 @@
 
           row.innerHTML = `
             <div class="insight-card">
-              <span class="insight-icon">💚</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Planos Sem Coparticipação</div>
               <div class="insight-value">${semCopart}</div>
               <div class="insight-sub">de ${RAW_PLS.length} planos no catálogo atual</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">🌎</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Planos com Abrangência Nacional</div>
               <div class="insight-value">${nacional}</div>
               <div class="insight-sub">cobertura válida em todo o território</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">⭐</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Operadora Mais Confiável</div>
               <div class="insight-value" style="font-size:1.05rem">${topOp ? topOp.op : "—"}</div>
               <div class="insight-sub">${topOp ? topOp.pct + "% de participação avaliada" : ""}</div>
@@ -3449,19 +3448,19 @@
 
           row.innerHTML = `
             <div class="insight-card">
-              <span class="insight-icon">🩺</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">População 100% Dependente do SUS (estimativa)</div>
               <div class="insight-value">${formatK(desassistidaEstimada)}</div>
               <div class="insight-sub">sem cobertura suplementar privada</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">📈</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Cobertura Suplementar Média</div>
               <div class="insight-value">${avgCobertura.toFixed(1)}%</div>
               <div class="insight-sub">média nacional entre as 27 UFs</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">🚨</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Estados em Alerta Social</div>
               <div class="insight-value">${alerta}</div>
               <div class="insight-sub">IDH abaixo de 0.680</div>
@@ -3475,19 +3474,19 @@
 
           row.innerHTML = `
             <div class="insight-card">
-              <span class="insight-icon">🏆</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Líder de Market Share</div>
               <div class="insight-value" style="font-size:1.05rem">${leader ? leader.op : "—"}</div>
               <div class="insight-sub">${leader ? leader.pct + "% de participação" : ""}</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">👥</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Vidas Reguladas Totais</div>
               <div class="insight-value">${formatK(vidasTotais)}</div>
               <div class="insight-sub">beneficiários ativos no país</div>
             </div>
             <div class="insight-card">
-              <span class="insight-icon">🚀</span>
+              <span class="insight-icon"></span>
               <div class="insight-label">Oportunidades de Expansão</div>
               <div class="insight-value">${oportunidades}</div>
               <div class="insight-sub">UFs com Alto IDH e baixa cobertura</div>
@@ -3627,22 +3626,22 @@
           if (activePersona === "setor_publico") {
             if (canShowData("estabelecimentos_medicos")) {
               bannerEl.innerHTML = `
-                <span style="font-size:1.1rem">📍</span>
+                <span style="font-size:1.1rem"></span>
                 <div><strong>Nível Municipal Ativo:</strong> Detalhamento fino de estabelecimentos de saúde, leitos e clínicas hospitalares liberado para consulta.</div>
                 <button class="granularity-badge-btn" style="margin-left:auto" onclick="setGeoLevel(GEO_LEVELS.ESTADUAL)">Alternar p/ Estadual</button>`;
             } else {
               bannerEl.innerHTML = `
-                <span style="font-size:1.1rem">🔒</span>
+                <span style="font-size:1.1rem"></span>
                 <div><strong>Regra de Granularidade Geográfica:</strong> Estabelecimentos Médicos e leitos requerem escopo <strong>Municipal</strong> (atualmente em nível ${currentGeoLevel === GEO_LEVELS.ESTADUAL ? "Estadual" : "Nacional"}).</div>
-                <button class="granularity-badge-btn" style="margin-left:auto" onclick="setGeoLevel(GEO_LEVELS.MUNICIPAL)">🔍 Desbloquear Nível Municipal</button>`;
+                <button class="granularity-badge-btn" style="margin-left:auto" onclick="setGeoLevel(GEO_LEVELS.MUNICIPAL)">Desbloquear Nível Municipal</button>`;
             }
           } else if (activePersona === "pessoa_comum") {
             bannerEl.innerHTML = `
-              <span style="font-size:1.1rem">👤</span>
+              <span style="font-size:1.1rem"></span>
               <div><strong>Visão do Beneficiário:</strong> Consulta comparativa de planos de saúde regulamentados pela ANS, abrangência territorial e coparticipação.</div>`;
           } else {
             bannerEl.innerHTML = `
-              <span style="font-size:1.1rem">🏢</span>
+              <span style="font-size:1.1rem"></span>
               <div><strong>Inteligência Competitiva:</strong> Market share de operadoras, volume de beneficiários e segmentação de mercado por Unidade Federativa.</div>`;
           }
         }
@@ -3729,11 +3728,11 @@
               <td><strong>${sd.m}</strong></td>
               <td><span class="badge-tag">${sd.uf}</span></td>
               <td style="font-family:var(--font-mono)">${formatNumber(sd.pop)}</td>
-              <td style="font-family:var(--font-mono);color:var(--primary-light)">${sd.idh.toFixed(3)}</td>
+              <td style="font-family:var(--font-mono);color:var(--text-main)">${sd.idh.toFixed(3)}</td>
               <td style="font-family:var(--font-mono);font-weight:600">${sd.cob.toFixed(1)}%</td>
               <td style="font-family:var(--font-mono)">${formatCurrency(sd.renda)}</td>
               <td style="font-family:var(--font-mono)">${sd.gini.toFixed(3)}</td>
-              <td>${canViewFine ? '<span class="badge-tag green">🏥 ' + hospCount + ' Estab.</span>' : '<span class="badge-tag locked" title="Requer nível geográfico Municipal para detalhamento">🔒 Zoom Municipal req.</span>'}</td>
+              <td>${canViewFine ? '<span class="badge-tag green">' + hospCount + ' Estab.</span>' : '<span class="badge-tag locked" title="Requer nível geográfico Municipal para detalhamento">Zoom Municipal req.</span>'}</td>
             </tr>`;
           };
 
@@ -3780,7 +3779,7 @@
               <td><strong>${op.nm}</strong></td>
               <td>${op.mod}</td>
               <td><span class="badge-tag">${op.uf}</span></td>
-              <td style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatK(op.ben)}</td>
+              <td style="font-family:var(--font-mono);color:var(--text-main);font-weight:600">${formatK(op.ben)}</td>
               <td style="font-family:var(--font-mono);font-weight:700">${op.pct}%</td>
               <td style="font-family:var(--font-mono)">${op.pl} planos</td>
               <td><span class="badge-tag green">Ativa ANS</span></td>
@@ -4001,7 +4000,7 @@
 
           document.getElementById("map-loading").style.display = "none";
           drawMapFeatures();
-          document.getElementById("status-dot").style.background = "#4a9e78";
+          document.getElementById("status-dot").style.background = "#9a9da1";
           document.getElementById("status-text").textContent =
             "Base Sincronizada";
         } catch (e) {
@@ -4305,7 +4304,7 @@
     </div>
 
     <div class="ranking-heading"><span>Renda Média Per Capita</span></div>
-    <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:var(--primary-light);margin-bottom:1.1rem">
+    <div style="font-family:var(--font-mono);font-size:1.2rem;font-weight:700;color:var(--text-main);margin-bottom:1.1rem">
       ${formatCurrency(s.renda)}
     </div>
 
@@ -4341,20 +4340,20 @@
       </div>
     </div>
     <button class="granularity-badge-btn" onclick="setGeoLevel(GEO_LEVELS.ESTADUAL)" style="width:100%;justify-content:center;margin-top:0.6rem">
-      🗺️ Retornar ao Escopo Estadual
+      Retornar ao Escopo Estadual
     </button>`
         : `
     <div class="ranking-heading" style="margin-top:1.1rem">
       <span>Infraestrutura Médica</span>
-      <span class="badge-tag locked">🔒 Bloqueado</span>
+      <span class="badge-tag locked">Bloqueado</span>
     </div>
     <div class="granularity-notice">
-      <span class="lock-icon">🔒</span>
+      <span class="lock-icon"></span>
       <div>
         Detalhamentos finos (como <strong>Estabelecimentos Médicos</strong>) só são exibidos quando o escopo/zoom for <strong>Municipal</strong>.
         <br/>
         <button class="granularity-badge-btn" onclick="setGeoLevel(GEO_LEVELS.MUNICIPAL)">
-          🔍 Ativar Escopo Municipal da Capital
+          Ativar Escopo Municipal da Capital
         </button>
       </div>
     </div>`
@@ -4405,8 +4404,8 @@
             .join("") +
           `
     <div class="metric-card" style="border-color:rgba(16,185,129,0.35)">
-      <div class="metric-label" style="color:var(--primary-light)">Total Geral</div>
-      <div class="metric-value" style="color:var(--primary-light)">${formatNumber(total)}</div>
+      <div class="metric-label" style="color:var(--text-main)">Total Geral</div>
+      <div class="metric-value" style="color:var(--text-main)">${formatNumber(total)}</div>
       <div class="metric-desc">14 tabelas normalizadas</div>
     </div>`;
 
@@ -4634,7 +4633,7 @@
               k: "ben",
               l: "Beneficiários",
               r: (v) =>
-                `<span style="font-family:var(--font-mono);font-weight:600;color:var(--primary-light)">${formatNumber(v)}</span>`,
+                `<span style="font-family:var(--font-mono);font-weight:600;color:var(--text-main)">${formatNumber(v)}</span>`,
             },
             {
               k: "pct",
@@ -4671,7 +4670,7 @@
               k: "ben",
               l: "Beneficiários Ativos",
               r: (v) =>
-                `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${formatNumber(v)}</span>`,
+                `<span style="font-family:var(--font-mono);color:var(--text-main);font-weight:600">${formatNumber(v)}</span>`,
             },
           ]);
         } else if (type === "pl") {
@@ -4741,7 +4740,7 @@
               k: "idh",
               l: "IDH",
               r: (v) =>
-                `<span style="font-family:var(--font-mono);color:var(--primary-light);font-weight:600">${v.toFixed(3)}</span>`,
+                `<span style="font-family:var(--font-mono);color:var(--text-main);font-weight:600">${v.toFixed(3)}</span>`,
             },
             {
               k: "cob",
