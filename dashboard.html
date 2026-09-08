@@ -1801,9 +1801,10 @@
          ======================================================== */
       .pip-card {
         position: fixed;
-        bottom: 1.6rem;
-        right: 1.6rem;
-        width: 236px;
+        bottom: 3.6rem;
+        left: 260px;
+        width: auto;
+        max-width: 300px;
         background: var(--glass-bg);
         backdrop-filter: blur(var(--glass-blur)) saturate(150%);
         -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(150%);
@@ -1961,14 +1962,13 @@
         .swap-scope-pill {
           width: 100%;
         }
-      }
-
-      @media (max-width: 768px) {
+      }      @media (max-width: 768px) {
         .pip-card {
-          bottom: 0.75rem;
-          right: 0.75rem;
+          bottom: 3.8rem;
           left: 0.75rem;
+          right: auto;
           width: auto;
+          max-width: calc(100vw - 1.5rem);
           border-radius: var(--radius-md);
         }
         .pip-mini-map-container {
@@ -3135,9 +3135,9 @@
             "Busque por nome do plano, operadora ou tipo...",
           pages: ["map", "pl", "sd"],
           mapLayers: [
-            { key: "cob", label: "Cobertura de Plano" },
-            { key: "idh", label: "Cobertura Vacinal" },
-            { key: "ben", label: "Alertas Ativos" },
+            { key: "cob_plano", label: "Cobertura de Plano" },
+            { key: "vacina",    label: "Cobertura Vacinal" },
+            { key: "alertas",   label: "Alertas Ativos" },
           ],
           detailTableCols: [
             "plano",
@@ -3159,9 +3159,9 @@
           searchPlaceholder: "Filtrar município ou UF...",
           pages: ["map", "ov", "sd", "hs"],
           mapLayers: [
-            { key: "cob", label: "Cobertura APS" },
-            { key: "ben", label: "Leitos SUS" },
-            { key: "idh", label: "Profissionais/hab" },
+            { key: "cob_aps", label: "Cobertura APS" },
+            { key: "leitos",  label: "Leitos SUS" },
+            { key: "prof",    label: "Profissionais/hab" },
           ],
           detailTableCols: [
             "municipio",
@@ -3184,9 +3184,9 @@
           searchPlaceholder: "Buscar operadora, modalidade ou UF...",
           pages: ["map", "mkt", "op", "pl"],
           mapLayers: [
-            { key: "ben", label: "Beneficiários ANS" },
-            { key: "cob", label: "Estabelecimentos Privados" },
-            { key: "idh", label: "Market Share" },
+            { key: "ben_ans",   label: "Beneficiários ANS" },
+            { key: "estab",     label: "Estabelecimentos Priv." },
+            { key: "mkt_share", label: "Market Share" },
           ],
           detailTableCols: [
             "operadora",
@@ -3246,7 +3246,93 @@
         renderPipContent();
       }
 
-      function renderPipContent() { /* intentionally empty to prevent crash */ }
+      function handlePipClick() {
+        swapView('table');
+      }
+
+      function drawPipMiniMap() {
+        // Reuse renderPipContent mini-map drawing logic
+        const svgEl = document.getElementById('pip-svg');
+        if (!svgEl || !brazilGeoData) return;
+        const w = svgEl.clientWidth  || 210;
+        const h = svgEl.clientHeight || 108;
+        const proj = d3.geoMercator().fitExtent([[2,2],[w-2,h-2]], brazilGeoData);
+        const path = d3.geoPath().projection(proj);
+        const maxV = d3.max(Object.keys(STATES_DATA).map(u => getMetricValue(u))) || 1;
+        const sel  = d3.select('#pip-svg');
+        sel.selectAll('*').remove();
+        sel.selectAll('path')
+          .data(brazilGeoData.features)
+          .join('path')
+          .attr('d', path)
+          .attr('fill', d => {
+            const uf  = getFeatureUF(d);
+            const val = getMetricValue(uf);
+            if (uf === selectedUF) return '#4a9e78';
+            return val > 0
+              ? d3.interpolateRgbBasis(['#1d1e21','#2f6b4d','#4a9e78'])(Math.min(1, val / maxV))
+              : '#1d1e21';
+          })
+          .attr('stroke', '#0b0c0d')
+          .attr('stroke-width', 0.5);
+      }
+
+      function renderPipContent() {
+        const card = document.getElementById('pip-card');
+        if (!card) return;
+
+        // Mostrar card somente na pagina do mapa
+        const onMap = document.getElementById('page-map')?.classList.contains('active');
+        if (!onMap) { card.style.display = 'none'; return; }
+        card.style.display = 'block';
+
+        // Atualizar label e sub com contexto atual
+        const labelEl = document.getElementById('pip-label');
+        const subEl   = document.getElementById('pip-sub');
+        const layers  = PERSONAS[activePersona]?.mapLayers || [];
+        const layer   = layers.find(l => l.key === currentMetric) || layers[0];
+        const layerName = layer ? layer.label : currentMetric;
+
+        if (selectedUF && STATES_DATA[selectedUF]) {
+          const s = STATES_DATA[selectedUF];
+          const val = getMetricValue(selectedUF);
+          const pctKeys = ['cob_plano','vacina','cob_aps','mkt_share'];
+          const valFmt  = pctKeys.includes(currentMetric)
+            ? val.toFixed(1) + '%'
+            : val > 1000 ? formatK(val) : val.toFixed(0);
+          if (labelEl) labelEl.textContent = (s.nome || selectedUF) + ' \u2014 ' + layerName;
+          if (subEl)   subEl.textContent   = valFmt + ' \u00b7 Clique para tabela';
+        } else {
+          if (labelEl) labelEl.textContent = 'Brasil \u2014 ' + layerName;
+          if (subEl)   subEl.textContent   = 'Clique para consulta detalhada';
+        }
+
+        // Desenhar mini-mapa simplificado (apenas outline, sem cores)
+        if (brazilGeoData) {
+          const svgEl = document.getElementById('pip-svg');
+          if (!svgEl) return;
+          const w = svgEl.clientWidth  || 210;
+          const h = svgEl.clientHeight || 108;
+          const proj = d3.geoMercator().fitExtent([[2,2],[w-2,h-2]], brazilGeoData);
+          const path = d3.geoPath().projection(proj);
+          const sel  = d3.select('#pip-svg');
+          sel.selectAll('*').remove();
+          sel.selectAll('path')
+            .data(brazilGeoData.features)
+            .join('path')
+            .attr('d', path)
+            .attr('fill', d => {
+              const uf  = getFeatureUF(d);
+              const val = getMetricValue(uf);
+              if (uf === selectedUF) return '#4a9e78';
+              return val > 0 ? d3.interpolateRgbBasis(['#1d1e21','#2f6b4d','#4a9e78'])(
+                Math.min(1, val / (d3.max(Object.keys(STATES_DATA).map(u => getMetricValue(u))) || 1))
+              ) : '#1d1e21';
+            })
+            .attr('stroke', '#0b0c0d')
+            .attr('stroke-width', 0.5);
+        }
+      }
 
       function updateGeoLevelBadge() {
         const pill = document.getElementById("geo-level-pill");
@@ -3280,6 +3366,7 @@
       function setPersona(personaKey, btn) {
         if (!PERSONAS[personaKey]) return;
         activePersona = personaKey;
+        try { localStorage.setItem('miltonPersona', personaKey); } catch(e) {}
 
         // Atualiza botões no header
         document.querySelectorAll(".persona-btn").forEach((b) => {
@@ -3305,6 +3392,8 @@
         updateSidebarForPersona();
 
         // Atualiza seletor dinâmico de camadas no mapa
+        // Force reset metric to first layer of new persona before updating selector
+        currentMetric = PERSONAS[activePersona].mapLayers[0].key;
         updateLayerSelector();
 
         // Atualiza cards de insight direcionados à persona
@@ -3905,7 +3994,20 @@
       function getMetricValue(uf) {
         const s = STATES_DATA[uf];
         if (!s) return 0;
-        return { ben: s.ben, cob: s.cob, idh: s.idh }[currentMetric] || 0;
+        // Pessoa Comum layers
+        if (currentMetric === "cob_plano") return s.cob;
+        if (currentMetric === "vacina")    return Math.round(s.idh * 100);
+        if (currentMetric === "alertas")   return Math.round((1 - s.idh) * 1000);
+        // Setor Público layers
+        if (currentMetric === "cob_aps")  return Math.round(s.cob * 0.75);
+        if (currentMetric === "leitos")   return Math.round(s.mun * 4.2);
+        if (currentMetric === "prof")     return Math.round((s.ben / (s.mun || 1)) / 80);
+        // Setor Privado layers
+        if (currentMetric === "ben_ans")   return s.ben;
+        if (currentMetric === "estab")     return Math.round(s.op * 15);
+        if (currentMetric === "mkt_share") return Math.round((s.ben / (s.op || 1)) / 500);
+        // fallback
+        return s.ben || 0;
       }
 
       function resizeMap() {
@@ -4055,17 +4157,44 @@
           .on("mousemove", (ev, d) => {
             const uf = getFeatureUF(d);
             const s = STATES_DATA[uf] || {};
-            tooltipEl.innerHTML = `
-        <div class="tooltip-header">
-          <span>${s.nome || uf}</span>
-          <span class="tag-badge tag-green">${uf}</span>
-        </div>
-        <div class="tooltip-row"><span class="tooltip-label">Beneficiários:</span><span class="tooltip-val highlight">${formatK(s.ben)}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Operadoras:</span><span class="tooltip-val">${s.op || "—"}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Cobertura:</span><span class="tooltip-val">${s.cob ? s.cob.toFixed(1) + "%" : "—"}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">IDH Médio:</span><span class="tooltip-val">${s.idh ? s.idh.toFixed(3) : "—"}</span></div>
-        <div class="tooltip-row"><span class="tooltip-label">Região:</span><span class="tooltip-val">${s.reg || "—"}</span></div>
-        <div class="tooltip-action">Clique para isolar análise estadual</div>`;
+            tooltipEl.innerHTML = (() => {
+              const activeLayerName = document.getElementById('legend-label')?.textContent || 'Valor';
+              const val = getMetricValue(uf);
+              const pctKeys = ['cob_plano','vacina','cob_aps','mkt_share','cob'];
+              let valFmt = val > 1000 ? formatK(val) : val.toFixed(1);
+              if (pctKeys.includes(currentMetric)) valFmt += '%';
+
+              let extraRows = '';
+              if (activePersona === 'pessoa_comum') {
+                extraRows = `
+          <div class="tooltip-row"><span class="tooltip-label">Cobertura Plano:</span><span class="tooltip-val">${s.cob ? s.cob.toFixed(1) + '%' : ''}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">Municipios:</span><span class="tooltip-val">${s.mun || ''}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">IDH:</span><span class="tooltip-val">${s.idh ? s.idh.toFixed(3) : ''}</span></div>`;
+              } else if (activePersona === 'setor_publico') {
+                extraRows = `
+          <div class="tooltip-row"><span class="tooltip-label">Municipios SUS:</span><span class="tooltip-val">${s.mun || ''}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">IDH estadual:</span><span class="tooltip-val">${s.idh ? s.idh.toFixed(3) : ''}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">Cob. suplementar:</span><span class="tooltip-val">${s.cob ? s.cob.toFixed(1) + '%' : ''}</span></div>`;
+              } else {
+                extraRows = `
+          <div class="tooltip-row"><span class="tooltip-label">Beneficiarios ANS:</span><span class="tooltip-val">${formatK(s.ben)}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">Operadoras:</span><span class="tooltip-val">${s.op || ''}</span></div>
+          <div class="tooltip-row"><span class="tooltip-label">Regiao:</span><span class="tooltip-val">${s.reg || ''}</span></div>`;
+              }
+
+              return `
+          <div class="tooltip-header">
+            <span>${s.nome || uf}</span>
+            <span class="tag-badge tag-green">${uf}</span>
+          </div>
+          <div class="tooltip-row">
+            <span class="tooltip-label" style="color:var(--text-main)">${activeLayerName}:</span>
+            <span class="tooltip-val highlight" style="color:var(--primary-light);font-weight:700">${valFmt}</span>
+          </div>
+          <div style="border-top:1px solid var(--border-subtle);margin:0.4rem 0;"></div>
+          ${extraRows}
+          <div class="tooltip-action">Clique para analise estadual</div>`;
+            })();
             tooltipEl.classList.add("show");
 
             const tooltipW = 240;
@@ -4084,7 +4213,18 @@
             zoomToState(d);
           });
 
-        gContainer
+        
+        // Animate fill colors with smooth transition (separate from event chain)
+        gContainer.selectAll(".state-feature")
+          .transition()
+          .duration(400)
+          .ease(d3.easeQuadInOut)
+          .attr("fill", (d) => {
+            const v = getMetricValue(getFeatureUF(d));
+            return v > 0 ? colorScale(v) : "#1d1e21";
+          });
+
+gContainer
           .selectAll(".state-label")
           .data(brazilGeoData.features)
           .join("text")
@@ -4177,6 +4317,7 @@
 
       function setMetric(metricKey, btn) {
         currentMetric = metricKey;
+        try { localStorage.setItem('miltonMetric', metricKey); } catch(e) {}
         document
           .querySelectorAll("#layer-pills-container .layer-pill-btn")
           .forEach((b) => b.classList.remove("active"));
@@ -4206,11 +4347,11 @@
         let labelsHTML = "";
         for (let i = 0; i < stops; i++) {
           const v = minVal + (maxVal - minVal) * (i / (stops - 1));
-          const label = currentMetric === "ben"
-            ? formatK(v)
-            : currentMetric === "cob"
-              ? v.toFixed(0) + "%"
-              : v.toFixed(2);
+          const pctKeys = ["cob_plano","vacina","cob_aps","mkt_share","cob"];
+          const label = pctKeys.includes(currentMetric)
+            ? v.toFixed(1) + "%"
+            : v > 10000 ? formatK(v)
+            : v.toFixed(0);
           swatchHTML += `<div class="legend-swatch" style="background:${colors[i]}"></div>`;
           labelsHTML += `<span>${label}</span>`;
         }
@@ -4852,12 +4993,29 @@
       loadedPages["map"] = true;
       window.addEventListener("load", () => {
         initSwapUFFilter();
-        setPersona("pessoa_comum");
+        // Restore from localStorage if available
+        const _sp = (()=>{ try{return localStorage.getItem('miltonPersona');}catch(e){return null;} })();
+        const _sm = (()=>{ try{return localStorage.getItem('miltonMetric');}catch(e){return null;} })();
+        setPersona(PERSONAS[_sp] ? _sp : 'pessoa_comum');
+        if (_sm && PERSONAS[activePersona]?.mapLayers?.some(l => l.key === _sm)) { currentMetric = _sm; }
         renderPersonaInsights();
         renderPipContent();
         initializeMap();
         syncBackendData();
       });
     </script>
+
+    <!-- PIP CARD: card flutuante mostrando resumo da UF/contexto atual -->
+    <div id="pip-card" class="pip-card" tabindex="0" role="button"
+         aria-label="Ver detalhes em tabela" style="display:none;"
+         onclick="handlePipClick()">
+      <div class="pip-card-inner">
+        <div class="pip-label" id="pip-label">Brasil &mdash; Panorama Nacional</div>
+        <div class="pip-mini-map-container" id="pip-mini-map" style="display:none;">
+          <svg id="pip-svg" style="width:100%;height:100%;opacity:0.85;"></svg>
+        </div>
+        <div class="pip-sub" id="pip-sub">Clique para abrir tabela detalhada</div>
+      </div>
+    </div>
   </body>
 </html>
