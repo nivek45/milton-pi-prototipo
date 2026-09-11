@@ -1,0 +1,47 @@
+/* D3 owns fill transitions; CSS owns hover decoration. */
+#map-svg .state-feature { transition:stroke .15s,filter .15s; }
+#map-svg .state-feature:focus { stroke:#fff;stroke-width:2;outline:none; }
+.global-controls {display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:18px 28px 10px;}
+.global-controls label {display:grid;gap:6px;color:var(--text-secondary);font-size:12px;flex:1;min-width:140px;}
+.global-controls select {background:#202226;color:#e9eeeb;border:1px solid #464a48;padding:9px;border-radius:5px;width:100%;}
+.global-controls small {flex-basis:100%;color:#a6b8ac;}
+.data-status {margin:0 28px 16px;padding:12px 16px;background:#263b31;color:#d2e7d8;border:1px solid #466552;border-radius:6px;font-size:13px;line-height:1.6;}
+.data-message {font-size:13px;line-height:1.6;color:#b9c6bd;padding:8px 0;}
+.table-sort {background:none;border:0;padding:0;color:inherit;font:inherit;cursor:pointer;text-align:left;}
+.pagination {display:flex;gap:16px;align-items:center;justify-content:center;padding:18px;font-size:12px;}
+button:disabled {opacity:.5;cursor:not-allowed;}
+.data-table-container {overflow-x:auto;}
+.map-legend {max-width:calc(100% - 36px);}
+.legend-values {font-size:9px;gap:5px;}
+#legend-note {display:block;font-size:9px;margin-top:5px;color:#b5bbb7;}
+.insight-value {font-size:clamp(14px,1.5vw,20px);line-height:1.5;}
+.pip-card {left:calc(var(--sidebar-width,240px) + 16px);right:auto;max-width:235px;}
+main {padding-bottom:130px;overflow-y:auto;}
+.page {flex:none;min-height:min-content;}
+.map-layout {flex:none;min-height:530px;grid-template-columns:minmax(0,1fr) 310px;}
+.map-viewport {min-height:530px;}
+.map-side-panel {max-height:650px;}
+.global-controls,.data-status,.page-head,.insight-row {flex-shrink:0;}
+.persona-btn.active {color:#b0e5c7;}
+.map-side-panel details {font-size:12px;line-height:1.5;margin-top:18px;}
+.map-side-panel details p {margin-top:10px;overflow-wrap:anywhere;}
+.glass-tooltip {max-width:260px;pointer-events:none;}
+.glass-tooltip div,.glass-tooltip small {display:block;margin-top:6px;}
+.metric-card {padding:15px;background:#202825;line-height:1.7;}
+.metric-card strong {font-size:22px;}
+@media(max-width:900px) {.pip-card {left:12px;}.global-controls {padding:12px;}.data-status {margin:0 12px 12px;}.map-layout {grid-template-columns:1fr;}.persona-btn .persona-label {display:inline;}.map-layer-selector {top:12px;bottom:auto;left:55px;right:80px;max-width:none;}.map-side-panel {max-height:none;}}
+@media(max-width:600px) {.header-actions {gap:4px;}.live-indicator,.version-tag {display:none;}.global-controls label {min-width:42%;}.pagination {gap:8px;}.pip-card {max-width:200px;}.map-layer-selector {max-width:calc(100% - 60px);}.legend-values {flex-wrap:wrap;}}
+@media(max-width:600px) {
+ body {grid-template-rows:100px minmax(0,1fr);}
+ header {padding:8px 12px;flex-wrap:wrap;gap:6px;}
+ .brand-desc {display:none;}.brand-name {font-size:18px;}
+ .header-actions {width:100%;justify-content:center;}
+ .persona-selector {width:100%;justify-content:space-between;}
+ .persona-btn {font-size:11px;flex:1;}
+ aside {top:100px;height:calc(100vh - 100px);}
+ .map-layer-selector {left:52px;right:10px;top:55px;max-width:none;}
+ .layer-pill-btn {font-size:10px;padding:6px;}
+ .map-viewport {min-height:540px;}
+ .pip-card {bottom:10px;}
+ .insight-row {grid-template-columns:1fr;}
+}
