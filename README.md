@@ -1,63 +1,110 @@
-# Milton Analytics — Observatório de Saúde Suplementar
+# Milton Analytics - Observatorio de Saude Suplementar
 
-Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revisão corrige agregações, sincronização assíncrona, proveniência, segurança e navegação das três personas. O mapa mostra UFs; o detalhamento municipal ocorre na tabela por seleção explícita.
+Dashboard interativo utilizando **Flask + PostgreSQL** no backend, e **JavaScript modular, D3.js e Chart.js** no frontend. 
 
-## Executar
+O projeto foi totalmente reestruturado para ser modular, separando responsabilidades e melhorando a UX (Experiencia do Usuario) e Acessibilidade (leia mais em [Design e Acessibilidade](DESIGN-ACESSIBILIDADE.md)). O sistema apresenta dados da saude suplementar e publica no Brasil, filtrados por **Tres Personas** (Pessoa Comum, Setor Publico, Setor Privado).
 
-Requisitos: Python 3.11+, PostgreSQL 16+; Node 20+ apenas para os testes JavaScript. Docker é opcional, para fornecer PostgreSQL.
+---
 
-1. Crie um ambiente: `python -m venv .venv` e ative-o (`.venv\Scripts\Activate.ps1` no PowerShell).
-2. Instale: `python -m pip install -r requirements.txt`.
-3. Copie `.env.example` para `.env`, configure seu banco e defina uma senha. Variáveis de ambiente já exportadas têm precedência.
-4. Com Docker: `docker compose up -d`. Sem Docker, crie o usuário/banco configurados em um PostgreSQL existente.
-5. Primeira execução: `python start.py --init-db`. Acesse http://127.0.0.1:5001.
-6. Para uma base demonstrativa, use explicitamente `python start.py --init-db --demo`. Interrompa o servidor anterior antes de iniciar outro.
-7. Execuções seguintes: `python start.py`.
+## Tutorial Passo a Passo: Como Rodar o Projeto
 
-`python migrate.py` aplica o schema novo ou migrações atômicas em banco legado. Faça backup do banco legado antes de migrar: dados antigos incompatíveis com constraints bloqueiam a transação e precisam ser corrigidos na origem. A inicialização nunca apaga tabelas. A seed é determinística e idempotente, e recusa misturar amostras com fatos preexistentes não reconhecidos.
+Siga os passos abaixo para rodar a aplicacao localmente no seu computador.
 
-## Dados reais e demonstração
+### 1. Pre-requisitos
+*   **Python 3.11** ou superior instalado.
+*   **PostgreSQL 16** ou superior (Pode ser instalado nativamente ou via Docker).
+*   *Opcional para testes front-end:* Node.js 20+.
 
-`python fetch_real_data.py --only estados municipios operadoras` importa cadastros públicos IBGE e ANS, com UPSERT e transação por conjunto. O cadastro de operadoras não fornece números de beneficiários nem market share. A carga foi executada nesta revisão: 27 UFs, 5.571 municípios e 1.111 operadoras do cadastro ANS. Valores são uma fotografia da execução, não totais permanentes.
+### 2. Preparando o Ambiente Python
+Abra o seu terminal (PowerShell, CMD ou Bash) e execute os seguintes comandos:
 
-Beneficiários, planos e perfis da seed são exemplos explicitamente sintéticos. Vacinação, cobertura APS, alertas, leitos, profissionais e estabelecimentos não são inferidos de proxies. Sem fonte cadastrada em `indicador_saude`, aparecem como indisponíveis. Essa tabela exige unidade, competência e fonte; a ingestão de cada série oficial ainda precisa ser implementada e validada. Não há malha municipal nem promessa de vacinação real nesta versão.
+`ash
+# 1. Crie um ambiente virtual para nao misturar dependencias
+python -m venv .venv
 
-Market share no mapa é a participação da maior operadora no total da UF, no mês escolhido. Cobertura e renda são ponderadas pela população dos municípios com dados; IDH é média municipal, não o IDH oficial da UF. Ausência é `null`, distinta de zero. O período automático usa fatos existentes, não apenas dimensões de calendário. A competência dos indicadores próprios aparece na fonte do tooltip.
+# 2. Ative o ambiente virtual
+# No Windows (PowerShell):
+.venv\Scripts\Activate.ps1
+# No Linux/Mac:
+source .venv/bin/activate
 
-## Estrutura e API
+# 3. Instale todas as dependencias do projeto
+python -m pip install -r requirements.txt
+`
 
-- `dashboard.html`: estrutura; `static/styles/`: apresentação.
-- `static/js/store.js`: estado validado; `api.js`: timeout, cancelamento e descarte de respostas antigas.
-- `map.js`, `table.js`, `panels.js`: mapa, tabelas e painéis; `app.js`: coordenação e eventos; `config.js`: personas e métricas.
-- `backend/db.py`: pool limitado, transações de leitura e timeout SQL; `queries.py`: agregações; `routes.py`: validação, rotas e serialização.
-- `schema.sql`, `migrations/`, `migrate.py`: bootstrap e evolução versionada.
+### 3. Configurando o Banco de Dados (PostgreSQL)
+O sistema precisa de um banco de dados para buscar as informacoes.
 
-`GET /api/snapshot` entrega estados, totais, indicadores e metadados em uma transação consistente. Listas `/api/operadoras`, `/api/market-share`, `/api/planos`, `/api/perfil-saude` retornam `{items,total,page,page_size,meta}`; página máxima de 100 itens. Filtros são validados e parametrizados. Veja `backend/routes.py` para nomes e valores aceitos. `/api/municipios?uf=SP` lista o cadastro municipal da UF. `/api/health` verifica PostgreSQL. Histórico pessoal não é publicado: `/api/historico` retorna 403. Aplicação e assets usam mesma origem; arquivos do repositório e credenciais não são servidos.
+1.  Copie o arquivo .env.example e cole com o nome .env.
+2.  Abra o arquivo .env gerado e defina uma senha forte na variavel MILTON_DB_PASS.
+3.  **Para subir o banco com Docker:**
+    *   Basta rodar o comando: docker compose up -d
+4.  **Se nao for usar Docker:**
+    *   Crie um banco de dados no seu PostgreSQL local com o nome, usuario e senha que voce definiu no arquivo .env.
 
-## Verificação
+### 4. Inicializando e Rodando o Servidor
 
-Com o banco configurado, execute:
+Agora que o banco esta pronto, vamos criar as tabelas, inserir dados de exemplo e rodar o site.
 
-```sh
+`ash
+# 1. Aplique o schema e popule o banco de dados com dados de demonstracao
+python start.py --init-db --demo
+
+# 2. Acesse o painel pelo seu navegador no endereco:
+# http://127.0.0.1:5001
+`
+
+> **Nota:** Nas proximas vezes que for iniciar o servidor (sem precisar recriar o banco), basta rodar apenas python start.py.
+
+---
+
+## Nova Estrutura do Projeto
+
+O projeto deixou de ser um arquivo HTML gigante e agora adota uma estrutura limpa e profissional:
+
+*   **pi.py / start.py**: Pontos de entrada do servidor backend Flask.
+*   **ackend/**: Contem a logica do servidor.
+    *   db.py: Conexao, transacoes e pool de banco de dados.
+    *   queries.py: Logicas de agregacoes e SQL.
+    *   
+outes.py: Endpoints da API REST.
+*   **dashboard.html**: A casca da estrutura principal da pagina.
+*   **static/**: Arquivos do Frontend, organizados por:
+    *   js/: Scripts modulares (pp.js, map.js, 	able.js, store.js, pi.js).
+    *   styles/: CSS dividido em responsabilidades (dashboard.css, ixes.css, 
+efinements.css).
+    *   endor/: Bibliotecas de terceiros (D3.js, Chart.js).
+    *   data/: Arquivos geojson (ex: malha do Brasil para o mapa).
+*   **migrations/ & migrate.py**: Ferramentas para controle de versao e evolucao do banco de dados.
+
+---
+
+## Dados Reais vs Demonstracao
+
+*   **Dados de Teste (Demo):** O comando --demo (mostrado acima) popula tabelas com dados de pacientes ficticios, planos sinteticos e numeros gerados matematicamente. Serve para ver a plataforma funcionando.
+*   **Dados Reais do IBGE/ANS:** Voce pode rodar o comando python fetch_real_data.py --only estados municipios operadoras para baixar cadastros publicos atualizados (tabelas geograficas oficiais). *Nota: os cadastros de operadoras abertos da ANS nao fornecem quantidade de beneficiarios na mesma fonte primaria.*
+
+## Como Testar a Aplicacao
+
+Para certificar que o banco e a API estao consistentes, execute:
+
+`ash
+# Valida se todas as constraints e schemas do banco estao corretos
 python validate_schema.py
+
+# Roda a bateria de testes Python (Pytest)
 python -m pytest -q
+
+# Roda os testes de Frontend (Jest)
 npm test
-```
+`
 
-Os testes de integração criam e removem somente um schema temporário próprio; o usuário de teste precisa de permissão para criar schemas. Cobrem agregações sem multiplicação, datas, paginação, filtros, constraints, falhas da API e rollback de importação. Os testes JavaScript cobrem estado, concorrência, cancelamento e ausência de dados. Testes não substituem medição de carga com o volume real futuro.
+## Proximos Passos (Roadmap)
 
-## Próximas etapas
+1.  **Ingestores Oficiais:** Adicionar ingestores automaticos por indicador de saude real (Cobertura, IDH atualizado).
+2.  **CI/CD:** Criar pipeline de testes reproduziveis automatizados.
+3.  **Otimizacao de Banco:** Medir gargalos com EXPLAIN ANALYZE quando o volume de dados crescer.
+4.  **Autenticacao:** Implementar controle de acesso e autorizacao antes de expor dados de pacientes a internet.
 
-1. Adicionar ingestores oficiais por indicador com testes de unidade, período e cobertura territorial; manter exemplos separados das bases oficiais.
-2. Criar testes de navegador reproduzíveis e pipeline CI com PostgreSQL, preservando os contratos atuais.
-3. Medir consultas com EXPLAIN ANALYZE em volume representativo antes de materializar agregados ou aumentar o pool.
-4. Evoluir os módulos independentes para componentes conforme necessidade, sem migração obrigatória para React/Vue.
-5. Antes de expor dados pessoais, implementar autenticação, autorização e uma política de retenção específica; a rota pública permanece fechada.
-
-## Bibliotecas e geografia
-
-D3 7.9.0 e Chart.js 4.4.9 estão em `static/vendor`, com licenças incluídas. A geometria estadual vendorizada vem de https://github.com/codeforamerica/click_that_hood/blob/master/public/data/brazil-states.geojson; o cadastro de códigos e nomes vem da API de Localidades do IBGE. A malha é destinada à visualização do protótipo, não a uso cartográfico de precisão. Fontes tipográficas Google são opcionais e têm fallback local.
-
-## Atualização de UX e acessibilidade
-
-A primeira rodada aprovada adiciona busca por cidade, explicações dos indicadores, painéis por persona, filtros recolhíveis e preservação de contexto. Consulte [Design e acessibilidade](DESIGN-ACESSIBILIDADE.md) para mudanças e verificação (33 testes PostgreSQL e 11 JavaScript).
+---
+*D3.js e Chart.js estao localizados em static/vendor/ sob suas respectivas licencas de codigo aberto.*
