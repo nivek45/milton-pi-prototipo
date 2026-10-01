@@ -95,9 +95,9 @@
 
       body {
         display: grid;
-        grid-template-columns: 248px 1fr;
+        grid-template-columns: 1fr;
         grid-template-rows: 64px 1fr;
-        grid-template-areas: "header header" "sidebar main";
+        grid-template-areas: "header" "main";
         overflow: hidden;
       }
 
@@ -258,9 +258,10 @@
       }
 
       aside {
+        display: none !important;
         grid-area: sidebar;
         background: var(--bg-sidebar);
-        border-right: 1px solid var(--border-subtle);
+        border-right: none;
         display: flex;
         flex-direction: column;
         padding: 1.25rem 0.85rem;
@@ -494,7 +495,7 @@
    ======================================================== */
       .map-layout {
         display: grid;
-        grid-template-columns: 1fr 360px;
+        grid-template-columns: 1fr;
         flex: 1;
         min-height: 0;
         overflow: hidden;
@@ -714,6 +715,7 @@
 
       /* Map Side Panel */
       .map-side-panel {
+        display: none !important;
         display: flex;
         flex-direction: column;
         background: var(--bg-sidebar);
@@ -1216,7 +1218,7 @@
         }
 
         .map-layout {
-          grid-template-columns: 1fr 310px;
+          grid-template-columns: 1fr;
         }
       }
 
@@ -1787,8 +1789,8 @@
          ======================================================== */
       .pip-card {
         position: fixed;
-        bottom: 3.6rem;
-        left: 260px;
+        bottom: 1.6rem;
+        right: 1.6rem;
         width: auto;
         max-width: 300px;
         background: var(--glass-bg);
@@ -1964,4 +1966,4 @@
           padding: 0.6rem 0.7rem 0.7rem;
         }
       }
-    
+          .mobile-toggle { display: none !important; }
