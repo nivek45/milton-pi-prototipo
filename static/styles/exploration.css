@@ -1,0 +1,47 @@
+/* Overview first; territory details follow the user's selection. */
+body {grid-template-columns:minmax(0,1fr);grid-template-areas:"header" "main";}
+.mobile-toggle {display:flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;}
+#sidebar {position:fixed;inset:0 auto 0 0;width:min(320px,90vw);height:100dvh;z-index:1100;transform:translateX(-105%);visibility:hidden;transition:transform 220ms;overflow-y:auto;padding-top:20px;}
+#sidebar.open {transform:translateX(0);visibility:visible;}
+.sidebar-backdrop {z-index:1050;}
+.drawer-close {display:block;min-height:44px;margin:0 14px 16px;padding:10px;background:#263b31;border:1px solid #688172;border-radius:6px;color:#e1eee5;}
+.version-tag,.insight-row {display:none;}
+.location-start {padding-top:24px;}
+.location-start h1 {font-size:clamp(20px,2.3vw,28px);}
+.filter-disclosure {margin:10px 26px;color:var(--text-secondary);font-size:13px;}
+.filter-disclosure>summary {cursor:pointer;min-height:44px;display:list-item;padding:12px 0;}
+.filter-disclosure .global-controls {padding:10px 0;}
+.data-status {background:transparent;border:0;border-left:2px solid #8dbf9f;border-radius:0;padding:4px 12px;margin-top:8px;font-size:12px;}
+.page-head {padding-top:18px;padding-bottom:12px;}
+.map-layout {grid-template-columns:minmax(0,1fr);grid-template-rows:auto;gap:20px;}
+.map-viewport {height:clamp(530px,65vh,850px);min-height:530px;}
+.map-side-panel {width:100%;max-height:none;overflow:visible;border:0;border-top:1px solid var(--border-subtle);border-radius:0;background:transparent;padding:20px 0;}
+.map-side-panel[hidden] {display:none!important;}
+#close-state-details {float:right;margin:0 16px;}
+.panel-scrollable {overflow:visible;padding:12px 20px;}
+.stat-grid-2x2 {grid-template-columns:repeat(2,minmax(0,1fr));max-width:650px;}
+.stat-tile {background:transparent;border:0;border-left:2px solid #3c6550;border-radius:0;}
+.persona-shortcuts {display:flex;flex-wrap:wrap;gap:10px;margin:18px 0;}
+.persona-shortcuts button {min-height:44px;}
+.market-details {margin-top:22px;}
+.market-details summary {font-size:15px;min-height:44px;}
+.market-preview {width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;}
+.market-preview caption {text-align:left;padding:10px 0;color:var(--text-secondary);}
+.market-preview th,.market-preview td {text-align:left;padding:12px 8px;border-bottom:1px solid var(--border-subtle);}
+.pip-card {left:auto;right:20px;bottom:18px;max-width:220px;}
+@media(max-width:600px){.filter-disclosure {margin:8px 16px;}.map-viewport {height:550px;}.pip-card {right:12px;max-width:185px;}.stat-grid-2x2 {grid-template-columns:1fr 1fr;}.panel-scrollable {padding:12px 4px;}.market-preview {font-size:12px;}.market-preview th,.market-preview td {padding:10px 4px;}.location-start {display:block;}.location-start form {margin-top:12px;}}
+@media(prefers-reduced-motion:reduce){#sidebar {transition:none;}}
+.plan-dialog {width:min(620px,90vw);max-height:85dvh;margin:auto;overflow:auto;background:var(--bg-sidebar);color:var(--text-main);border:1px solid var(--border-default);border-radius:8px;padding:24px;}
+.plan-dialog::backdrop {background:rgba(0,0,0,.7);}
+.plan-dialog button,.data-table td button {min-height:44px;padding:8px 12px;cursor:pointer;}
+.plan-dialog>button {float:right;}
+.plan-dialog h2 {font-size:20px;padding-right:80px;}
+.plan-dialog dt {font-weight:600;margin-top:14px;}
+.plan-dialog dd {margin:4px 0;line-height:1.5;}
+.plan-dialog dl {display:grid;grid-template-columns:minmax(120px,1fr) 1.5fr;gap:14px;margin:20px 0;}
+.plan-dialog dl dt,.plan-dialog dl dd {margin:0;overflow-wrap:anywhere;}
+@media(max-width:480px){.plan-dialog dl {display:block;}.plan-dialog dl dt {margin-top:14px;}.plan-dialog dl dd {margin-top:4px;}}
+.plan-dialog a {color:#9ed7b8;text-decoration:underline;}
+.catalog-filters {display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;}
+.catalog-filters label {display:flex;flex-direction:column;gap:6px;font-size:13px;}
+.catalog-filters select {min-height:44px;padding:8px;background:var(--bg-sidebar);color:var(--text-main);border:1px solid var(--border-default);border-radius:4px;}
