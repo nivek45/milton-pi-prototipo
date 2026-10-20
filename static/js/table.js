@@ -58,7 +58,7 @@ export class DataTable {
       }else th.textContent=label;
       head.append(th);
     }
-    head.append(node('th','Origem'));if(hasDetails)head.append(node('th','Detalhes'));thead.append(head);
+    if(hasDetails)head.append(node('th','Detalhes'));thead.append(head);
     for(const row of data.items){
       const tr=node('tr');
       for(const[key]of config.columns){
@@ -95,11 +95,6 @@ export class DataTable {
         }
         tr.append(td);
       }
-      const origTd=node('td');
-      const isAns=data.meta?.dataset==='ans_catalogo';
-      const origBadge=node('span',row.sintetico?'Demo':(isAns?'ANS':'Oficial'),row.sintetico?'kpi-badge warning':'kpi-badge success');
-      origTd.append(origBadge);
-      tr.append(origTd);
       if(hasDetails){
         const td=node('td');
         const open=button('Ver detalhes',()=>this.showDetail(row.id),'table-detail-btn');
@@ -109,7 +104,7 @@ export class DataTable {
       }
       tbody.append(tr);
     }
-    if(!data.items.length){const tr=node('tr'),td=node('td','Nenhum registro para este território, período e busca.');td.colSpan=config.columns.length+1+(hasDetails?1:0);tr.append(td);tbody.append(tr);}
+    if(!data.items.length){const tr=node('tr'),td=node('td','Nenhum registro para este território, período e busca.');td.colSpan=config.columns.length+(hasDetails?1:0);tr.append(td);tbody.append(tr);}
     table.append(thead,tbody);
     const pages=Math.max(1,Math.ceil(data.total/data.page_size)),footer=node('div','','pagination');
     const previous=button('Anterior',()=>{this.page--;this.load();}),next=button('Próxima',()=>{this.page++;this.load();});

@@ -862,3 +862,17 @@ button:active:not(:disabled) {
  .map-viewport .map-legend {grid-column:1 / -1;grid-row:5;width:100%;padding:10px 12px;}
  .map-side-panel {padding:16px 4px;}
 }
+
+/* Brand navigation and a continuous legend shared with the map. */
+a.brand {color:var(--text-main);border-radius:6px;cursor:pointer;}
+a.brand:hover .brand-name {color:var(--primary);}
+a.brand:focus-visible {outline:2px solid var(--primary);outline-offset:6px;}
+#map-svg .state-feature,
+#map-svg .state-feature:hover,
+#map-svg .state-feature:focus,
+#map-svg .state-feature:focus-visible,
+#map-svg .state-feature.selected {filter:none;}
+.map-legend .legend-bar {display:block;height:10px;border:1px solid #49654c28;}
+.map-legend .legend-bar[hidden] {display:none;}
+.map-legend .legend-values {display:flex;justify-content:space-between;flex-wrap:nowrap;gap:12px;}
+.legend-missing-swatch {display:inline-block;width:10px;height:10px;background:#33363b;border:1px solid #33363b;vertical-align:-1px;border-radius:2px;}

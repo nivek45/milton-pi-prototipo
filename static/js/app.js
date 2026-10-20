@@ -148,6 +148,15 @@ const drawer=setupDrawer();
 byId('sidebar-backdrop').removeAttribute('data-action');
 const scrollPositions=new Map();
 const actions={
+  goToMap:event=>{
+    event.preventDefault();
+    store.dispatch({type:'view',value:'map'});
+    switchPage('map');
+    requestAnimationFrame(()=>{
+      map.resize();
+      byId('map-page-heading').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
+    });
+  },
   setPersona:(_,arg)=>{if(arg===store.get().persona)return;clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();searches.set('swap-'+store.get().persona,byId('swap-search-input').value);byId('swap-search-input').value=searches.get('swap-'+arg)||'';store.dispatch({type:'loading'});store.dispatch({type:'persona',value:arg});selectUF(store.get().uf);loadSnapshot();},
   switchPage:(_,arg)=>switchPage(arg),toggleSidebar:()=>toggleSidebar(),
   swapView:()=>store.dispatch({type:'view'}),handlePipClick:()=>store.dispatch({type:'view'}),

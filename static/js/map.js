@@ -64,9 +64,9 @@ export class BrazilMap {
     const domain=spec.domain||[0,Math.max(1,...values)];
     const persona=this.state?.persona||'pessoa_comum';
     const palettes={
-      pessoa_comum: ['#183328','#2e7d5e','#7edfc0'],
-      setor_publico: ['#18233c','#3a5eb5','#93aeff'],
-      setor_privado: ['#362215','#a36025','#ffc078']
+      pessoa_comum: ['#d6e6c8','#719d78','#214c3b'],
+      setor_publico: ['#d9e7f0','#789fbd','#294f77'],
+      setor_privado: ['#f3e3c6','#c59a60','#80502b']
     };
     const colors=palettes[persona]||palettes.pessoa_comum;
     return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(colors)).clamp(true);
@@ -90,7 +90,7 @@ export class BrazilMap {
       .attr('aria-label',d=>`${d.properties.name}: ${metricFormat(metricValue(this.state?.snapshot,d.properties.sigla,metric),metric)}. Selecionar estado.`)
       .attr('aria-pressed',d=>String(this.state?.uf===d.properties.sigla))
       .classed('selected',d=>this.state?.uf===d.properties.sigla)
-      .interrupt('metric').transition('metric').duration(this.duration(240)).attr('fill',fill);
+      .interrupt('metric').attr('fill',fill);
     const labels=this.labels.selectAll('text').data(this.geo.features,d=>d.properties.sigla)
       .join('text').attr('class','state-label').attr('aria-hidden','true').text(d=>d.properties.sigla);
     if(geometry)labels.attr('x',d=>this.path.centroid(d)[0]).attr('y',d=>this.path.centroid(d)[1]).attr('font-size',this.width<500?9:11);
@@ -99,12 +99,18 @@ export class BrazilMap {
   renderLegend(scale,metric) {
     text('legend-label',METRICS[metric].label);
     const [min,max]=scale.domain(),bar=document.querySelector('.legend-bar'),labels=document.querySelector('.legend-values');
+    const note=byId('legend-note');
     const available=this.geo.features.some(d=>finite(metricValue(this.state?.snapshot,d.properties.sigla,metric)));
-    if(!available){bar.replaceChildren();labels.replaceChildren();text('legend-note','Sem dados cadastrados para esta camada e período.');return;}
-    const samples=[0,0.25,0.5,0.75,1].map(t=>min+(max-min)*t);
-    bar.replaceChildren(...samples.map(value=>{const el=node('div','','legend-swatch');el.style.background=scale(value);return el;}));
-    labels.replaceChildren(...samples.map(value=>node('span',metricFormat(value,metric))));
-    text('legend-note','Cinza: sem dado • Escala compartilhada com o minimapa');
+    bar.replaceChildren();labels.replaceChildren();note.replaceChildren();
+    bar.hidden=!available;bar.style.background='none';bar.setAttribute('aria-hidden','true');
+    if(!available){note.textContent='Sem dados cadastrados para esta camada e período.';document.querySelector('.map-legend').setAttribute('aria-label',METRICS[metric].label+': sem dados.');return;}
+    // Use the same numeric scale as both maps, rather than five apparent categories.
+    const stops=Array.from({length:101},(_,i)=>scale(min+(max-min)*i/100)+' '+i+'%');
+    bar.style.background='linear-gradient(to right, '+stops.join(', ')+')';
+    labels.append(node('span',metricFormat(min,metric)),node('span',metricFormat(max,metric)));
+    const missing=node('span','','legend-missing-swatch');missing.setAttribute('aria-hidden','true');
+    note.append(node('span','Menor → maior · '),missing,node('span',' Sem dados'));
+    document.querySelector('.map-legend').setAttribute('aria-label',METRICS[metric].label+': escala contínua de '+metricFormat(min,metric)+' a '+metricFormat(max,metric)+'. Cinza indica ausência de dados.');
   }
   drawMini(scale,fill) {
     const svg=this.d3.select('#pip-svg');
