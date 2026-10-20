@@ -18,7 +18,12 @@ export class BrazilMap {
       cancelAnimationFrame(this.frame);this.frame=requestAnimationFrame(()=>this.resize());
     });
     this.observer.observe(byId('map-container'));
+    this.observer.observe(this.svg.node());
     this.motion=matchMedia('(prefers-reduced-motion: reduce)');
+    // Keep map controls outside the drawing area and expose clear accessible names.
+    document.querySelectorAll('.map-controls button').forEach(control=>control.setAttribute('aria-label',control.title));
+    const reset=document.querySelector('.map-controls [data-action="resetMap"]');
+    if(reset)reset.textContent='↺';
   }
   duration(value){return this.motion.matches?0:value;}
   load() {
@@ -35,11 +40,13 @@ export class BrazilMap {
   }
   resize() {
     if(!this.geo)return;
-    const rect=byId('map-container').getBoundingClientRect();
+    const rect=this.svg.node().getBoundingClientRect();
     if(rect.width<10||rect.height<10)return;
     this.width=rect.width;this.height=rect.height;
     this.svg.attr('viewBox',`0 0 ${this.width} ${this.height}`).attr('width',this.width).attr('height',this.height);
-    this.projection=this.d3.geoMercator().fitExtent([[25,this.width<500?145:100],[this.width-25,this.height-105]],this.geo);
+    // Toolbar and legend have their own grid rows; the whole canvas belongs to Brazil.
+    const padding=this.width<500?12:20;
+    this.projection=this.d3.geoMercator().fitExtent([[padding,padding],[this.width-padding,this.height-padding]],this.geo);
     this.path=this.d3.geoPath(this.projection);
     this.draw(true);this.focus(this.state?.uf||'',false);
   }
@@ -55,7 +62,14 @@ export class BrazilMap {
     const spec=METRICS[metric];
     const values=(this.geo?.features||[]).map(d=>metricValue(this.state?.snapshot,d.properties.sigla,metric)).filter(finite);
     const domain=spec.domain||[0,Math.max(1,...values)];
-    return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(['#24362d','#40845f','#b0e5c7'])).clamp(true);
+    const persona=this.state?.persona||'pessoa_comum';
+    const palettes={
+      pessoa_comum: ['#183328','#2e7d5e','#7edfc0'],
+      setor_publico: ['#18233c','#3a5eb5','#93aeff'],
+      setor_privado: ['#362215','#a36025','#ffc078']
+    };
+    const colors=palettes[persona]||palettes.pessoa_comum;
+    return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(colors)).clamp(true);
   }
   draw(geometry) {
     const metric=this.state?.metric||'cob_plano',scale=this.scale();
@@ -79,7 +93,7 @@ export class BrazilMap {
       .interrupt('metric').transition('metric').duration(this.duration(240)).attr('fill',fill);
     const labels=this.labels.selectAll('text').data(this.geo.features,d=>d.properties.sigla)
       .join('text').attr('class','state-label').attr('aria-hidden','true').text(d=>d.properties.sigla);
-    if(geometry)labels.attr('x',d=>this.path.centroid(d)[0]).attr('y',d=>this.path.centroid(d)[1]).attr('font-size',9);
+    if(geometry)labels.attr('x',d=>this.path.centroid(d)[0]).attr('y',d=>this.path.centroid(d)[1]).attr('font-size',this.width<500?9:11);
     this.renderLegend(scale,metric);this.drawMini(scale,fill);
   }
   renderLegend(scale,metric) {

@@ -1,7 +1,7 @@
 export const PERSONAS = {
   pessoa_comum: { label:'Pessoa Comum', heading:'Encontre convênios na sua região', description:'Consulte planos ativos e sua cobertura geográfica cadastrada na ANS.', pages:['map','pl','op'], layers:['planos_ans'], table:'pl' },
-  setor_publico: { label:'Setor Público', heading:'Gestão de Saúde Pública', description:'Indicadores públicos com fonte e período de referência', pages:['map','ov','sd'], layers:['cob_aps','leitos','prof'], table:'sd' },
-  setor_privado: { label:'Setor Privado', heading:'Inteligência de Mercado', description:'Beneficiários e participação no mercado do território selecionado', pages:['map','mkt','op','pl'], layers:['cob_plano','ben_ans'], table:'op' },
+  setor_publico: { label:'Setor Público', heading:'Gestão de Saúde Pública', description:'Indicadores públicos com fonte e período de referência', pages:['map','ov','sd'], layers:['cob_aps','vacina','leitos','prof','alertas'], table:'sd' },
+  setor_privado: { label:'Setor Privado', heading:'Inteligência de Mercado', description:'Beneficiários e participação no mercado do território selecionado', pages:['map','mkt','op','pl'], layers:['cob_plano','ben_ans','mkt_share'], table:'op' },
 };
 export const METRICS = {
   planos_ans:{label:'Planos com cobertura na região',field:'pl',unit:'quantidade'},

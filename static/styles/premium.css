@@ -1,0 +1,669 @@
+/* ================================================================
+   PREMIUM DESIGN SYSTEM — Milton Analytics
+   Gradientes, glassmorphism, micro-animações e paleta por persona.
+   ================================================================ */
+
+/* --- Persona Color Palettes ----------------------------------- */
+:root {
+  /* Pessoa Comum — teal/emerald warm */
+  --persona-pc-primary: #4ecda5;
+  --persona-pc-secondary: #36b893;
+  --persona-pc-glow: rgba(78, 205, 165, 0.15);
+  --persona-pc-gradient: linear-gradient(135deg, #1a3d2e 0%, #0f2a20 100%);
+  --persona-pc-accent: #7edfc0;
+  --persona-pc-badge: linear-gradient(135deg, #2a5c47, #1a3d2e);
+
+  /* Setor Público — blue/indigo civic */
+  --persona-sp-primary: #6b8cff;
+  --persona-sp-secondary: #4a6fe0;
+  --persona-sp-glow: rgba(107, 140, 255, 0.15);
+  --persona-sp-gradient: linear-gradient(135deg, #1e2a4a 0%, #141c33 100%);
+  --persona-sp-accent: #93aeff;
+  --persona-sp-badge: linear-gradient(135deg, #2a3d66, #1e2a4a);
+
+  /* Setor Privado — amber/coral business */
+  --persona-sv-primary: #f0a050;
+  --persona-sv-secondary: #e08a35;
+  --persona-sv-glow: rgba(240, 160, 80, 0.15);
+  --persona-sv-gradient: linear-gradient(135deg, #3d2e1a 0%, #2a2010 100%);
+  --persona-sv-accent: #ffc078;
+  --persona-sv-badge: linear-gradient(135deg, #5c4a2a, #3d2e1a);
+
+  /* Premium tokens */
+  --premium-glass: rgba(20, 22, 24, 0.72);
+  --premium-glass-border: rgba(255, 255, 255, 0.08);
+  --premium-glass-blur: 20px;
+  --premium-shadow-soft: 0 2px 12px rgba(0,0,0,0.25);
+  --premium-shadow-elevated: 0 8px 32px rgba(0,0,0,0.35);
+  --premium-shadow-glow: 0 0 24px;
+  --enter-duration: 380ms;
+  --enter-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Header Premium Gradient ---------------------------------- */
+header {
+  background: linear-gradient(180deg, #111214 0%, #0d0e10 100%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  position: relative;
+}
+header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, var(--primary, #4a9e78) 50%, transparent 100%);
+  opacity: 0.4;
+}
+
+/* --- Brand Glow ---------------------------------------------- */
+.brand-icon {
+  background: linear-gradient(135deg, #1e2b23, #162018) !important;
+  border-color: rgba(127, 199, 162, 0.3) !important;
+  box-shadow: 0 0 16px rgba(78, 205, 165, 0.12);
+  transition: box-shadow 300ms ease, transform 300ms ease;
+}
+.brand-icon:hover {
+  box-shadow: 0 0 22px rgba(78, 205, 165, 0.22);
+  transform: scale(1.05);
+}
+
+/* --- Persona Selector Pill Glow ---- */
+.persona-selector {
+  border-radius: 8px !important;
+  overflow: hidden;
+  background: rgba(18, 20, 18, 0.9) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+}
+.persona-selector::before {
+  border-radius: 6px !important;
+  transition: transform 280ms var(--enter-ease), background 300ms ease, border-color 300ms ease !important;
+}
+/* Dynamic persona pill color via JS data-attribute */
+body[data-persona="pessoa_comum"] .persona-selector::before {
+  background: linear-gradient(135deg, #1e3b2d, #15281e) !important;
+  border-color: rgba(78, 205, 165, 0.25) !important;
+}
+body[data-persona="setor_publico"] .persona-selector::before {
+  background: linear-gradient(135deg, #1e2a4a, #161f38) !important;
+  border-color: rgba(107, 140, 255, 0.25) !important;
+}
+body[data-persona="setor_privado"] .persona-selector::before {
+  background: linear-gradient(135deg, #3d2e1a, #2a2010) !important;
+  border-color: rgba(240, 160, 80, 0.25) !important;
+}
+
+/* --- Persona-adaptive accent colors --- */
+body[data-persona="pessoa_comum"] {
+  --active-persona-primary: var(--persona-pc-primary);
+  --active-persona-glow: var(--persona-pc-glow);
+  --active-persona-accent: var(--persona-pc-accent);
+  --active-persona-gradient: var(--persona-pc-gradient);
+  --active-persona-badge: var(--persona-pc-badge);
+}
+body[data-persona="setor_publico"] {
+  --active-persona-primary: var(--persona-sp-primary);
+  --active-persona-glow: var(--persona-sp-glow);
+  --active-persona-accent: var(--persona-sp-accent);
+  --active-persona-gradient: var(--persona-sp-gradient);
+  --active-persona-badge: var(--persona-sp-badge);
+}
+body[data-persona="setor_privado"] {
+  --active-persona-primary: var(--persona-sv-primary);
+  --active-persona-glow: var(--persona-sv-glow);
+  --active-persona-accent: var(--persona-sv-accent);
+  --active-persona-gradient: var(--persona-sv-gradient);
+  --active-persona-badge: var(--persona-sv-badge);
+}
+
+/* --- Insight Row Premium (persona context bar) --------------- */
+.insight-row {
+  display: grid !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  background: var(--active-persona-gradient, var(--persona-pc-gradient));
+  overflow: hidden;
+  position: relative;
+}
+.insight-row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 50%, var(--active-persona-glow, rgba(78,205,165,0.08)) 0%, transparent 70%);
+  pointer-events: none;
+}
+.insight-card {
+  position: relative;
+  z-index: 1;
+  border-right-color: rgba(255,255,255,0.06) !important;
+}
+.insight-value {
+  color: var(--active-persona-accent, #7edfc0) !important;
+  font-weight: 600 !important;
+}
+
+/* --- Stat Tiles Premium -------------------------------------- */
+.stat-tile {
+  position: relative;
+  border-left: 3px solid var(--active-persona-primary, #4ecda5) !important;
+  border-bottom: none !important;
+  padding: 12px 0 12px 14px !important;
+  transition: border-color 300ms ease;
+}
+.stat-tile .tile-number {
+  color: var(--active-persona-accent, #7edfc0);
+  transition: color 300ms ease;
+}
+.stat-tile.unavailable {
+  border-left-color: rgba(255,255,255,0.1) !important;
+}
+.stat-tile.unavailable .tile-number {
+  color: #7a827d !important;
+}
+
+/* --- Cards Premium Glass ------------------------------------- */
+.card-panel {
+  position: relative;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  background: linear-gradient(180deg, rgba(22,25,22,0.95) 0%, rgba(16,18,16,0.98) 100%) !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+  overflow: hidden;
+  transition: box-shadow 300ms ease, border-color 300ms ease, transform 200ms ease;
+}
+.card-panel:hover {
+  box-shadow: var(--premium-shadow-elevated) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+}
+.card-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--active-persona-primary, #4ecda5) 50%, transparent 100%);
+  opacity: 0.5;
+}
+.card-head {
+  border-bottom-color: rgba(255,255,255,0.05) !important;
+}
+.card-title .indicator-dot {
+  box-shadow: 0 0 8px currentColor;
+}
+
+/* --- Map Viewport Premium ------------------------------------ */
+.map-viewport {
+  border-radius: 12px !important;
+  border-color: rgba(255,255,255,0.06) !important;
+  background: radial-gradient(ellipse at center, #141a16 0%, #0c100e 100%) !important;
+  box-shadow: inset 0 0 60px rgba(0,0,0,0.3), var(--premium-shadow-soft);
+}
+
+/* --- Map Legend Glass ---------------------------------------- */
+.map-legend {
+  backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  background: var(--premium-glass) !important;
+  border: 1px solid var(--premium-glass-border) !important;
+  border-radius: 8px !important;
+  box-shadow: var(--premium-shadow-soft) !important;
+}
+
+/* --- Tooltip Glass ------------------------------------------- */
+.glass-tooltip {
+  backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  background: rgba(16, 20, 18, 0.88) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.45), 0 0 20px var(--active-persona-glow, rgba(78,205,165,0.06)) !important;
+  padding: 14px 16px !important;
+}
+.glass-tooltip .highlight {
+  color: var(--active-persona-accent, #7edfc0) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+/* --- PIP Card Premium --------------------------------------- */
+.pip-card {
+  backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--premium-glass-blur)) !important;
+  background: rgba(18, 24, 20, 0.85) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 16px var(--active-persona-glow, rgba(78,205,165,0.06)) !important;
+  transition: transform 280ms var(--enter-ease), box-shadow 280ms ease !important;
+}
+.pip-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 24px var(--active-persona-glow, rgba(78,205,165,0.12)) !important;
+}
+
+/* --- Map Side Panel Premium --------------------------------- */
+.map-side-panel {
+  background: linear-gradient(180deg, rgba(18,22,20,0.98) 0%, rgba(14,16,14,1) 100%) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 10px !important;
+}
+
+/* --- Layer Selector Premium --------------------------------- */
+.map-layer-selector {
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  background: rgba(18, 24, 20, 0.88) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3) !important;
+}
+.layer-pill-btn.active {
+  background: var(--active-persona-gradient, linear-gradient(135deg, #2a5c47, #1a3d2e)) !important;
+  color: var(--active-persona-accent, #d2ebdb) !important;
+  box-shadow: 0 0 12px var(--active-persona-glow, rgba(78,205,165,0.12));
+}
+
+/* --- Data Table Premium ------------------------------------- */
+.data-table th {
+  background: linear-gradient(180deg, #1a201c 0%, #151a17 100%) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
+}
+.data-table tbody tr {
+  transition: background 180ms ease, box-shadow 180ms ease !important;
+}
+.data-table tbody tr:hover {
+  background: var(--active-persona-glow, rgba(78,205,165,0.06)) !important;
+}
+
+/* --- Pagination Premium ------------------------------------- */
+.pagination button {
+  border-radius: 6px !important;
+  transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 100ms ease !important;
+}
+.pagination button:hover:not(:disabled) {
+  background: var(--active-persona-gradient, linear-gradient(135deg, #2a5c47, #1a3d2e)) !important;
+  border-color: rgba(255,255,255,0.1) !important;
+  box-shadow: 0 0 12px var(--active-persona-glow, rgba(78,205,165,0.08));
+}
+
+/* --- Shortcut Buttons Premium ------------------------------- */
+.shortcut-button {
+  border-radius: 8px !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: var(--active-persona-gradient, linear-gradient(135deg, #1a3d2e, #0f2a20)) !important;
+  transition: transform 200ms ease, box-shadow 300ms ease, border-color 200ms ease !important;
+  position: relative;
+  overflow: hidden;
+}
+.shortcut-button::before {
+  content: '→';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--active-persona-accent, #7edfc0);
+  opacity: 0.5;
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+.shortcut-button:hover {
+  border-color: rgba(255,255,255,0.14) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3), 0 0 12px var(--active-persona-glow, rgba(78,205,165,0.06));
+  transform: translateX(3px);
+}
+.shortcut-button:hover::before {
+  transform: translateY(-50%) translateX(4px);
+  opacity: 1;
+}
+
+/* --- Nav Links Premium -------------------------------------- */
+.nav-link.active {
+  background: var(--active-persona-gradient, linear-gradient(135deg, #1e3b2d, #15281e)) !important;
+  color: var(--active-persona-accent, #7edfc0) !important;
+  border-left: 2px solid var(--active-persona-primary, #4ecda5);
+}
+.nav-link:hover:not(.active) {
+  background: rgba(255,255,255,0.03) !important;
+}
+
+/* --- Sidebar Card Glass ------------------------------------- */
+.sidebar-card {
+  background: linear-gradient(135deg, rgba(20,28,24,0.9), rgba(14,18,16,0.95)) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 8px !important;
+}
+
+/* --- Reload Button Premium ---------------------------------- */
+#reload-data {
+  border-radius: 8px !important;
+  transition: background 200ms ease, border-color 200ms ease, box-shadow 300ms ease, transform 100ms !important;
+}
+#reload-data:hover:not(:disabled) {
+  box-shadow: 0 0 16px var(--active-persona-glow, rgba(78,205,165,0.1));
+}
+
+/* --- Data Status Premium ------------------------------------ */
+.data-status {
+  border-radius: 6px !important;
+  position: relative;
+  overflow: hidden;
+}
+body[data-load-state="loading"] .data-status {
+  border-left-color: var(--active-persona-primary, #8dbf9f) !important;
+}
+body[data-load-state="loading"] .data-status::after {
+  background: linear-gradient(90deg, transparent, var(--active-persona-primary, #8dbf9f), transparent) !important;
+}
+
+/* --- Page Title Premium ------------------------------------- */
+.page-title-group h2 {
+  background: linear-gradient(135deg, var(--text-main) 0%, var(--active-persona-accent, #7edfc0) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* --- Metric Cards (Overview Page) Premium ------------------- */
+.metric-card {
+  border-radius: 8px !important;
+  background: var(--active-persona-gradient, linear-gradient(135deg, #1e3b2d, #15281e)) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  padding: 18px !important;
+  transition: transform 200ms ease, box-shadow 300ms ease !important;
+}
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+.metric-card strong {
+  color: var(--active-persona-accent, #7edfc0) !important;
+}
+
+/* --- Persona Badge Cards (new) ------------------------------ */
+.persona-context-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--active-persona-gradient);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.persona-context-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 90% 50%, var(--active-persona-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+.persona-context-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: var(--active-persona-badge);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.persona-context-text {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+}
+.persona-context-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--active-persona-accent);
+  line-height: 1.4;
+}
+.persona-context-desc {
+  font-size: 11px;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+/* --- KPI Alert Badges (Setor Público) ----------------------- */
+.kpi-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.kpi-badge.success {
+  background: rgba(78, 205, 165, 0.15);
+  color: #6fe0b8;
+  border: 1px solid rgba(78, 205, 165, 0.2);
+}
+.kpi-badge.warning {
+  background: rgba(240, 200, 80, 0.12);
+  color: #f0c850;
+  border: 1px solid rgba(240, 200, 80, 0.2);
+}
+.kpi-badge.danger {
+  background: rgba(240, 80, 80, 0.12);
+  color: #f07070;
+  border: 1px solid rgba(240, 80, 80, 0.2);
+}
+
+/* --- Market Concentration Badge (Setor Privado) ------------- */
+.market-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.market-badge.concentrated {
+  background: rgba(240, 160, 80, 0.15);
+  color: #ffc078;
+  border: 1px solid rgba(240, 160, 80, 0.2);
+}
+.market-badge.dispersed {
+  background: rgba(78, 205, 165, 0.15);
+  color: #7edfc0;
+  border: 1px solid rgba(78, 205, 165, 0.2);
+}
+
+/* --- Plan Type Icons (Pessoa Comum) ------------------------- */
+.plan-type-icon {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+.plan-type-icon.medical {
+  background: rgba(107, 140, 255, 0.12);
+  color: #93aeff;
+}
+.plan-type-icon.dental {
+  background: rgba(78, 205, 165, 0.12);
+  color: #7edfc0;
+}
+.plan-type-icon.reference {
+  background: rgba(163, 92, 98, 0.15);
+  color: #e0808a;
+}
+
+/* --- Micro-Animations --------------------------------------- */
+@keyframes premium-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes premium-scale-in {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+@keyframes premium-slide-right {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes shimmer-gradient {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Entrance animations for page content */
+.page.active .card-panel {
+  animation: premium-fade-in var(--enter-duration) var(--enter-ease) both;
+}
+.page.active .card-panel:nth-child(2) { animation-delay: 60ms; }
+.page.active .card-panel:nth-child(3) { animation-delay: 120ms; }
+
+.page.active .page-head {
+  animation: premium-fade-in 300ms var(--enter-ease) both;
+}
+
+/* Stat tile stagger */
+.stat-grid-2x2 .stat-tile {
+  animation: premium-slide-right 300ms var(--enter-ease) both;
+}
+.stat-grid-2x2 .stat-tile:nth-child(2) { animation-delay: 50ms; }
+.stat-grid-2x2 .stat-tile:nth-child(3) { animation-delay: 100ms; }
+.stat-grid-2x2 .stat-tile:nth-child(4) { animation-delay: 150ms; }
+
+/* Nav link hover slide */
+.nav-link {
+  position: relative;
+  overflow: hidden;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  background: var(--active-persona-primary, #4ecda5);
+  opacity: 0.08;
+  transition: width 200ms ease;
+}
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* Filter chip enter */
+.filter-chip {
+  animation: premium-scale-in 200ms var(--enter-ease) both;
+}
+
+/* --- Swap Table Premium ------------------------------------- */
+.swap-table-card {
+  border-radius: 10px !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  background: linear-gradient(180deg, rgba(18,22,20,0.98) 0%, rgba(14,16,14,1) 100%) !important;
+  overflow: hidden;
+}
+.swap-table-header {
+  border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+}
+
+/* Swap geo banner premium */
+.swap-geo-banner {
+  background: var(--active-persona-gradient) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-radius: 6px !important;
+  position: relative;
+  overflow: hidden;
+}
+.swap-geo-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 10% 50%, var(--active-persona-glow) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* --- Location Start Premium --------------------------------- */
+.location-start h1 {
+  background: linear-gradient(135deg, #f2f3f4 0%, var(--active-persona-accent, #7edfc0) 100%) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+#city-search {
+  border-radius: 8px !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease !important;
+}
+#city-search:focus {
+  border-color: var(--active-persona-primary, #4ecda5) !important;
+  box-shadow: 0 0 0 3px var(--active-persona-glow, rgba(78,205,165,0.1)), 0 0 16px var(--active-persona-glow, rgba(78,205,165,0.06)) !important;
+}
+
+/* City results premium */
+#city-results {
+  border-radius: 8px !important;
+  backdrop-filter: blur(12px);
+  border-color: rgba(255,255,255,0.08) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4) !important;
+}
+.city-result:hover, .city-result:focus-visible {
+  background: var(--active-persona-gradient, linear-gradient(135deg, #1e3b2d, #15281e)) !important;
+}
+
+/* --- Plan Dialog Premium ------------------------------------ */
+.plan-dialog {
+  background: linear-gradient(180deg, #141816 0%, #0e1210 100%) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.6) !important;
+}
+.plan-dialog::backdrop {
+  background: rgba(0,0,0,0.8) !important;
+  backdrop-filter: blur(6px);
+}
+
+/* --- Scrollbar Custom --------------------------------------- */
+main::-webkit-scrollbar { width: 6px; }
+main::-webkit-scrollbar-track { background: transparent; }
+main::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+}
+main::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.14);
+}
+
+/* --- Table Detail Button ------------------------------------ */
+.table-detail-btn {
+  padding: 4px 10px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  border-radius: 6px !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: var(--active-persona-gradient, linear-gradient(135deg, #1e3b2d, #15281e)) !important;
+  color: var(--active-persona-accent, #7edfc0) !important;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 200ms ease, border-color 200ms ease !important;
+}
+.table-detail-btn:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,0.2) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3), 0 0 10px var(--active-persona-glow);
+}
+
+/* --- Respect reduced motion --------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -62,13 +62,51 @@ export class DataTable {
     for(const row of data.items){
       const tr=node('tr');
       for(const[key]of config.columns){
-        const value=row[key];let rendered=value==null?'—':String(value);
-        if(key==='copart')rendered=value==null?'Não informado':value?'Sim':'Não';
-        else if(finite(value)&&key!=='ano')rendered=number(value,['idh','gini'].includes(key)?3:['pct','cob','renda'].includes(key)?2:0);
-        tr.append(node('td',rendered));
+        const value=row[key];
+        const td=node('td');
+        if(key==='copart'){
+          if(value===true){
+            const b=node('span','Coparticipação','kpi-badge warning');
+            td.append(b);
+          } else if(value===false){
+            const b=node('span','Sem copart','kpi-badge success');
+            td.append(b);
+          } else {
+            td.textContent='Não informado';
+          }
+        } else if(key==='tipo'&&typeof value==='string'){
+          let cls='plan-type-icon medical';
+          if(value.toLowerCase().includes('individual')||value.toLowerCase().includes('familiar'))cls='plan-type-icon dental';
+          else if(value.toLowerCase().includes('adesão')||value.toLowerCase().includes('adesao'))cls='plan-type-icon reference';
+          const b=node('span',value,cls);
+          td.append(b);
+        } else if(key==='pct'&&finite(value)){
+          const isLeader=row===data.items[0]&&value>=25;
+          td.textContent=number(value,1)+'%';
+          if(isLeader){
+            const badge=node('span','Líder','market-badge concentrated');
+            badge.style.marginLeft='6px';
+            td.append(badge);
+          }
+        } else {
+          let rendered=value==null?'—':String(value);
+          if(finite(value)&&key!=='ano')rendered=number(value,['idh','gini'].includes(key)?3:['cob','renda'].includes(key)?2:0)+(key==='cob'?'%':'');
+          td.textContent=rendered;
+        }
+        tr.append(td);
       }
-      tr.append(node('td',row.sintetico?'Demonstração':data.meta?.dataset==='ans_catalogo'?'ANS':'Fonte cadastrada'));
-      if(hasDetails){const td=node('td'),open=button('Ver detalhes',()=>this.showDetail(row.id));open.setAttribute('aria-label',`Ver detalhes de ${row.nm}`);td.append(open);tr.append(td);}
+      const origTd=node('td');
+      const isAns=data.meta?.dataset==='ans_catalogo';
+      const origBadge=node('span',row.sintetico?'Demo':(isAns?'ANS':'Oficial'),row.sintetico?'kpi-badge warning':'kpi-badge success');
+      origTd.append(origBadge);
+      tr.append(origTd);
+      if(hasDetails){
+        const td=node('td');
+        const open=button('Ver detalhes',()=>this.showDetail(row.id),'table-detail-btn');
+        open.setAttribute('aria-label',`Ver detalhes de ${row.nm}`);
+        td.append(open);
+        tr.append(td);
+      }
       tbody.append(tr);
     }
     if(!data.items.length){const tr=node('tr'),td=node('td','Nenhum registro para este território, período e busca.');td.colSpan=config.columns.length+1+(hasDetails?1:0);tr.append(td);tbody.append(tr);}

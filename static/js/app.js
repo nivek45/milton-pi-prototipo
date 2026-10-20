@@ -91,6 +91,7 @@ function render(state,previous={},action={}){
   const focused=document.activeElement;
   if(previous.page&&previousView!==currentView)scrollPositions.set(previousView,document.querySelector('main').scrollTop);
   document.body.dataset.loadState=state.status;
+  document.body.dataset.persona=state.persona;
   byId('state-details').hidden=!state.uf;
   document.body.dataset.scope=state.uf?'state':'country';
   byId('persona-selector').style.setProperty('--persona-index',Object.keys(PERSONAS).indexOf(state.persona));
