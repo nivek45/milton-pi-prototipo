@@ -96,3 +96,66 @@ test('keyboard focus reveals an animating control immediately',async()=>{
   assert.equal(f.calls[0].animation.cancelled,1);
   dispose();
 });
+
+async function swapFixture(){
+  const f=await fixture(),animations=[],commits=[];
+  let view='map';
+  const elements=Object.fromEntries(['map','table'].map(name=>[name,{
+    getClientRects:()=>[{}],
+    animate(frames,options){
+      let resolve,reject;
+      const finished=new Promise((yes,no)=>{resolve=yes;reject=no;});
+      const animation={frames,options,finished,finish:resolve,cancel(){this.cancelled=true;reject(new Error('cancelled'));}};
+      animations.push(animation);return animation;
+    },
+  }]));
+  const swap=f.motion.createViewSwap({getView:()=>view,getElement:key=>elements[key],commit:target=>{view=target;commits.push(target);}});
+  return {...f,swap,animations,commits,get view(){return view;}};
+}
+
+test('map/table swap commits between exit and entrance, reversing direction on return',async()=>{
+  const f=await swapFixture();
+  const toTable=f.swap.toggle();
+  assert.equal(f.view,'map');assert.equal(f.animations[0].frames[1].transform,'translate3d(-14px,0,0)');
+  f.animations[0].finish();await Promise.resolve();
+  assert.equal(f.view,'table');assert.equal(f.animations[1].frames[0].transform,'translate3d(18px,0,0)');
+  f.animations[1].finish();await toTable;
+  const toMap=f.swap.toggle();
+  assert.equal(f.animations[2].frames[1].transform,'translate3d(14px,0,0)');
+  f.animations[2].finish();await Promise.resolve();
+  assert.equal(f.view,'map');assert.equal(f.animations[3].frames[0].transform,'translate3d(-18px,0,0)');
+  f.animations[3].finish();await toMap;
+  assert.deepEqual(f.commits,['table','map']);
+  assert.ok(f.animations.every(a=>a.cancelled));
+  for(const a of f.animations)for(const frame of a.frames)assert.deepEqual(Object.keys(frame).sort(),['opacity','transform']);
+  f.swap.destroy();
+});
+
+test('rapid toggles and disposal cannot commit an obsolete view',async()=>{
+  const f=await swapFixture();
+  const first=f.swap.toggle(),second=f.swap.toggle();
+  await Promise.all([first,second]);
+  assert.equal(f.view,'map');assert.deepEqual(f.commits,[]);
+  const third=f.swap.toggle();f.swap.destroy();await third;
+  assert.deepEqual(f.commits,[]);
+});
+
+test('reduced motion switches immediately and finishes a pending swap exactly once',async()=>{
+  const f=await swapFixture();
+  const pending=f.swap.toggle();f.preference(true);await pending;
+  assert.equal(f.view,'table');assert.deepEqual(f.commits,['table']);
+  await f.swap.toggle();assert.equal(f.view,'map');assert.equal(f.animations.length,1);
+  f.swap.destroy();
+});
+
+test('reversing during entrance cancels it and returns to the requested view',async()=>{
+  const f=await swapFixture(),first=f.swap.toggle();
+  f.animations[0].finish();await Promise.resolve();
+  assert.equal(f.view,'table');
+  const reverse=f.swap.toggle();
+  assert.ok(f.animations[1].cancelled);
+  f.animations[2].finish();await Promise.resolve();
+  assert.equal(f.view,'map');
+  f.animations[3].finish();await Promise.all([first,reverse]);
+  assert.deepEqual(f.commits,['table','map']);f.swap.destroy();
+});

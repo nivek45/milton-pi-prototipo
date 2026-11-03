@@ -40,6 +40,50 @@ export function finishMotion(){
 }
 reduced.addEventListener('change',()=>{if(reduced.matches)finishMotion();});
 
+// A short exit, then an entrance in the opposite direction. State changes only
+// once, between phases; cancelling an older request cannot commit a stale view.
+export function createViewSwap({getView,getElement,commit}){
+  let current=null,disposed=false;
+  function cancel(){
+    const job=current;current=null;
+    job?.animation?.cancel();
+  }
+  function finishImmediately(){
+    const target=current?.target;
+    cancel();
+    if(target&&getView()!==target)commit(target);
+  }
+  const preferenceChanged=()=>{if(reduced.matches)finishImmediately();};
+  reduced.addEventListener('change',preferenceChanged);
+  async function toggle(){
+    if(disposed)return;
+    const target=(current?.target||getView())==='map'?'table':'map';
+    cancel();
+    if(target===getView())return;
+    const outgoing=getElement(getView());
+    if(reduced.matches||!outgoing?.animate||!outgoing.getClientRects().length){commit(target);return;}
+    const direction=target==='table'?1:-1;
+    const job=current={target,animation:outgoing.animate([
+      {opacity:1,transform:'translate3d(0,0,0)'},
+      {opacity:0,transform:`translate3d(${-direction*14}px,0,0)`},
+    ],{duration:150,easing:'cubic-bezier(.4,0,1,1)',fill:'forwards'})};
+    try{await job.animation.finished;}catch{}
+    if(current!==job)return;
+    commit(target);
+    job.animation.cancel();
+    if(current!==job)return;
+    const incoming=getElement(target);
+    if(reduced.matches||!incoming?.animate||!incoming.getClientRects().length){cancel();return;}
+    job.animation=incoming.animate([
+      {opacity:0,transform:`translate3d(${direction*18}px,0,0)`},
+      {opacity:1,transform:'translate3d(0,0,0)'},
+    ],{duration:300,easing,fill:'backwards'});
+    try{await job.animation.finished;}catch{}
+    if(current===job)cancel();
+  }
+  return {toggle,cancel,destroy(){disposed=true;cancel();reduced.removeEventListener('change',preferenceChanged);}};
+}
+
 export function setupScrollMotion(root){
   if(!root||!globalThis.IntersectionObserver||!globalThis.MutationObserver)return ()=>{};
   const seen=new WeakSet(),pending=new Set();

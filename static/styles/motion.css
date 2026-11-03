@@ -2,6 +2,9 @@
    This also constrains legacy `transition: all`, width, color and shadow rules. */
 *, *::before, *::after { transition-property:transform,opacity !important; }
 :root { --motion-ease:cubic-bezier(.22,1,.36,1); }
+/* Sliding views must not create a horizontal scrollbar on narrow screens.
+   Wide data tables keep their own existing horizontal scroll container. */
+#main-content { overflow-x:hidden; }
 .metrics-banner .metric-card, .page.active, .view-anim {
   animation:none; /* IntersectionObserver owns entry timing. */
 }

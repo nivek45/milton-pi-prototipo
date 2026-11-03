@@ -1,5 +1,5 @@
 import {setupDrawer} from './accessibility.js';
-import {reveal,setupScrollMotion} from './motion.js';
+import {reveal,setupScrollMotion,createViewSwap} from './motion.js';
 import {setupLocation,renderFilters} from './location.js';
 import {PERSONAS,METRICS,TABLES,number,tableConfig} from './config.js';
 import {createStore} from './store.js';
@@ -85,6 +85,8 @@ function renderStats(){
   },error=>text('overview-bars',error.message));
 }
 function render(state,previous={},action={}){
+  if(previous.page&&(previous.page!==state.page||previous.persona!==state.persona||
+    (previous.view!==state.view&&action.type!=='view')))viewSwap.cancel();
   const persona=PERSONAS[state.persona];
   byId('more-filters').hidden=state.persona==='pessoa_comum';
   const previousView=previous.page+'-'+previous.view,currentView=state.page+'-'+state.view;
@@ -129,7 +131,7 @@ function render(state,previous={},action={}){
   const contentChanged=['persona','metric','uf','municipio','status','snapshot'].some(key=>state[key]!==previous[key]);
   if(contentChanged){renderPanel(state,shortcut);renderInsights(state);map.update(state);}
   renderPip(state);renderActiveTable(state);renderFilters(state,store,selectUF,changePeriod);
-  if(previous.page&&(previous.page!==state.page||previous.view!==state.view||previous.persona!==state.persona)){
+  if(previous.page&&(previous.page!==state.page||previous.persona!==state.persona)){
     // Animate a small heading instead of rasterizing the entire map/table surface.
     reveal(document.querySelector('.page.active .page-head'),8);
   }
@@ -148,9 +150,15 @@ function render(state,previous={},action={}){
 const drawer=setupDrawer();
 byId('sidebar-backdrop').removeAttribute('data-action');
 const scrollPositions=new Map();
+const viewSwap=createViewSwap({
+  getView:()=>store.get().view,
+  getElement:view=>byId(view==='map'?'map-layout-el':'swap-table-container'),
+  commit:view=>store.dispatch({type:'view',value:view}),
+});
 const actions={
   goToMap:event=>{
     event.preventDefault();
+    viewSwap.cancel();
     store.dispatch({type:'view',value:'map'});
     switchPage('map');
     requestAnimationFrame(()=>{
@@ -160,7 +168,7 @@ const actions={
   },
   setPersona:(_,arg)=>{if(arg===store.get().persona)return;clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();searches.set('swap-'+store.get().persona,byId('swap-search-input').value);byId('swap-search-input').value=searches.get('swap-'+arg)||'';store.dispatch({type:'loading'});store.dispatch({type:'persona',value:arg});selectUF(store.get().uf);loadSnapshot();},
   switchPage:(_,arg)=>switchPage(arg),toggleSidebar:()=>toggleSidebar(),
-  swapView:()=>store.dispatch({type:'view'}),handlePipClick:()=>store.dispatch({type:'view'}),
+  swapView:()=>viewSwap.toggle(),handlePipClick:()=>viewSwap.toggle(),
   zoomMap:(_,arg)=>map.zoomBy(Number(arg)),resetMap:()=>{selectUF('');map.focus('');},
   onSwapUFFilterChange:event=>selectUF(event.target.value),
   filterSwapTable:event=>filter('swap',event.target.value),filterTable:(event,arg)=>filter(arg,event.target.value),
@@ -190,6 +198,6 @@ const disposeMotion=setupScrollMotion(byId('main-content'));
 map.load();loadSnapshot();
 window.addEventListener('pagehide',event=>{
   if(event.persisted)return;
-  disposeMotion();disposeLocation();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
+  viewSwap.destroy();disposeMotion();disposeLocation();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
   map.destroy();charts.destroy();for(const table of tables.values())table.destroy();
 });

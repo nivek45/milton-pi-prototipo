@@ -22,6 +22,8 @@ Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revis�
 
 `static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As transições interpolam apenas `transform` e `opacity`. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
 
+A troca mapa ↔ tabela tem saída de 150 ms e entrada de 300 ms, com fade e deslocamento horizontal invertido na volta. Os botões e o card flutuante compartilham o mesmo controlador, que cancela transições substituídas e faz a troca imediatamente quando movimento reduzido está ativo.
+
 `prefers-reduced-motion` desativa os efeitos, inclusive quando a preferência muda durante a sessão. Conteúdo permanece visível sem animações; focar um controle cancela sua entrada imediatamente. `npm test` inclui verificações de redução de movimento, foco, substituição de elementos e limpeza dos observadores.
 
 ## Integração real do perfil Pessoa Comum — 02/10/2026
