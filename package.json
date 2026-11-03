@@ -1,5 +1,5 @@
 {
-  "name":"milton-analytics",
+  "name":"saudash",
   "private":true,
   "type":"module",
   "scripts":{"test":"node --test tests/frontend.test.js"}

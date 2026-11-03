@@ -1,4 +1,4 @@
-import {METRICS,metricValue,metricFormat,finite} from './config.js';
+import {PROFILE_COLORS,METRICS,metricValue,metricFormat,finite} from './config.js';
 import {LatestRequest} from './api.js';
 import {byId,node,button,text} from './dom.js';
 
@@ -63,12 +63,8 @@ export class BrazilMap {
     const values=(this.geo?.features||[]).map(d=>metricValue(this.state?.snapshot,d.properties.sigla,metric)).filter(finite);
     const domain=spec.domain||[0,Math.max(1,...values)];
     const persona=this.state?.persona||'pessoa_comum';
-    const palettes={
-      pessoa_comum: ['#d6e6c8','#719d78','#214c3b'],
-      setor_publico: ['#d9e7f0','#789fbd','#294f77'],
-      setor_privado: ['#f3e3c6','#c59a60','#80502b']
-    };
-    const colors=palettes[persona]||palettes.pessoa_comum;
+    const palette=PROFILE_COLORS[persona]||PROFILE_COLORS.pessoa_comum;
+    const colors=[palette.light,palette.base,palette.darkest];
     return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(colors)).clamp(true);
   }
   draw(geometry) {

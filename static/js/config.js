@@ -1,7 +1,13 @@
+// Brand palette shared by the map and charts; CSS uses the same five tones per profile.
+export const PROFILE_COLORS = {
+  pessoa_comum: { base:'#D59B00', darkest:'#584000', dark:'#5B4200', bright:'#FFC834', light:'#FFCD46' },
+  setor_publico: { base:'#77018C', darkest:'#31003A', dark:'#33003C', bright:'#C431DE', light:'#D745F0' },
+  setor_privado: { base:'#009842', darkest:'#003F1B', dark:'#00411C', bright:'#2EE37D', light:'#42F38F' },
+};
 export const PERSONAS = {
-  pessoa_comum: { label:'Pessoa Comum', heading:'Encontre convênios na sua região', description:'Consulte planos ativos e sua cobertura geográfica cadastrada na ANS.', pages:['map','pl','op'], layers:['planos_ans'], table:'pl' },
-  setor_publico: { label:'Setor Público', heading:'Gestão de Saúde Pública', description:'Indicadores públicos com fonte e período de referência', pages:['map','ov','sd'], layers:['cob_aps','vacina','leitos','prof','alertas'], table:'sd' },
-  setor_privado: { label:'Setor Privado', heading:'Inteligência de Mercado', description:'Beneficiários e participação no mercado do território selecionado', pages:['map','mkt','op','pl'], layers:['cob_plano','ben_ans','mkt_share'], table:'op' },
+  pessoa_comum: { label:'Pessoas Físicas', heading:'Encontre convênios na sua região', description:'Consulte planos ativos e sua cobertura geográfica cadastrada na ANS.', pages:['map','pl','op'], layers:['planos_ans'], table:'pl' },
+  setor_publico: { label:'Governo', heading:'Gestão de Saúde Pública', description:'Indicadores públicos com fonte e período de referência', pages:['map','ov','sd'], layers:['cob_aps','vacina','leitos','prof','alertas'], table:'sd' },
+  setor_privado: { label:'Operadoras', heading:'Inteligência de Mercado', description:'Beneficiários e participação no mercado do território selecionado', pages:['map','mkt','op','pl'], layers:['cob_plano','ben_ans','mkt_share'], table:'op' },
 };
 export const METRICS = {
   planos_ans:{label:'Planos com cobertura na região',field:'pl',unit:'quantidade'},

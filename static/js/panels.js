@@ -1,6 +1,6 @@
 import {LatestRequest} from './api.js';
 const marketRequest=new LatestRequest();
-import {PERSONAS,METRICS,metricValue,metricFormat,number,finite} from './config.js';
+import {PROFILE_COLORS,PERSONAS,METRICS,metricValue,metricFormat,number,finite} from './config.js';
 import {byId,node,text,button} from './dom.js';
 
 function tile(label,value,badge=''){
@@ -212,12 +212,8 @@ export class Charts {
     canvas.setAttribute('role','img');canvas.setAttribute('aria-label',label+'. Os valores também estão disponíveis no conteúdo textual desta página.');
     // Persona-aware colors
     const persona=document.body.dataset.persona||'pessoa_comum';
-    const colors={
-      pessoa_comum:['#4ecda5','#36b893','#2a9c7d','#1e8067','#156551'],
-      setor_publico:['#6b8cff','#5a7de8','#4a6ed0','#3a5fb8','#2a50a0'],
-      setor_privado:['#f0a050','#e09040','#d08030','#c07020','#b06010']
-    };
-    const palette=colors[persona]||colors.pessoa_comum;
+    const colors=PROFILE_COLORS[persona]||PROFILE_COLORS.pessoa_comum;
+    const palette=[colors.base,colors.bright,colors.dark,colors.light,colors.darkest];
     const bgColors=rows.slice(0,20).map((_,i)=>palette[i%palette.length]);
 
     const values=rows.slice(0,20),data={labels:values.map(r=>r[labelKey]),datasets:[{label,data:values.map(r=>r[valueKey]),backgroundColor:bgColors,borderRadius:4,borderSkipped:false}]};
@@ -226,8 +222,8 @@ export class Charts {
     else this.charts.set(id,new window.Chart(canvas,{
       type:id==='chart-doughnut'?'doughnut':'bar',data,
       options:{responsive:true,maintainAspectRatio:false,animation:{duration:400,easing:'easeOutQuart'},
-        plugins:{legend:{display:id==='chart-doughnut',labels:{color:'#aaa',padding:12,usePointStyle:true}},title:{display:true,text:label,color:'#ccc',padding:{bottom:12}}},
-        scales:id==='chart-doughnut'?{}:{x:{ticks:{color:'#888',maxRotation:45},grid:{color:'rgba(255,255,255,0.04)'}},y:{beginAtZero:true,ticks:{color:'#888'},grid:{color:'rgba(255,255,255,0.04)'}}}
+        plugins:{legend:{display:id==='chart-doughnut',labels:{color:'#52676B',padding:12,usePointStyle:true}},title:{display:true,text:label,color:'#0C2D35',padding:{bottom:12}}},
+        scales:id==='chart-doughnut'?{}:{x:{ticks:{color:'#52676B',maxRotation:45},grid:{color:'rgba(12,45,53,0.09)'}},y:{beginAtZero:true,ticks:{color:'#52676B'},grid:{color:'rgba(12,45,53,0.09)'}}}
       }
     }));
   }

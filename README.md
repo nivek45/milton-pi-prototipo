@@ -1,4 +1,18 @@
-# Milton Analytics — Observatório de Saúde Suplementar
+# SaúDash — Observatório de Saúde Suplementar
+
+## Identidade visual
+
+A logo fornecida está em `static/assets/saudash-brand.png`; o cabeçalho exibe a assinatura superior da imagem, preservando o arquivo original. O tema está em `static/styles/saudash.css`, e as cores do mapa e dos gráficos em `PROFILE_COLORS`, em `static/js/config.js`.
+
+| Perfil | Principal | Escuros | Claros |
+| --- | --- | --- | --- |
+| Operadoras | `#009842` | `#003F1B`, `#00411C` | `#2EE37D`, `#42F38F` |
+| Pessoas Físicas | `#D59B00` | `#584000`, `#5B4200` | `#FFC834`, `#FFCD46` |
+| Governo | `#77018C` | `#31003A`, `#33003C` | `#C431DE`, `#D745F0` |
+
+Os identificadores internos dos perfis, as preferências salvas e as variáveis `MILTON_*` continuam compatíveis com a configuração existente.
+
+## Projeto
 
 Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revisão corrige agregações, sincronização assíncrona, proveniência, segurança e navegação das três personas. O mapa mostra UFs; o detalhamento municipal ocorre na tabela por seleção explícita.
 

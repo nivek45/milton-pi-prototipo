@@ -1,6 +1,6 @@
 # Design e acessibilidade — primeira rodada
 
-Implementação de 11/09/2026, sobre a versão corrigida do Milton Analytics.
+Implementação de 11/09/2026, sobre a versão corrigida do SaúDash.
 
 ## O que mudou
 

@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <title>Milton Analytics — Inteligência em Saúde Suplementar</title>
+    <meta name="theme-color" content="#0C2D35" />
+    <meta name="description" content="SaúDash: dados de saúde suplementar para pessoas físicas, governo e operadoras." />
+    <title>SaúDash — Inteligência em Saúde Suplementar</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -15,9 +17,9 @@
     <link rel="stylesheet" href="/static/styles/dashboard.css"><link rel="stylesheet" href="/static/styles/fixes.css">
     <link rel="stylesheet" href="/static/styles/refinements.css">
     <link rel="stylesheet" href="/static/styles/exploration.css">
-    <link rel="stylesheet" href="/static/styles/milton.css">
+    <link rel="stylesheet" href="/static/styles/saudash.css">
   </head>
-  <body>
+  <body data-persona="pessoa_comum">
     <a class="skip-link" href="#main-content">Pular para o conteúdo</a>
     <div id="interaction-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
     <div
@@ -46,56 +48,42 @@
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
-        <a class="brand" href="#page-map" data-action="goToMap" aria-label="Milton Analytics — voltar ao mapa">
-          <div class="brand-icon">
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
-            </svg>
-          </div>
-          <div class="brand-text">
-            <div class="brand-name">Milton <span>Analytics</span></div>
-            <div class="brand-desc">Observatório de Saúde Suplementar</div>
-          </div>
+        <a class="brand" href="#page-map" data-action="goToMap" aria-label="SaúDash — voltar ao mapa">
+          <span class="brand-logo">
+            <img src="/static/assets/saudash-brand.png" alt="SaúDash" width="1200" height="850" fetchpriority="high" />
+          </span>
+          <span class="brand-desc">Observatório de Saúde Suplementar</span>
         </a>
       </div>
 
       <div class="header-actions">
-        <div class="persona-selector" id="persona-selector">
+        <div class="persona-selector" id="persona-selector" role="group" aria-label="Perfil de consulta">
           <button
             class="persona-btn active"
             data-persona="pessoa_comum"
             data-action="setPersona" data-event="click" data-arg="pessoa_comum"
-            title="Perfil Pessoa Comum"
+            title="Perfil Pessoas Físicas"
           >
             <span class="persona-icon"></span>
-            <span class="persona-label">Pessoa Comum</span>
+            <span class="persona-label">Pessoas Físicas</span>
           </button>
           <button
             class="persona-btn"
             data-persona="setor_publico"
             data-action="setPersona" data-event="click" data-arg="setor_publico"
-            title="Perfil Gestor Público / SUS"
+            title="Perfil Governo"
           >
             <span class="persona-icon"></span>
-            <span class="persona-label">Setor Público</span>
+            <span class="persona-label">Governo</span>
           </button>
           <button
             class="persona-btn"
             data-persona="setor_privado"
             data-action="setPersona" data-event="click" data-arg="setor_privado"
-            title="Perfil Operadoras & Mercado"
+            title="Perfil Operadoras"
           >
             <span class="persona-icon"></span>
-            <span class="persona-label">Setor Privado</span>
+            <span class="persona-label">Operadoras</span>
           </button>
         </div>
         <div class="live-indicator">
@@ -110,7 +98,7 @@
     <aside id="sidebar" role="dialog" aria-modal="true" aria-label="Menu de navegação" inert aria-hidden="true">
       <div style="border-bottom: 1px solid var(--border-subtle); padding: 0 1rem 1rem 1rem; margin-bottom: 0.5rem;">
         <div style="font-size:0.6rem;text-transform:uppercase;color:var(--text-faint);letter-spacing:0.08em;margin-bottom:0.25rem;">PERFIL</div>
-        <div id="persona-badge-name" style="font-size:0.9rem;color:var(--text-main);font-weight:600;margin-bottom:0.2rem;">Pessoa Comum</div>
+        <div id="persona-badge-name" style="font-size:0.9rem;color:var(--text-main);font-weight:600;margin-bottom:0.2rem;">Pessoas Físicas</div>
         <div id="persona-badge-desc" style="font-size:0.75rem;color:var(--text-faint);">Consumidor de planos de saúde</div>
       </div>
 
@@ -389,7 +377,7 @@
             </div>
             <div class="swap-table-footer">
               <span id="swap-table-count">0 registros exibidos</span>
-              <span id="swap-table-persona-tag">Persona: Pessoa Comum</span>
+              <span id="swap-table-persona-tag">Persona: Pessoas Físicas</span>
             </div>
           </div>
         </div>
@@ -436,7 +424,7 @@
           </div>
         </div>
         <footer>
-          <span>Milton Analytics · Plataforma de Dados</span>
+          <span>SaúDash · Plataforma de Dados</span>
           <span id="footer-time"></span>
         </footer>
       </div>

@@ -19,7 +19,7 @@ def main():
     from api import app
     from waitress import serve
     host=os.getenv('MILTON_HOST','127.0.0.1');port=int(os.getenv('MILTON_PORT','5001'))
-    print(f'Milton Analytics: http://{host}:{port}',flush=True)
+    print(f'SaúDash: http://{host}:{port}',flush=True)
     serve(app,host=host,port=port,threads=4)
 
 if __name__=='__main__':main()

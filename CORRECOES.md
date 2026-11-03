@@ -1,4 +1,4 @@
-# Correções implementadas — Milton Analytics
+# Correções implementadas — SaúDash
 
 10/09/2026. Revisão local sobre o commit `59f23cc568664879483e451046157e0e5f1e72bf`. Este relatório complementa a auditoria inicial, que descreve o código anterior às correções. As alterações ainda não foram enviadas ao GitHub.
 
