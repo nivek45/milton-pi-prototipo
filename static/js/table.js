@@ -1,7 +1,6 @@
 import {TABLES,number,finite,tableConfig} from './config.js';
 import {LatestRequest,queryString,apiPath} from './api.js';
 import {node,button} from './dom.js';
-import {reveal} from './motion.js';
 
 export class DataTable {
   request=new LatestRequest();page=1;sort='';direction='desc';q='';signature='';
@@ -123,7 +122,7 @@ export class DataTable {
     this.container.replaceChildren(filters,explanation,table,footer);this.container.setAttribute('aria-busy','false');
     const status=document.getElementById('interaction-status');if(status)status.textContent=`${config.title}. Página ${this.page} de ${pages}. ${number(data.total)} registros.`;
     if(this.returnFocus&&document.activeElement===this.container){const target=this.container.querySelector(`[data-focus="${this.returnFocus}"]`);if(target&&!target.disabled)target.focus({preventScroll:true});}
-    this.returnFocus=null;reveal(table,3);
+    this.returnFocus=null;
   }
   showDetail(id){
     this.closeDetail();

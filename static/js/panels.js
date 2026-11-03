@@ -221,7 +221,7 @@ export class Charts {
     if(chart){chart.data=data;chart.update('none');}
     else this.charts.set(id,new window.Chart(canvas,{
       type:id==='chart-doughnut'?'doughnut':'bar',data,
-      options:{responsive:true,maintainAspectRatio:false,animation:{duration:400,easing:'easeOutQuart'},
+      options:{responsive:true,maintainAspectRatio:false,animation:false,
         plugins:{legend:{display:id==='chart-doughnut',labels:{color:'#52676B',padding:12,usePointStyle:true}},title:{display:true,text:label,color:'#0C2D35',padding:{bottom:12}}},
         scales:id==='chart-doughnut'?{}:{x:{ticks:{color:'#52676B',maxRotation:45},grid:{color:'rgba(12,45,53,0.09)'}},y:{beginAtZero:true,ticks:{color:'#52676B'},grid:{color:'rgba(12,45,53,0.09)'}}}
       }

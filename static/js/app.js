@@ -1,5 +1,5 @@
 import {setupDrawer} from './accessibility.js';
-import {reveal,finishMotion} from './motion.js';
+import {reveal,setupScrollMotion} from './motion.js';
 import {setupLocation,renderFilters} from './location.js';
 import {PERSONAS,METRICS,TABLES,number,tableConfig} from './config.js';
 import {createStore} from './store.js';
@@ -127,10 +127,11 @@ function render(state,previous={},action={}){
   text('data-status',state.status==='error'?state.error:state.status==='loading'?'Carregando…':state.snapshot.meta.synthetic?'Demonstração · Dados fictícios para testar a navegação.':`ANS · Catálogo atualizado em ${state.snapshot.meta.atualizado_em||'data não informada'}. Cobertura não garante venda ou atendimento imediato.`);
   byId('reload-data').disabled=state.status==='loading';
   const contentChanged=['persona','metric','uf','municipio','status','snapshot'].some(key=>state[key]!==previous[key]);
-  if(contentChanged){renderPanel(state,shortcut);renderInsights(state);map.update(state);reveal(byId('panel-content'));}
+  if(contentChanged){renderPanel(state,shortcut);renderInsights(state);map.update(state);}
   renderPip(state);renderActiveTable(state);renderFilters(state,store,selectUF,changePeriod);
-  if(previous.page!==state.page||previous.view!==state.view||previous.persona!==state.persona){
-    reveal(byId(state.page==='map'?(state.view==='map'?'map-layout-el':'swap-table-container'):'page-'+state.page));
+  if(previous.page&&(previous.page!==state.page||previous.view!==state.view||previous.persona!==state.persona)){
+    // Animate a small heading instead of rasterizing the entire map/table surface.
+    reveal(document.querySelector('.page.active .page-head'),8);
   }
   if(['persona','metric','uf','locality','municipio','view'].includes(action.type)){
     text('interaction-status',`${persona.label}. ${state.municipioName||state.uf||'Brasil'}. ${METRICS[state.metric].label}. ${state.view==='map'?'Mapa estadual':'Tabela de dados'}.`);
@@ -184,9 +185,11 @@ function shortcut(target){
  else switchPage(target);
  const heading=document.querySelector('.page.active h2, .page.active h3');heading?.setAttribute('tabindex','-1');heading?.focus({preventScroll:true});
 }
-const unsubscribe=store.subscribe(render);render(store.get());map.load();loadSnapshot();
+const unsubscribe=store.subscribe(render);render(store.get());
+const disposeMotion=setupScrollMotion(byId('main-content'));
+map.load();loadSnapshot();
 window.addEventListener('pagehide',event=>{
   if(event.persisted)return;
-  finishMotion();disposeLocation();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
+  disposeMotion();disposeLocation();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
   map.destroy();charts.destroy();for(const table of tables.values())table.destroy();
 });

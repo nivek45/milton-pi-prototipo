@@ -2,5 +2,5 @@
   "name":"saudash",
   "private":true,
   "type":"module",
-  "scripts":{"test":"node --test tests/frontend.test.js"}
+  "scripts":{"test":"node --test tests/frontend.test.js tests/motion.test.js"}
 }

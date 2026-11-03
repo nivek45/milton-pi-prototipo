@@ -16,6 +16,14 @@ Os identificadores internos dos perfis, as preferências salvas e as variáveis 
 
 Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revisão corrige agregações, sincronização assíncrona, proveniência, segurança e navegação das três personas. O mapa mostra UFs; o detalhamento municipal ocorre na tabela por seleção explícita.
 
+### Animações
+
+`static/js/motion.js` usa Web Animations API e um único IntersectionObserver com o `main` como raiz de rolagem. Entradas em cascata duram 420 ms, com intervalo de 45 ms e atraso máximo de 240 ms; cada lote anima até 16 elementos. Cards, tabelas e resultados adicionados pela API são observados automaticamente, e elementos removidos são liberados.
+
+`static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As transições interpolam apenas `transform` e `opacity`. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
+
+`prefers-reduced-motion` desativa os efeitos, inclusive quando a preferência muda durante a sessão. Conteúdo permanece visível sem animações; focar um controle cancela sua entrada imediatamente. `npm test` inclui verificações de redução de movimento, foco, substituição de elementos e limpeza dos observadores.
+
 ## Integração real do perfil Pessoa Comum — 02/10/2026
 
 O perfil Convênios agora usa o catálogo oficial da ANS, separado da demonstração dos outros perfis. Consulte [INTEGRACAO-ANS.md](INTEGRACAO-ANS.md) para fontes, carga, configuração e limitações desta entrega.

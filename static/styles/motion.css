@@ -1,0 +1,56 @@
+/* SaúDash motion layer. Only transform and opacity are interpolated.
+   This also constrains legacy `transition: all`, width, color and shadow rules. */
+*, *::before, *::after { transition-property:transform,opacity !important; }
+:root { --motion-ease:cubic-bezier(.22,1,.36,1); }
+.metrics-banner .metric-card, .page.active, .view-anim {
+  animation:none; /* IntersectionObserver owns entry timing. */
+}
+.persona-selector::before {
+  transition-duration:360ms;
+  transition-timing-function:var(--motion-ease);
+}
+button, .brand-logo, .nav-link, .metric-card, .stat-tile, .pip-card {
+  transition-duration:220ms;
+  transition-timing-function:var(--motion-ease);
+}
+.nav-link svg, .swap-view-btn svg {
+  transition-duration:260ms;
+  transition-timing-function:var(--motion-ease);
+}
+/* Preserve card dimensions on hover; lift instead of adding/removing borders. */
+.stat-tile:hover { border:0; border-left:3px solid var(--profile-base); }
+.pip-card:hover { box-shadow:0 5px 15px #254e3d20; }
+.brand-logo { transform-origin:center; }
+@media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
+  :is(.seg-btn,.ctrl-btn,.swap-view-btn,.shortcut-button,.filter-chip,.table-detail-btn,
+      .pagination button,.mobile-toggle,.drawer-close):hover:not(:disabled) {
+    transform:translate3d(0,-2px,0);
+  }
+  .persona-btn:hover:not(.active) { transform:translate3d(0,-1px,0); }
+  .brand:hover .brand-logo { transform:translate3d(0,-1px,0) scale(1.015); }
+  .nav-link:hover { transform:translate3d(3px,0,0); }
+  .metric-card:hover, .stat-tile:hover { transform:translate3d(0,-3px,0); }
+  .pip-card:hover { transform:translate3d(0,-3px,0); }
+  .swap-view-btn:hover svg { transform:rotate(90deg); }
+}
+@media (prefers-reduced-motion:no-preference) {
+  button:active:not(:disabled) { transform:translate3d(0,1px,0) scale(.98); }
+  .plan-dialog[open] { animation:dialog-enter 220ms var(--motion-ease); }
+  .plan-dialog[open]::backdrop { animation:backdrop-enter 180ms ease-out; }
+}
+@keyframes dialog-enter {
+  from { opacity:0; transform:translate3d(0,8px,0) scale(.99); }
+  to { opacity:1; transform:translate3d(0,0,0) scale(1); }
+}
+@keyframes backdrop-enter { from { opacity:0; } to { opacity:1; } }
+@media (prefers-reduced-motion:reduce) {
+  *, *::before, *::after {
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
+  /* Keep functional transforms (drawer position, persona indicator, map zoom). */
+  button:active:not(:disabled), .nav-link:hover, .nav-link:hover svg,
+  .swap-view-btn:hover svg, .pip-card:hover, .pip-card:hover::after,
+  .metric-card:hover, .stat-tile:hover, .brand:hover .brand-logo { transform:none; }
+}
