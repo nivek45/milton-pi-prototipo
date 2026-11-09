@@ -3,7 +3,7 @@ const active=new Map();
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const easing='cubic-bezier(.22,1,.36,1)';
 const targets=[
-  '.location-eyebrow','.location-start h1','.location-start p','#city-form',
+  '.location-start h1','.location-copy p','#city-form','.filter-chip',
   '.page-head','.map-controls','.layer-pill-btn','.map-legend','.map-breadcrumb',
   '.card-panel','.metric-card','.stat-tile','.persona-context-card',
   '.persona-shortcuts > *','.data-table tbody tr','#city-results li',

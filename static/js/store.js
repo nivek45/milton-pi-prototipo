@@ -19,7 +19,7 @@ export function reduce(state,action) {
     case 'metric': return PERSONAS[state.persona].layers.includes(action.value)?{...state,metric:action.value}:state;
     case 'page': return PERSONAS[state.persona].pages.includes(action.value)?{...state,page:action.value}:state;
     case 'view': return {...state,view:action.value || (state.view==='map'?'table':'map')};
-    case 'locality': return {...state,uf:action.uf,municipio:action.code,municipioName:action.name,page:'map',view:'table'};
+    case 'locality': return {...state,uf:action.uf,municipio:action.code,municipioName:action.name,page:'map',view:action.view==='map'?'map':'table'};
     case 'uf': return {...state,uf:action.value,municipio:'',municipioName:''};
     case 'municipio': return state.uf?{...state,municipio:action.value,municipioName:action.name||'',view:action.value?'table':state.view}:state;
     case 'period': return {...state,[action.key]:action.value};

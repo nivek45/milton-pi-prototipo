@@ -13,7 +13,7 @@ import {renderPanel,renderInsights,renderPip,Charts} from './panels.js';
 let storage;try{storage=window.localStorage;}catch{}
 const store=createStore(storage),snapshotRequest=new LatestRequest(),municipalityRequest=new LatestRequest(),statsRequest=new LatestRequest();
 const life=new AbortController(),charts=new Charts(),tables=new Map(),searches=new Map();
-const map=new BrazilMap(uf=>selectUF(uf));
+const map=new BrazilMap(uf=>selectUF(uf), (uf,city)=>selectUF(uf,city,'map'));
 let searchTimer=0;
 function chartRows(kind,rows){
   if(kind==='mkt')charts.show('chart-market',rows,'nm','ben','Beneficiários — página exibida');
@@ -32,18 +32,34 @@ function loadSnapshot(){
     store.dispatch({type:'snapshot',value:validateSnapshot(data)});
   },error=>store.dispatch({type:'error',value:error.message}));
 }
-function selectUF(uf,city=null){
+function selectUF(uf,city=null,view=store.get().persona==='setor_publico'?'map':'table'){
+  locationSearch.close();
   if(!city){byId('city-search').value='';text('city-status','');}
-  if(city)store.dispatch({type:'locality',uf,code:city.codigo_ibge,name:city.nome});
+  if(city)store.dispatch({type:'locality',uf,code:city.codigo_ibge,name:city.nome,view});
   else store.dispatch({type:'uf',value:uf});
-  const select=byId('global-municipio');select.disabled=true;
+  loadMunicipalities(uf);
+}
+function loadMunicipalities(uf){
+  const select=byId('global-municipio'),state=store.get();
+  const scope=state.persona+'-'+uf;
+  if(uf&&select.dataset.scope===scope&&!select.disabled){
+    if(state.municipio&&![...select.options].some(o=>o.value===state.municipio)){
+      select.add(new Option(state.municipioName,state.municipio));
+    }
+    select.value=state.municipio;
+    return;
+  }
+  select.dataset.scope=scope;
+  select.disabled=true;
   options(select,[],uf?'Carregando municípios…':'Selecione um estado','');
   municipalityRequest.cancel();
   if(!uf)return;
-  requestAnimationFrame(()=>{if(store.get().view==='map'){byId('panel-title').focus({preventScroll:true});byId('state-details').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth',block:'nearest'});}});
   municipalityRequest.run(apiPath(store.get(),'municipios')+'?uf='+encodeURIComponent(uf),data=>{
     if(!Array.isArray(data.items))throw new Error('Lista de municípios inválida.');
-    options(select,data.items.map(m=>[m.codigo_ibge,m.nome]),'Todas as cidades',store.get().municipio);select.disabled=false;
+    const cities=data.items.map(m=>[String(m.codigo_ibge),m.nome]);
+    const state=store.get();
+    if(state.municipio&&!cities.some(([code])=>code===state.municipio))cities.push([state.municipio,state.municipioName]);
+    options(select,cities,'Todas as cidades',state.municipio);select.disabled=false;
   },error=>{options(select,[],'Falha ao carregar municípios','');text('scope-message',error.message);});
 }
 function toggleSidebar(force){
@@ -111,7 +127,7 @@ function render(state,previous={},action={}){
   document.querySelectorAll('.page').forEach(el=>el.classList.toggle('active',el.id==='page-'+state.page));
   byId('map-layout-el').style.display=state.view==='map'?'':'none';
   byId('swap-table-container').style.display=state.view==='table'?'block':'none';
-  text('swap-view-label',state.view==='map'?'Ver tabela':'Ver mapa');
+  text('swap-view-label',state.view==='map'?(state.municipio?'Ver tabela da cidade':'Ver tabela'):'Ver mapa');
   if(previous.persona!==state.persona){
     byId('layer-pills-container').replaceChildren(...persona.layers.map(key=>{
       const btn=button(METRICS[key].label,()=>store.dispatch({type:'metric',value:key}),'layer-pill-btn'+(key===state.metric?' active':''));
@@ -127,20 +143,23 @@ function render(state,previous={},action={}){
   }
   byId('global-uf').value=state.uf;byId('swap-uf-filter').value=state.uf;
   byId('global-uf').disabled=state.status!=='ready';byId('swap-uf-filter').disabled=state.status!=='ready';
-  text('scope-message',state.municipio?'A cidade selecionada filtra a tabela. O mapa mostra o estado.':'O estado filtra onde os planos atendem, não o endereço da operadora.');
-  const status=state.status==='loading'?'Carregando dados':state.status==='error'?'Dados indisponíveis':state.snapshot.meta.synthetic?'Demonstração':'Dados reais · ANS';
+  text('scope-message',state.municipio?'O código IBGE da cidade filtra a consulta.':'O estado filtra onde os planos atendem, não o endereço da operadora.');
+  const status=state.status==='loading'?'Carregando dados':state.status==='error'?'Dados indisponíveis':state.snapshot.meta.synthetic?'Demonstração':state.persona==='pessoa_comum'?'Dados reais · ANS':'Base de indicadores';
   text('status-text',status);
-  text('data-status',state.status==='error'?state.error:state.status==='loading'?'Carregando…':state.snapshot.meta.synthetic?'Demonstração · Dados fictícios para testar a navegação.':`ANS · Catálogo atualizado em ${state.snapshot.meta.atualizado_em||'data não informada'}. Cobertura não garante venda ou atendimento imediato.`);
+  text('data-status',state.status==='error'?state.error:state.status==='loading'?'Carregando…':state.snapshot.meta.synthetic?'Demonstração · Dados fictícios para testar a navegação.':state.persona!=='pessoa_comum'?'Indicadores da base local. Limites municipais: IBGE. Unidades de saúde: CNES.':`ANS · Catálogo atualizado em ${state.snapshot.meta.atualizado_em||'data não informada'}. Cobertura não garante venda ou atendimento imediato.`);
   byId('reload-data').disabled=state.status==='loading';
   const contentChanged=['persona','metric','uf','municipio','status','snapshot'].some(key=>state[key]!==previous[key]);
-  if(contentChanged){renderPanel(state,shortcut);renderInsights(state);map.update(state);}
+  if(contentChanged||state.page!==previous.page||state.view!==previous.view)renderPanel(state,shortcut);
+  if(contentChanged){renderInsights(state);map.update(state);}
+  map.territory.update(state);
   renderPip(state);renderActiveTable(state);renderFilters(state,store,selectUF,changePeriod);
   if(previous.page&&(previous.page!==state.page||previous.persona!==state.persona)){
     // Animate a small heading instead of rasterizing the entire map/table surface.
     reveal(document.querySelector('.page.active .page-head'),8);
   }
+  if(action.type==='metric' && state.metric!==previous.metric)reveal(byId('legend-label'),6);
   if(['persona','metric','uf','locality','municipio','view'].includes(action.type)){
-    text('interaction-status',`${persona.label}. ${state.municipioName||state.uf||'Brasil'}. ${METRICS[state.metric].label}. ${state.view==='map'?'Mapa estadual':'Tabela de dados'}.`);
+    text('interaction-status',`${persona.label}. ${state.municipioName||state.uf||'Brasil'}. ${METRICS[state.metric].label}. ${state.view==='map'?'Mapa':'Tabela de dados'}.`);
   }
   if(previous.page&&previousView!==currentView){
     document.querySelector('main').scrollTop=scrollPositions.get(currentView)||0;
@@ -183,10 +202,21 @@ const actions={
       byId('map-page-heading').scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
     });
   },
-  setPersona:(_,arg)=>{if(arg===store.get().persona)return;clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();searches.set('swap-'+store.get().persona,byId('swap-search-input').value);byId('swap-search-input').value=searches.get('swap-'+arg)||'';store.dispatch({type:'loading'});store.dispatch({type:'persona',value:arg});selectUF(store.get().uf);loadSnapshot();},
+  setPersona:(_,arg)=>{
+    if(arg===store.get().persona)return;
+    clearTimeout(searchTimer);
+    locationSearch.close();
+    snapshotRequest.cancel();
+    searches.set('swap-'+store.get().persona,byId('swap-search-input').value);
+    byId('swap-search-input').value=searches.get('swap-'+arg)||'';
+    store.dispatch({type:'loading'});
+    store.dispatch({type:'persona',value:arg});
+    loadMunicipalities(store.get().uf);
+    loadSnapshot();
+  },
   switchPage:(_,arg)=>switchPage(arg),toggleSidebar:()=>toggleSidebar(),
   swapView:()=>viewSwap.toggle(),handlePipClick:()=>viewSwap.toggle(),
-  zoomMap:(_,arg)=>map.zoomBy(Number(arg)),resetMap:()=>{selectUF('');map.focus('');},
+  zoomMap:(_,arg)=>map.zoomBy(Number(arg)),resetMap:()=>{if(store.get().uf)selectUF('');else map.focus('');},
   onSwapUFFilterChange:event=>selectUF(event.target.value),
   filterSwapTable:event=>filter('swap',event.target.value),filterTable:(event,arg)=>filter(arg,event.target.value),
 };
@@ -199,12 +229,16 @@ for(const el of document.querySelectorAll('[data-action]')){
 }
 byId('close-state-details').addEventListener('click',()=>{const uf=store.get().uf;selectUF('');document.querySelector(`[data-uf="${uf}"]`)?.focus();},{signal:life.signal});
 byId('global-uf').addEventListener('change',event=>selectUF(event.target.value),{signal:life.signal});
-byId('global-municipio').addEventListener('change',event=>store.dispatch({type:'municipio',value:event.target.value,name:event.target.selectedOptions[0]?.text||''}),{signal:life.signal});
+byId('global-municipio').addEventListener('change',event=>{
+  const select=event.target;
+  if(select.value)selectUF(store.get().uf,{codigo_ibge:select.value,nome:select.selectedOptions[0].text});
+  else selectUF(store.get().uf);
+},{signal:life.signal});
 byId('global-competencia').addEventListener('change',event=>changePeriod('competencia',event.target.value),{signal:life.signal});
 byId('global-ano').addEventListener('change',event=>changePeriod('ano',event.target.value),{signal:life.signal});
 byId('reload-data').addEventListener('click',loadSnapshot,{signal:life.signal});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){toggleSidebar(false);map.hideTooltip();}},{signal:life.signal});
-const disposeLocation=setupLocation(selectUF,()=>store.get());
+const locationSearch=setupLocation(selectUF,()=>store.get());
 function shortcut(target){
  if(target==='table'){store.dispatch({type:'page',value:'map'});store.dispatch({type:'view',value:'table'});}
  else switchPage(target);
@@ -215,6 +249,6 @@ const disposeMotion=setupScrollMotion(byId('main-content'));
 map.load();loadSnapshot();
 window.addEventListener('pagehide',event=>{
   if(event.persisted)return;
-  viewSwap.destroy();disposeMotion();disposeLocation();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
+  viewSwap.destroy();disposeMotion();locationSearch.destroy();drawer.destroy();life.abort();unsubscribe();clearTimeout(searchTimer);snapshotRequest.cancel();municipalityRequest.cancel();statsRequest.cancel();
   map.destroy();charts.destroy();for(const table of tables.values())table.destroy();
 });

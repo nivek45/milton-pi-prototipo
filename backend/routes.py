@@ -10,10 +10,12 @@ import psycopg2
 from psycopg2.pool import PoolError
 from backend.db import reader
 from backend import queries
+from backend.public_data import bp as public_data_blueprint
 
 ROOT = Path(__file__).resolve().parent.parent
 app = Flask(__name__, static_folder=str(ROOT / 'static'), static_url_path='/static')
 app.json.sort_keys = False
+app.register_blueprint(public_data_blueprint)
 
 def clean(value):
     if isinstance(value, Decimal): return float(value)

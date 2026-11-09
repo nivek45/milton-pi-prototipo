@@ -201,30 +201,52 @@
 
     <!-- MAIN APP BODY -->
     <main id="main-content" tabindex="-1">
-<section class="location-start" aria-labelledby="location-heading">
- <span class="location-eyebrow">Saúde suplementar · pelo Brasil</span>
- <div><h1 id="location-heading">Qual cidade você quer consultar?</h1><p>Encontre sua cidade ou explore os estados no mapa.</p></div>
- <form id="city-form" role="search" aria-label="Buscar cidade">
-  <label for="city-search">Nome da cidade</label>
-  <div class="city-input-row"><input id="city-search" type="search" autocomplete="off" placeholder="Ex.: Campinas" aria-describedby="city-help"><button type="submit" class="seg-btn">Buscar</button></div>
-  <small id="city-help">Digite pelo menos 2 letras. Use Tab para acessar os resultados.</small>
-  <p id="city-status" role="status" aria-live="polite"></p>
-  <ul id="city-results" aria-label="Cidades encontradas" hidden></ul>
- </form>
-</section>
-<details class="filter-disclosure"><summary>Filtrar por estado, cidade ou período</summary><section class="global-controls" aria-label="Filtros do observatório">
- <label>Estado<select id="global-uf" disabled><option value="">Todos os estados</option></select></label>
- <label>Cidade<select id="global-municipio" disabled><option value="">Selecione um estado</option></select></label>
- <details id="more-filters"><summary>Mais filtros <span id="period-summary"></span></summary><div class="period-fields">
-  <label>Mês de referência<select id="global-competencia"><option value="">Último com dados</option></select></label>
-  <label>Ano dos indicadores municipais<select id="global-ano"><option value="">Último com dados</option></select></label>
- </div></details>
- <button id="reload-data" class="seg-btn" type="button">Atualizar dados</button>
- <small id="scope-message"></small>
-</section>
-</details>
-<div id="active-filters" class="active-filters" role="group" aria-label="Filtros aplicados"></div>
-<div id="data-status" class="data-status" role="status" aria-live="polite">Consultando o banco…</div>
+      <section class="location-start" aria-labelledby="location-heading">
+        <div class="location-copy">
+          <h1 id="location-heading">Qual cidade você quer consultar?</h1>
+          <p>Busque uma cidade ou selecione um estado no mapa.</p>
+        </div>
+        <form id="city-form" role="search" aria-label="Buscar cidade ou CEP">
+          <label class="sr-only" for="city-search">Cidade ou CEP</label>
+          <div class="city-input-row">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+              <circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/>
+            </svg>
+            <input id="city-search" type="search" autocomplete="off" placeholder="Cidade ou CEP" aria-describedby="city-help">
+            <button type="submit" class="seg-btn">Buscar</button>
+          </div>
+          <small id="city-help">Digite o nome da cidade ou um CEP de 8 dígitos. Use Tab para escolher.</small>
+          <p id="city-status" role="status" aria-live="polite"></p>
+          <ul id="city-results" aria-label="Cidades encontradas" hidden></ul>
+        </form>
+      </section>
+      <div class="query-context">
+        <details class="filter-disclosure">
+          <summary>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+              <path d="M3 7h9m5 0h4M3 17h3m5 0h10"/><circle cx="14.5" cy="7" r="2.5"/><circle cx="8.5" cy="17" r="2.5"/>
+            </svg>
+            Filtrar por estado, cidade ou período
+          </summary>
+          <section class="global-controls" aria-label="Filtros do observatório">
+            <label>Estado<select id="global-uf" disabled><option value="">Todos os estados</option></select></label>
+            <label>Cidade<select id="global-municipio" disabled><option value="">Selecione um estado</option></select></label>
+            <details id="more-filters">
+              <summary>Mais filtros <span id="period-summary"></span></summary>
+              <div class="period-fields">
+                <label>Mês de referência<select id="global-competencia"><option value="">Último com dados</option></select></label>
+                <label>Ano dos indicadores municipais<select id="global-ano"><option value="">Último com dados</option></select></label>
+              </div>
+            </details>
+            <button id="reload-data" class="seg-btn" type="button">Atualizar dados</button>
+            <small id="scope-message"></small>
+          </section>
+        </details>
+        <div id="data-status" class="data-status" role="status" aria-live="polite">Consultando o banco…</div>
+      </div>
+      <div id="active-filters" class="active-filters" role="group" aria-label="Filtros aplicados"></div>
       <!-- PAGE 1: MAPA REGIONAL -->
       <div id="page-map" class="page active">
         <div class="page-head">
@@ -242,52 +264,64 @@
         <!-- PERSONA INSIGHT CARDS -->
         <div class="insight-row" id="insight-row"></div>
 
+        <section id="territory-explorer" class="territory-explorer" aria-label="Explorar municípios" hidden>
+          <button type="button" id="territory-back" class="seg-btn">Voltar ao Brasil</button>
+          <label for="map-municipio">Municípios · IBGE</label>
+          <select id="map-municipio" disabled></select>
+          <a href="#facility-panel" id="facility-link" hidden>Ver unidades do CNES</a>
+          <button id="unit-reset" class="seg-btn" type="button" hidden>Enquadrar município</button>
+          <span id="unit-caption" role="status" hidden></span>
+          <span id="mesh-status" role="status"></span>
+          <button type="button" id="mesh-retry" class="seg-btn" hidden>Tentar novamente</button>
+        </section>
         <div class="map-layout" id="map-layout-el">
           <div class="map-viewport" id="map-container">
-            <div class="map-controls">
-              <button class="ctrl-btn" data-action="zoomMap" data-event="click" data-arg="1.4" title="Aproximar">
-                +
-              </button>
-              <button class="ctrl-btn" data-action="zoomMap" data-event="click" data-arg="0.7" title="Afastar">
-                −
-              </button>
-              <button
-                class="ctrl-btn"
-                data-action="resetMap" data-event="click" data-arg=""
-                title="Restaurar Visão Geral"
-              >
-                ⌂
-              </button>
-            </div>
-
-            <!-- Seletor Dinâmico de Camadas flutuante (por Persona) -->
-            <div class="map-layer-selector" id="map-layer-selector">
-              <div class="layer-selector-header">
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
+            <div class="map-toolbar">
+              <div class="map-controls">
+                <button class="ctrl-btn" data-action="zoomMap" data-event="click" data-arg="1.4" title="Aproximar">
+                  +
+                </button>
+                <button class="ctrl-btn" data-action="zoomMap" data-event="click" data-arg="0.7" title="Afastar">
+                  −
+                </button>
+                <button
+                  class="ctrl-btn"
+                  data-action="resetMap" data-event="click" data-arg=""
+                  title="Restaurar Visão Geral"
                 >
-                  <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                  <polyline points="2 17 12 22 22 17" />
-                  <polyline points="2 12 12 17 22 12" />
-                </svg>
-                <span>Camada</span>
+                  ⌂
+                </button>
               </div>
-              <div class="layer-pills" id="layer-pills-container"></div>
-            </div>
 
-            <!-- Swap Map/Table Button -->
-            <button class="swap-view-btn" id="swap-view-btn" data-action="swapView" data-event="click" data-arg="">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
-                <path d="M14 3h7v7M10 21H3v-7"/>
-              </svg>
-              <span id="swap-view-label">Ver tabela</span>
-            </button>
+              <!-- Seletor Dinâmico de Camadas flutuante (por Persona) -->
+              <div class="map-layer-selector" id="map-layer-selector">
+                <div class="layer-selector-header">
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                  </svg>
+                  <span>Camada</span>
+                </div>
+                <div class="layer-pills" id="layer-pills-container"></div>
+              </div>
+
+              <!-- Swap Map/Table Button -->
+              <button class="swap-view-btn" id="swap-view-btn" data-action="swapView" data-event="click" data-arg="">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+                  <path d="M14 3h7v7M10 21H3v-7"/>
+                </svg>
+                <span id="swap-view-label">Ver tabela</span>
+              </button>
+            </div>
 
             <svg id="map-svg"></svg>
 
@@ -314,6 +348,17 @@
 
             <div class="glass-tooltip" id="tooltip"></div>
           </div>
+
+          <section id="facility-panel" class="facility-panel" aria-labelledby="facility-heading" hidden>
+            <h3 id="facility-heading">Unidades de saúde</h3>
+            <p id="facility-status" role="status"></p>
+            <ul id="facility-list"></ul>
+            <div class="facility-pages">
+              <button type="button" class="seg-btn" id="facility-prev">Anterior</button>
+              <button type="button" class="seg-btn" id="facility-next">Próxima</button>
+              <button type="button" class="seg-btn" id="facility-retry" hidden>Tentar novamente</button>
+            </div>
+          </section>
 
           <!-- Map Side Drawer -->
           <section class="map-side-panel" id="state-details" aria-labelledby="panel-title" hidden>

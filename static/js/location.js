@@ -8,27 +8,32 @@ export function setupLocation(selectUF,getState=()=>({})){
  function search(){
   close();const q=input.value.trim();
   if(q.length<2){text('city-status','Digite pelo menos 2 letras.');return;}
-  text('city-status','Buscando cidades…');
+  const isCep=/^[0-9-]+$/.test(q);
+  if(isCep&&!/^\d{5}-?\d{3}$/.test(q)){text('city-status','Informe um CEP de oito dígitos.');return;}
+  text('city-status',isCep?'Consultando o ViaCEP…':'Buscando cidades…');
   const persona=getState().persona;
-  request.run(apiPath(getState(),'localidades')+'?q='+encodeURIComponent(q),data=>{
+  const url=isCep?'/api/publico/cep/'+q.replace('-',''):apiPath(getState(),'localidades')+'?q='+encodeURIComponent(q);
+  request.run(url,data=>{
    if(getState().persona!==persona)return;
    if(!Array.isArray(data.items))throw new Error('Resposta de cidades inválida.');
    for(const city of data.items){
-    const item=node('li');item.append(button(`${city.nome} — ${city.uf}`,()=>{
+    const item=node('li');item.append(button(`${city.nome} — ${city.uf}${isCep?' · ViaCEP':''}`,()=>{
      if(getState().persona!==persona){close();return;}
      input.value=`${city.nome} — ${city.uf}`;close();selectUF(city.uf,city);
-     text('city-status',`${city.nome} selecionada. A tabela mostra os dados disponíveis para a cidade.`);
-     byId('city-search').focus();
+     text('city-status',`${city.nome} selecionada. O recorte municipal foi aplicado.`);
+     const target=byId(getState().view==='table'?'swap-table-title':'map-page-heading');
+     target.tabIndex=-1;target.focus({preventScroll:true});
+     target.scrollIntoView({block:'start',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
     },'city-result'));results.append(item);
    }
    results.hidden=!data.items.length;
    text('city-status',data.items.length?`${data.items.length} cidades encontradas${data.items.length===20?' (limite de 20; refine a busca)':''}. Use Tab para escolher.`:'Nenhuma cidade encontrada. Confira o nome ou tente outra grafia.');
-  },error=>text('city-status',error.message+' Use Buscar para tentar novamente.'));
+  },error=>{if(getState().persona===persona)text('city-status',error.message+' Use Buscar para tentar novamente.');});
  }
  input.addEventListener('input',()=>{close();text('city-status','');if(input.value.trim().length>=2)timer=setTimeout(search,300);},{signal:life.signal});
  form.addEventListener('submit',event=>{event.preventDefault();search();},{signal:life.signal});
  form.addEventListener('keydown',event=>{if(event.key==='Escape'){close();input.focus();text('city-status','Busca fechada.');}},{signal:life.signal});
- return()=>{close();life.abort();};
+ return {close,destroy(){close();life.abort();}};
 }
 
 let filterSignature='';

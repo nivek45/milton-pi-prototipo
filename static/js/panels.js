@@ -1,5 +1,5 @@
-import {LatestRequest} from './api.js';
-const marketRequest=new LatestRequest();
+import {LatestRequest,apiPath,queryString} from './api.js';
+const panelRequest=new LatestRequest();
 import {themeColors} from './theme.js';
 import {PERSONAS,METRICS,metricValue,metricFormat,number,finite} from './config.js';
 import {byId,node,text,button} from './dom.js';
@@ -55,16 +55,31 @@ function personaContextCard(state){
 }
 
 export function renderPanel(state,shortcut=()=>{}) {
-  marketRequest.cancel();
+  panelRequest.cancel();
   const selected=state.snapshot?.states.find(row=>row.uf===state.uf);
   const scope=state.municipio?state.municipioName:selected?.nome||state.uf||'Brasil';
-  text('panel-title',scope);text('breadcrumb-uf',state.uf?(selected?.nome||state.uf):'Todos os Estados');
-  const level=state.municipio?'Municipal (tabela)':state.uf?'Estadual':'Nacional';
+  text('panel-title',scope);text('breadcrumb-uf',state.municipio?(scope+' · '+state.uf):state.uf?(selected?.nome||state.uf):'Todos os Estados');
+  const level=state.municipio?'Municipal':state.uf?'Estadual':'Nacional';
   text('geo-level-pill',level);text('swap-scope-pill',`Escopo: ${scope} · ${level}`);
-  text('panel-subtitle',state.municipio?'O mapa mantém a malha estadual. A tabela usa o código IBGE selecionado.':'Dados dos municípios cadastrados no recorte selecionado');
+  text('panel-subtitle',state.municipio?'A tabela usa o código IBGE do município selecionado.':'Dados dos municípios cadastrados no recorte selecionado');
   const panel=byId('panel-content');panel.replaceChildren();
   if(state.status!=='ready'){panel.append(node('p',state.status==='error'?state.error:'Carregando os indicadores…'));return;}
-  if(state.municipio){panel.append(node('p',`Consulte os dados de ${scope} na tabela. Não há malha municipal neste protótipo.`));return;}
+  if(state.municipio){
+    panel.append(button('Ver dados de '+scope+' na tabela',()=>shortcut('table'),'shortcut-button'));
+    if(state.page==='map' && state.view==='map' && state.persona!=='setor_publico'){
+      const citizen=state.persona==='pessoa_comum';
+      const summary=node('p','Consultando o recorte municipal…','data-message');
+      panel.prepend(summary);
+      const url=apiPath(state,citizen?'planos':'operadoras')+'?'+queryString(state,{page_size:3});
+      panelRequest.run(url,data=>{
+        summary.textContent=number(data.total)+(citizen?' planos com cobertura cadastrada':' operadoras com atuação registrada')+' em '+scope+'.';
+        const list=node('ul','','municipal-preview');
+        for(const row of data.items)list.append(node('li',row.nm));
+        if(data.items.length)summary.after(list);
+      },error=>{summary.textContent=error.message;});
+    }
+    return;
+  }
   const data=state.uf?selected:state.snapshot.national;
   if(!data){panel.append(node('p','Território sem dados cadastrados.'));return;}
   const persona=PERSONAS[state.persona];
@@ -153,7 +168,7 @@ export function renderPanel(state,shortcut=()=>{}) {
       if(!detail.open||loaded)return;loaded=true;content.replaceChildren(node('p','Carregando operadoras…'));
       const params=new URLSearchParams({uf:state.uf,page_size:'5',sort:'ben',direction:'desc'});
       const period=state.competencia||state.snapshot.meta.competencia;if(period)params.set('competencia',period);
-      marketRequest.run('/api/market-share?'+params,data=>{
+      panelRequest.run('/api/market-share?'+params,data=>{
         content.replaceChildren(node('p',`Operadora líder: ${metricFormat(selected.mkt_share,'mkt_share')} dos vínculos no estado.`));
         const table=node('table','','market-preview');table.append(node('caption',`Operadoras com mais beneficiários · ${period||'período não informado'}`));
         const head=node('thead'),hr=node('tr');for(const title of ['Operadora','Beneficiários','Participação']){const th=node('th',title);th.scope='col';hr.append(th);}head.append(hr);table.append(head);
@@ -199,8 +214,8 @@ export function renderPip(state) {
   const uf=state.snapshot?.states.find(row=>row.uf===state.uf);
   const scope=state.municipioName||uf?.nome||state.uf||'Brasil';
   const action=state.view==='map'?(scope==='Brasil'?'Ver dados do Brasil':`Ver dados de ${scope}`):'Voltar ao mapa';card.setAttribute('aria-label',action);
-  text('pip-label',`${scope} · ${METRICS[state.metric].label}`);
-  const value=state.uf?metricFormat(metricValue(state.snapshot,state.uf,state.metric),state.metric):'Visão estadual';
+  text('pip-label',scope+' · '+(state.municipio?'Município':METRICS[state.metric].label));
+  const value=state.municipio?'Consulta municipal':state.uf?metricFormat(metricValue(state.snapshot,state.uf,state.metric),state.metric):'Visão estadual';
   text('pip-sub',action);card.title=value;
   byId('pip-mini-map').style.display=state.view==='table'?'block':'none';
 }

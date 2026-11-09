@@ -8,7 +8,15 @@ As três paletas ficam em `static/styles/themes.css`. O mapa, o minimapa, a lege
 
 ## Projeto
 
-Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revisão corrige agregações, sincronização assíncrona, proveniência, segurança e navegação das três personas. O mapa mostra UFs; o detalhamento municipal ocorre na tabela por seleção explícita.
+Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revisão corrige agregações, sincronização assíncrona, proveniência, segurança e navegação das três personas. O mapa permite explorar UFs e municípios, com as tabelas filtradas pelo código IBGE.
+
+### Exploração territorial
+
+Selecione uma UF para carregar os limites municipais do IBGE. Clique em um município ou escolha seu nome na lista para aproximar o mapa. O botão de retorno refaz o caminho até o Brasil. A busca aceita cidades e CEPs com ou sem hífen. O ViaCEP identifica o município pelo código IBGE.
+
+No perfil Governo, a seleção municipal mostra estabelecimentos cadastrados e seus tipos segundo o CNES. Os pontos correspondem às unidades da página atual com coordenadas informadas. A lista também inclui registros sem posição e oferece paginação. O CNES informa o cadastro da unidade. A cobertura de cada plano precisa ser confirmada com a operadora.
+
+As consultas passam pelo Flask em `/api/publico` e precisam de acesso HTTPS a `servicodados.ibge.gov.br`, `viacep.com.br` e `apidadosabertos.saude.gov.br`. As malhas e a classificação de unidades têm cache diário no servidor. A busca nominal e o mapa nacional usam a base e os arquivos locais.
 
 ### Animações
 
@@ -42,7 +50,7 @@ Requisitos: Python 3.11+, PostgreSQL 16+; Node 20+ apenas para os testes JavaScr
 
 `python fetch_real_data.py --only estados municipios operadoras` importa cadastros públicos IBGE e ANS, com UPSERT e transação por conjunto. O cadastro de operadoras não fornece números de beneficiários nem market share. A carga foi executada nesta revisão: 27 UFs, 5.571 municípios e 1.111 operadoras do cadastro ANS. Valores são uma fotografia da execução, não totais permanentes.
 
-Beneficiários, planos e perfis da seed são exemplos explicitamente sintéticos. Vacinação, cobertura APS, alertas, leitos, profissionais e estabelecimentos não são inferidos de proxies. Sem fonte cadastrada em `indicador_saude`, aparecem como indisponíveis. Essa tabela exige unidade, competência e fonte; a ingestão de cada série oficial ainda precisa ser implementada e validada. Não há malha municipal nem promessa de vacinação real nesta versão.
+Beneficiários, planos e perfis da seed são exemplos explicitamente sintéticos. Vacinação, cobertura APS, alertas, leitos, profissionais e estabelecimentos não são inferidos de proxies. Sem fonte cadastrada em `indicador_saude`, aparecem como indisponíveis. Essa tabela exige unidade, competência e fonte; a ingestão de cada série oficial ainda precisa ser implementada e validada. Os limites municipais identificam territórios. As cores do mapa representam o indicador estadual.
 
 Market share no mapa é a participação da maior operadora no total da UF, no mês escolhido. Cobertura e renda são ponderadas pela população dos municípios com dados; IDH é média municipal, não o IDH oficial da UF. Ausência é `null`, distinta de zero. O período automático usa fatos existentes, não apenas dimensões de calendário. A competência dos indicadores próprios aparece na fonte do tooltip.
 

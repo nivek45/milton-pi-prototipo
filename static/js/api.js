@@ -19,11 +19,11 @@ export async function requestJSON(url,{signal,timeout=10000}={}) {
 }
 export class LatestRequest {
   generation=0; controller=null;
-  async run(url,apply,fail) {
+  async run(url,apply,fail,timeout=10000) {
     this.cancel();const generation=this.generation;
     const controller=this.controller=new AbortController();
     try {
-      const data=await requestJSON(url,{signal:controller.signal});
+      const data=await requestJSON(url,{signal:controller.signal,timeout});
       if(generation===this.generation)apply(data);
     } catch(error) {
       if(generation===this.generation && !controller.signal.aborted)fail(error);

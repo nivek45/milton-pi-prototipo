@@ -47,6 +47,47 @@ button, .brand-logo, .nav-link, .metric-card, .stat-tile, .pip-card {
   .plan-dialog[open] { animation:dialog-enter 220ms var(--motion-ease); }
   .plan-dialog[open]::backdrop { animation:backdrop-enter 180ms ease-out; }
 }
+/* Follow the interaction from search to the map, without delaying input. */
+@media (prefers-reduced-motion:no-preference) {
+  .location-start {position:relative;}
+  .location-start::before {
+    content:"";position:absolute;inset:0 22px auto;height:2px;
+    border-radius:2px;background:var(--color-primary-titles);
+    pointer-events:none;transform-origin:left;transform:scaleX(0);opacity:0;
+    transition:transform 450ms var(--motion-ease),opacity 220ms ease;
+  }
+  .location-start:focus-within::before {transform:scaleX(1);opacity:1;}
+  .city-input-row svg {transition:transform 240ms var(--motion-ease);}
+  .city-input-row:focus-within svg {transform:translateY(-1px) scale(1.12);}
+
+  .query-context .filter-disclosure > summary::after {transition:transform 260ms var(--motion-ease);}
+  @supports selector(details::details-content) and (interpolate-size:allow-keywords) {
+    .filter-disclosure, #more-filters {interpolate-size:allow-keywords;}
+    :is(.filter-disclosure,#more-filters)::details-content {
+      block-size:0;overflow:clip;opacity:0;
+      transition:block-size 320ms var(--motion-ease),opacity 220ms ease,
+        content-visibility 320ms allow-discrete;
+    }
+    :is(.filter-disclosure,#more-filters)[open]::details-content {block-size:auto;opacity:1;}
+  }
+
+  .glass-tooltip.show {animation:tooltip-arrive 140ms var(--motion-ease);}
+  #map-svg .state-feature {animation:state-arrive 460ms var(--motion-ease) var(--map-entry-delay,0ms) backwards;}
+  #map-svg .state-feature:focus {animation-duration:1ms;animation-delay:0ms;}
+  .mode-toggle .icon-sun, .mode-toggle .icon-moon {transform-origin:12px 12px;}
+  .mode-toggle .icon-sun {animation:daybreak 380ms var(--motion-ease);}
+  .mode-toggle .icon-moon {animation:nightfall 330ms var(--motion-ease);}
+}
+@keyframes tooltip-arrive {from {opacity:0;transform:translateY(4px);} to {opacity:1;transform:translateY(0);}}
+@keyframes state-arrive {from {opacity:.18;} to {opacity:1;}}
+@keyframes daybreak {
+  from {opacity:0;transform:rotate(-75deg) scale(.45);}
+  to {opacity:1;transform:rotate(0) scale(1);}
+}
+@keyframes nightfall {
+  from {opacity:0;transform:translateY(3px) rotate(35deg) scale(.6);}
+  to {opacity:1;transform:translateY(0) rotate(0) scale(1);}
+}
 @keyframes dialog-enter {
   from { opacity:0; transform:translate3d(0,8px,0) scale(.99); }
   to { opacity:1; transform:translate3d(0,0,0) scale(1); }
@@ -63,3 +104,10 @@ button, .brand-logo, .nav-link, .metric-card, .stat-tile, .pip-card {
   .swap-view-btn:hover svg, .pip-card:hover, .pip-card:hover::after,
   .metric-card:hover, .stat-tile:hover, .brand:hover .brand-logo { transform:none; }
 }
+
+@media (prefers-reduced-motion:no-preference) {
+ .municipal-boundaries path {animation:boundary-arrive 360ms ease-out;}
+ .facility-points circle {animation:boundary-arrive 260ms ease-out;}
+ .territory-explorer:not([hidden]),.facility-panel:not([hidden]) {animation:dialog-enter 250ms var(--motion-ease);}
+}
+@keyframes boundary-arrive {from {opacity:0;} to {opacity:1;}}

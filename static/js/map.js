@@ -1,3 +1,4 @@
+import {TerritoryLayer} from './territory.js';
 import {themeColors} from './theme.js';
 import {METRICS,metricValue,metricFormat,finite} from './config.js';
 import {LatestRequest} from './api.js';
@@ -5,13 +6,15 @@ import {byId,node,button,text} from './dom.js';
 
 export class BrazilMap {
   geo=null;state=null;lastUF=null;frame=0;tipFrame=0;request=new LatestRequest();
-  constructor(selectUF) {
+  constructor(selectUF, selectCity) {
     this.selectUF=selectUF;this.d3=window.d3;
     this.svg=this.d3.select('#map-svg');
     this.group=this.svg.append('g');
     this.paths=this.group.append('g');this.labels=this.group.append('g');
-    this.zoom=this.d3.zoom().scaleExtent([1,20]).on('zoom',event=>{
+    this.territory=new TerritoryLayer(this,selectCity);
+    this.zoom=this.d3.zoom().scaleExtent([1,2048]).on('zoom',event=>{
       this.group.attr('transform',event.transform);
+      this.territory.zoom(event.transform.k);
       this.labels.selectAll('text').attr('font-size',Math.min(16,11*Math.sqrt(event.transform.k))/event.transform.k);
     });
     this.svg.call(this.zoom).on('dblclick.zoom',null);
@@ -21,6 +24,8 @@ export class BrazilMap {
     this.observer.observe(byId('map-container'));
     this.observer.observe(this.svg.node());
     this.motion=matchMedia('(prefers-reduced-motion: reduce)');
+    this.stopMotion=()=>{if(this.motion.matches)this.focus(this.state?.uf||'',false);};
+    this.motion.addEventListener('change',this.stopMotion);
     // Keep map controls outside the drawing area and expose clear accessible names.
     document.querySelectorAll('.map-controls button').forEach(control=>control.setAttribute('aria-label',control.title));
     const reset=document.querySelector('.map-controls [data-action="resetMap"]');
@@ -49,7 +54,7 @@ export class BrazilMap {
     const padding=this.width<500?12:20;
     this.projection=this.d3.geoMercator().fitExtent([[padding,padding],[this.width-padding,this.height-padding]],this.geo);
     this.path=this.d3.geoPath(this.projection);
-    this.draw(true);this.focus(this.state?.uf||'',false);
+    this.draw(true);this.territory.drawGeometry();this.focus(this.state?.uf||'',false);
   }
   update(state) {
     this.state=state;this.hideTooltip();
@@ -72,6 +77,7 @@ export class BrazilMap {
     const fill=d=>{const value=metricValue(this.state?.snapshot,d.properties.sigla,metric);return finite(value)?scale(value):'var(--color-no-data)';};
     const paths=this.paths.selectAll('path').data(this.geo.features,d=>d.properties.sigla).join(
       enter=>enter.append('path').attr('class','state-feature').attr('fill','var(--color-no-data)')
+        .style('--map-entry-delay',d=>Math.round(220*this.path.centroid(d)[1]/this.height)+'ms')
         .attr('tabindex',0).attr('role','button')
         .on('pointerenter',(event,d)=>this.showTooltip(event,d))
         .on('pointermove',event=>this.moveTooltip(event))
@@ -118,14 +124,35 @@ export class BrazilMap {
   }
   focus(uf,animate=true) {
     if(!this.path)return;
-    const feature=this.geo.features.find(d=>d.properties.sigla===uf);
+    const city=this.territory.uf===uf && this.territory.city===this.state?.municipio ? this.territory.selectedFeature() : null;
+    const feature=city||this.geo.features.find(d=>d.properties.sigla===uf);
     let transform=this.d3.zoomIdentity;
     if(feature){
       const [[x0,y0],[x1,y1]]=this.path.bounds(feature);
-      const k=Math.min(14,0.65/Math.max((x1-x0)/this.width,(y1-y0)/this.height));
+      const k=Math.min(2048,0.76/Math.max((x1-x0)/this.width,(y1-y0)/this.height));
       transform=transform.translate(this.width/2-k*(x0+x1)/2,this.height/2-k*(y0+y1)/2).scale(k);
     }
-    this.svg.interrupt().transition().duration(animate?this.duration(300):0).call(this.zoom.transform,transform);
+    this.moveCamera(transform,animate,city?620:480);
+  }
+
+  moveCamera(transform,animate,duration) {
+    this.svg.interrupt();
+    if(animate&&!this.motion.matches){
+      this.svg.transition().duration(duration).ease(this.d3.easeCubicInOut).call(this.zoom.transform,transform);
+    }else this.svg.call(this.zoom.transform,transform);
+  }
+
+  focusUnit(unit) {
+    if(!this.projection)return;
+    const [x,y]=this.projection([unit.lon,unit.lat]);
+    const city=this.territory.selectedFeature();
+    let k=this.d3.zoomTransform(this.svg.node()).k;
+    if(city){
+      const [[x0,y0],[x1,y1]]=this.path.bounds(city);
+      k=Math.min(2048,1.45/Math.max((x1-x0)/this.width,(y1-y0)/this.height));
+    }
+    const target=this.d3.zoomIdentity.translate(this.width/2-k*x,this.height/2-k*y).scale(k);
+    this.moveCamera(target,true,520);
   }
   zoomBy(factor){if(this.path)this.svg.interrupt().transition().duration(this.duration(180)).call(this.zoom.scaleBy,factor);}
   showTooltip(event,feature) {
@@ -142,5 +169,5 @@ export class BrazilMap {
   moveTooltip(event){const{x,y}={x:event.clientX,y:event.clientY};cancelAnimationFrame(this.tipFrame);this.tipFrame=requestAnimationFrame(()=>this.positionTooltip(x,y));}
   positionTooltip(x,y){const tip=byId('tooltip');tip.style.left=Math.max(8,Math.min(x+14,innerWidth-270))+'px';tip.style.top=Math.max(8,Math.min(y+14,innerHeight-160))+'px';}
   hideTooltip(){cancelAnimationFrame(this.tipFrame);const tip=byId('tooltip');if(tip){tip.classList.remove('show');tip.hidden=true;tip.setAttribute('aria-hidden','true');}}
-  destroy(){this.request.cancel();this.observer.disconnect();cancelAnimationFrame(this.frame);this.hideTooltip();this.svg.interrupt().on('.zoom',null);this.paths.selectAll('*').interrupt('metric').on('pointerenter pointermove pointerleave focus blur click keydown',null);}
+  destroy(){this.territory.destroy();this.motion.removeEventListener('change',this.stopMotion);this.request.cancel();this.observer.disconnect();cancelAnimationFrame(this.frame);this.hideTooltip();this.svg.interrupt().on('.zoom',null);this.paths.selectAll('*').interrupt('metric').on('pointerenter pointermove pointerleave focus blur click keydown',null);}
 }
