@@ -11,32 +11,6 @@
       }
 
       :root {
-        --bg-app: #0b0c0d;
-        --bg-sidebar: #111214;
-        --bg-surface: #17181a;
-        --bg-surface-elevated: #1d1e21;
-        --bg-surface-hover: #232428;
-
-        --border-subtle: rgba(255, 255, 255, 0.06);
-        --border-default: rgba(255, 255, 255, 0.11);
-        --border-active: rgba(74, 158, 120, 0.45);
-
-        --primary: #4a9e78;
-        --primary-glow: rgba(74, 158, 120, 0.18);
-        --primary-light: #7fc7a2;
-        --primary-dark: #2f6b4d;
-        --primary-subtle: rgba(74, 158, 120, 0.1);
-
-        --accent-teal: #4a8f8a;
-        --accent-cyan: #4a8aa0;
-        --accent-blue: #5c7fa8;
-        --accent-amber: #b98a4a;
-        --accent-indigo: #7a7ea3;
-        --accent-rose: #a35c62;
-
-        --text-main: #f2f3f4;
-        --text-muted: #9a9da1;
-        --text-faint: #68696c;
         --font-display: "Fraunces", Georgia, "Times New Roman", serif;
         --font-sans:
           "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
@@ -48,16 +22,10 @@
         --radius-lg: 4px;
         --radius-pill: 3px;
 
-        --shadow-card:
-          0 1px 2px rgba(0, 0, 0, 0.4), 0 6px 16px -8px rgba(0, 0, 0, 0.5);
-        --shadow-glow: 0 0 0 rgba(0, 0, 0, 0);
         --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
         --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
         /* PIP / Glassmorphism tokens */
-        --glass-bg: rgba(23, 24, 26, 0.72);
-        --glass-bg-strong: rgba(17, 18, 20, 0.86);
-        --glass-border: rgba(255, 255, 255, 0.14);
         --glass-blur: 18px;
       }
 
@@ -245,7 +213,7 @@
         left: 0;
         width: 100vw;
         height: 100vh;
-        background: rgba(0, 0, 0, 0.65);
+        background: var(--color-overlay);
         backdrop-filter: blur(4px);
         z-index: 70;
         opacity: 0;
@@ -560,24 +528,24 @@
           fill 0.3s ease,
           stroke 0.2s ease,
           filter 0.2s ease;
-        stroke: rgba(255, 255, 255, 0.12);
+        stroke: var(--color-text);
         stroke-width: 0.75px;
       }
 
       #map-svg .state-feature:hover {
         filter: brightness(1.15);
-        stroke: #7fc7a2 !important;
+        stroke: var(--color-text) !important;
         stroke-width: 1.5px !important;
       }
 
       #map-svg .state-feature.selected {
-        stroke: #eef4f0 !important;
+        stroke: var(--color-text) !important;
         stroke-width: 2px !important;
         filter: brightness(1.1);
       }
 
       #map-svg .state-label {
-        fill: rgba(242, 243, 244, 0.6);
+        fill: var(--color-white);
         pointer-events: none;
         text-anchor: middle;
         dominant-baseline: middle;
@@ -724,7 +692,7 @@
       .panel-header {
         padding: 1.25rem 1.5rem;
         border-bottom: 1px solid var(--border-subtle);
-        background: rgba(20, 21, 23, 0.4);
+        background: var(--bg-surface-elevated);
       }
 
       .panel-header h3 {
@@ -855,7 +823,7 @@
 
       .ranking-fill {
         height: 100%;
-        background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.2));
+        background: linear-gradient(90deg, var(--primary-subtle), var(--bg-surface));
         border-radius: 3px;
         transition: width 0.8s var(--ease-spring);
       }
@@ -1023,7 +991,7 @@
         border: 1px solid var(--border-default);
         border-radius: var(--radius-pill);
         padding: 0.45rem 1rem 0.45rem 2.2rem;
-        color: #fff;
+        color: var(--text-main);
         font-size: 0.8rem;
         font-family: inherit;
         outline: none;
@@ -1089,29 +1057,29 @@
       }
 
       .tag-green {
-        background: rgba(74, 158, 120, 0.12);
-        color: #8fd0ab;
-        border: 1px solid rgba(74, 158, 120, 0.3);
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
+        border: 1px solid var(--border-default);
       }
       .tag-teal {
-        background: rgba(74, 143, 138, 0.12);
-        color: #8fc2bd;
-        border: 1px solid rgba(74, 143, 138, 0.3);
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
+        border: 1px solid var(--border-default);
       }
       .tag-blue {
-        background: rgba(92, 127, 168, 0.12);
-        color: #a7bedd;
-        border: 1px solid rgba(92, 127, 168, 0.3);
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
+        border: 1px solid var(--border-default);
       }
       .tag-purple {
-        background: rgba(122, 126, 163, 0.12);
-        color: #b7bade;
-        border: 1px solid rgba(122, 126, 163, 0.3);
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
+        border: 1px solid var(--border-default);
       }
       .tag-amber {
-        background: rgba(185, 138, 74, 0.12);
-        color: #dbb27f;
-        border: 1px solid rgba(185, 138, 74, 0.3);
+        background: var(--color-warning-bg);
+        color: var(--color-warning);
+        border: 1px solid var(--border-default);
       }
 
       .progress-row {
@@ -1141,7 +1109,7 @@
       .progress-fill {
         height: 100%;
         border-radius: 4px;
-        background: linear-gradient(90deg, rgba(255,255,255,0.08), rgba(255,255,255,0.2));
+        background: linear-gradient(90deg, var(--primary-subtle), var(--bg-surface));
         transition: width 0.8s var(--ease-spring);
       }
 
@@ -1198,7 +1166,7 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        background: rgba(17, 18, 20, 0.92);
+        background: var(--bg-surface-elevated);
         padding: 0.85rem 1.35rem;
         border-radius: var(--radius-pill);
         border: 1px solid var(--border-default);
@@ -1377,7 +1345,7 @@
       .persona-selector {
         display: inline-flex;
         align-items: center;
-        background: rgba(255, 255, 255, 0.04);
+        background: var(--bg-surface-elevated);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-pill);
         padding: 3px;
@@ -1403,12 +1371,12 @@
 
       .persona-btn:hover {
         color: var(--text-main);
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--bg-surface-elevated);
       }
 
       .persona-btn.active {
         background: transparent; border-bottom: 2px solid var(--primary);
-        color: #0b0c0d;
+        color: var(--text-main);
         font-weight: 600;
         box-shadow: 0 0 12px var(--primary-glow);
       }
@@ -1492,7 +1460,7 @@
         left: 50%;
         transform: translateX(-50%);
         z-index: 10;
-        background: rgba(17, 18, 20, 0.88);
+        background: var(--bg-surface-elevated);
         backdrop-filter: blur(10px);
         -webkit-backdrop-filter: blur(10px);
         border: 1px solid var(--border-default);
@@ -1555,21 +1523,21 @@
         border-radius: var(--radius-pill);
         font-size: 0.7rem;
         font-weight: 600;
-        background: rgba(74, 158, 120, 0.14);
+        background: var(--bg-surface-elevated);
         color: var(--primary-light);
-        border: 1px solid rgba(74, 158, 120, 0.3);
+        border: 1px solid var(--border-default);
       }
 
       .geo-level-pill.state {
-        background: rgba(74, 138, 160, 0.16);
+        background: var(--bg-surface-elevated);
         color: var(--accent-cyan);
-        border-color: rgba(74, 138, 160, 0.35);
+        border-color: var(--border-default);
       }
 
       .geo-level-pill.municipal {
-        background: rgba(185, 138, 74, 0.16);
-        color: #e0b068;
-        border-color: rgba(185, 138, 74, 0.35);
+        background: var(--color-warning-bg);
+        color: var(--color-warning);
+        border-color: var(--border-default);
       }
 
       .granularity-notice {
@@ -1604,8 +1572,8 @@
       }
 
       .granularity-badge-btn:hover {
-        background: rgba(255,255,255,0.08);
-        color: #0b0c0d;
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
       }
 
       /* SWAP TABLE VIEW */
@@ -1657,7 +1625,7 @@
         display: inline-flex;
         align-items: center;
         padding: 5px 11px;
-        background: rgba(255, 255, 255, 0.05);
+        background: var(--bg-surface-elevated);
         border: 1px solid var(--border-default);
         border-radius: var(--radius-pill);
         font-size: 0.74rem;
@@ -1695,13 +1663,13 @@
       }
 
       .swap-back-map-btn:hover {
-        background: rgba(255,255,255,0.1);
-        color: #0b0c0d;
+        background: var(--bg-surface-elevated);
+        color: var(--text-main);
       }
 
       .swap-geo-banner {
         padding: 0.65rem 1.4rem;
-        background: rgba(74, 158, 120, 0.07);
+        background: var(--bg-surface-elevated);
         border-bottom: 1px solid var(--border-subtle);
         font-size: 0.75rem;
         color: var(--text-muted);
@@ -1722,7 +1690,7 @@
       }
 
       .badge-tag.locked {
-        background: rgba(255, 255, 255, 0.06);
+        background: var(--bg-surface-elevated);
         color: var(--text-faint);
         border-color: var(--border-subtle);
         font-style: italic;
@@ -1798,7 +1766,7 @@
         border-radius: var(--radius-lg);
         box-shadow:
           var(--shadow-card),
-          0 0 0 1px rgba(255, 255, 255, 0.02);
+          0 0 0 1px var(--color-shadow);
         cursor: pointer;
         z-index: 95;
         overflow: hidden;
@@ -1846,7 +1814,7 @@
         height: 108px;
         border-radius: var(--radius-sm);
         overflow: hidden;
-        background: rgba(0, 0, 0, 0.25);
+        background: var(--color-map-surface);
         border: 1px solid var(--border-subtle);
       }
 
@@ -1860,7 +1828,7 @@
         border-radius: var(--radius-sm);
         overflow: hidden;
         border: 1px solid var(--border-subtle);
-        background: rgba(0, 0, 0, 0.2);
+        background: var(--bg-surface-elevated);
         padding: 0.55rem 0.6rem;
       }
 
@@ -1869,8 +1837,8 @@
         border-radius: 3px;
         background: linear-gradient(
           90deg,
-          rgba(255, 255, 255, 0.1),
-          rgba(255, 255, 255, 0.04)
+          var(--primary-subtle),
+          var(--bg-surface)
         );
         margin-bottom: 6px;
       }
@@ -1879,7 +1847,7 @@
         background: linear-gradient(
           90deg,
           var(--primary-subtle),
-          rgba(255, 255, 255, 0.03)
+          var(--primary-subtle)
         );
         width: 60%;
       }

@@ -2,15 +2,9 @@
 
 ## Identidade visual
 
-A logo fornecida está em `static/assets/saudash-brand.png`; o cabeçalho exibe a assinatura superior da imagem, preservando o arquivo original. O tema está em `static/styles/saudash.css`, e as cores do mapa e dos gráficos em `PROFILE_COLORS`, em `static/js/config.js`.
+O cabeçalho usa uma assinatura SVG inline, vetorizada a partir da marca original. O seletor **Tema** oferece Esmeralda, Dourado, Roxo e Verde profundo. A preferência fica salva neste navegador e vale para os três perfis de consulta.
 
-| Perfil | Principal | Escuros | Claros |
-| --- | --- | --- | --- |
-| Operadoras | `#009842` | `#003F1B`, `#00411C` | `#2EE37D`, `#42F38F` |
-| Pessoas Físicas | `#D59B00` | `#584000`, `#5B4200` | `#FFC834`, `#FFCD46` |
-| Governo | `#77018C` | `#31003A`, `#33003C` | `#C431DE`, `#D745F0` |
-
-Os identificadores internos dos perfis, as preferências salvas e as variáveis `MILTON_*` continuam compatíveis com a configuração existente.
+As quatro paletas ficam em `static/styles/themes.css`. O mapa, o minimapa, a legenda e os gráficos usam os mesmos tokens da interface. O token `--color-title-ink` fornece a variante de contraste para títulos sobre fundos claros.
 
 ## Projeto
 
@@ -20,7 +14,7 @@ Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revis�
 
 `static/js/motion.js` usa Web Animations API e um único IntersectionObserver com o `main` como raiz de rolagem. Entradas em cascata duram 420 ms, com intervalo de 45 ms e atraso máximo de 240 ms; cada lote anima até 16 elementos. Cards, tabelas e resultados adicionados pela API são observados automaticamente, e elementos removidos são liberados.
 
-`static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As transições interpolam apenas `transform` e `opacity`. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
+`static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As animações de entrada usam `transform` e `opacity`. A troca de tema suaviza as cores por 300 ms e respeita a preferência por movimento reduzido. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
 
 A troca mapa ↔ tabela tem saída de 150 ms e entrada de 300 ms, com fade e deslocamento horizontal invertido na volta. Os botões e o card flutuante compartilham o mesmo controlador, que cancela transições substituídas e faz a troca imediatamente quando movimento reduzido está ativo.
 

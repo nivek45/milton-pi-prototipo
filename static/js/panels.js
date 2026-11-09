@@ -1,6 +1,7 @@
 import {LatestRequest} from './api.js';
 const marketRequest=new LatestRequest();
-import {PROFILE_COLORS,PERSONAS,METRICS,metricValue,metricFormat,number,finite} from './config.js';
+import {themeColors} from './theme.js';
+import {PERSONAS,METRICS,metricValue,metricFormat,number,finite} from './config.js';
 import {byId,node,text,button} from './dom.js';
 
 function tile(label,value,badge=''){
@@ -210,22 +211,52 @@ export class Charts {
     if(!window.Chart)return;
     const canvas=byId(id);if(!canvas)return;
     canvas.setAttribute('role','img');canvas.setAttribute('aria-label',label+'. Os valores também estão disponíveis no conteúdo textual desta página.');
-    // Persona-aware colors
-    const persona=document.body.dataset.persona||'pessoa_comum';
-    const colors=PROFILE_COLORS[persona]||PROFILE_COLORS.pessoa_comum;
-    const palette=[colors.base,colors.bright,colors.dark,colors.light,colors.darkest];
-    const bgColors=rows.slice(0,20).map((_,i)=>palette[i%palette.length]);
-
-    const values=rows.slice(0,20),data={labels:values.map(r=>r[labelKey]),datasets:[{label,data:values.map(r=>r[valueKey]),backgroundColor:bgColors,borderRadius:4,borderSkipped:false}]};
+    const values=rows.slice(0,20),data={labels:values.map(r=>r[labelKey]),datasets:[{label,data:values.map(r=>r[valueKey]),borderRadius:4,borderSkipped:false}]};
     const chart=this.charts.get(id);
-    if(chart){chart.data=data;chart.update('none');}
-    else this.charts.set(id,new window.Chart(canvas,{
-      type:id==='chart-doughnut'?'doughnut':'bar',data,
-      options:{responsive:true,maintainAspectRatio:false,animation:false,
-        plugins:{legend:{display:id==='chart-doughnut',labels:{color:'#52676B',padding:12,usePointStyle:true}},title:{display:true,text:label,color:'#0C2D35',padding:{bottom:12}}},
-        scales:id==='chart-doughnut'?{}:{x:{ticks:{color:'#52676B',maxRotation:45},grid:{color:'rgba(12,45,53,0.09)'}},y:{beginAtZero:true,ticks:{color:'#52676B'},grid:{color:'rgba(12,45,53,0.09)'}}}
-      }
-    }));
+    if(chart){chart.data=data;this.applyTheme(chart);}
+    else {
+      const chart = new window.Chart(canvas, {
+        type: id === 'chart-doughnut' ? 'doughnut' : 'bar',
+        data,
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          plugins: {
+            legend: {display: id === 'chart-doughnut', labels: {padding: 12, usePointStyle: true}},
+            title: {display: true, text: label, padding: {bottom: 12}},
+          },
+          scales: id === 'chart-doughnut' ? {} : {
+            x: {ticks: {maxRotation: 45}}, y: {beginAtZero: true},
+          },
+        },
+      });
+      this.charts.set(id, chart);
+      this.applyTheme(chart);
+    }
+  }
+
+  applyTheme(chart) {
+    const colors = themeColors();
+    const series = [colors.title, colors.accent, colors.text, colors.surface];
+    for (const dataset of chart.data.datasets) {
+      dataset.backgroundColor = dataset.data.map((_, i) => series[i % series.length]);
+      dataset.borderColor = colors.text;
+      dataset.borderWidth = 1;
+    }
+    const {legend, title, tooltip} = chart.options.plugins;
+    legend.labels.color = colors.text;
+    title.color = colors.title;
+    tooltip.backgroundColor = colors.text;
+    tooltip.titleColor = tooltip.bodyColor = colors.white;
+    for (const axis of Object.values(chart.options.scales)) {
+      axis.ticks.color = colors.text;
+      axis.grid.color = colors.background;
+      axis.border.color = colors.title;
+    }
+    chart.update('none');
+  }
+
+  refreshTheme() {
+    for (const chart of this.charts.values()) this.applyTheme(chart);
   }
   destroy(){for(const chart of this.charts.values())chart.destroy();this.charts.clear();}
 }

@@ -1,4 +1,5 @@
-import {PROFILE_COLORS,METRICS,metricValue,metricFormat,finite} from './config.js';
+import {themeColors} from './theme.js';
+import {METRICS,metricValue,metricFormat,finite} from './config.js';
 import {LatestRequest} from './api.js';
 import {byId,node,button,text} from './dom.js';
 
@@ -62,16 +63,15 @@ export class BrazilMap {
     const spec=METRICS[metric];
     const values=(this.geo?.features||[]).map(d=>metricValue(this.state?.snapshot,d.properties.sigla,metric)).filter(finite);
     const domain=spec.domain||[0,Math.max(1,...values)];
-    const persona=this.state?.persona||'pessoa_comum';
-    const palette=PROFILE_COLORS[persona]||PROFILE_COLORS.pessoa_comum;
-    const colors=[palette.light,palette.base,palette.darkest];
+    const palette=themeColors();
+    const colors=[palette.background,palette.accent,palette.text];
     return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(colors)).clamp(true);
   }
   draw(geometry) {
     const metric=this.state?.metric||'cob_plano',scale=this.scale();
-    const fill=d=>{const value=metricValue(this.state?.snapshot,d.properties.sigla,metric);return finite(value)?scale(value):'#33363b';};
+    const fill=d=>{const value=metricValue(this.state?.snapshot,d.properties.sigla,metric);return finite(value)?scale(value):'var(--color-no-data)';};
     const paths=this.paths.selectAll('path').data(this.geo.features,d=>d.properties.sigla).join(
-      enter=>enter.append('path').attr('class','state-feature').attr('fill','#33363b')
+      enter=>enter.append('path').attr('class','state-feature').attr('fill','var(--color-no-data)')
         .attr('tabindex',0).attr('role','button')
         .on('pointerenter',(event,d)=>this.showTooltip(event,d))
         .on('pointermove',event=>this.moveTooltip(event))
@@ -113,7 +113,7 @@ export class BrazilMap {
     const projection=this.d3.geoMercator().fitExtent([[4,4],[202,100]],this.geo);
     const path=this.d3.geoPath(projection);
     svg.attr('viewBox','0 0 206 104').selectAll('path').data(this.geo.features,d=>d.properties.sigla).join('path')
-      .attr('d',path).attr('fill',fill).attr('stroke',d=>d.properties.sigla===this.state?.uf?'#fff':'#151619')
+      .attr('d',path).attr('fill',fill).attr('stroke',d=>d.properties.sigla===this.state?.uf?'var(--color-text)':'var(--color-white)')
       .attr('stroke-width',d=>d.properties.sigla===this.state?.uf?1.4:0.5);
   }
   focus(uf,animate=true) {

@@ -1,0 +1,71 @@
+/* Theme primitives shared by CSS, the D3 scale and Chart.js. */
+:root,
+:root[data-theme="green"] {
+  --color-primary-titles: #22b55e;
+  --color-bg: #e6f7f0;
+  --color-map-surface: #6ee7b7;
+  --color-text: #064e3b;
+  --color-title-ink: #08663c;
+}
+
+:root[data-theme="amber"] {
+  --color-primary-titles: #f59e0b;
+  --color-bg: #fefce8;
+  --color-map-surface: #fde047;
+  --color-text: #78350f;
+  --color-title-ink: #805000;
+}
+
+:root[data-theme="purple"] {
+  --color-primary-titles: #9333ea;
+  --color-bg: #faf5ff;
+  --color-map-surface: #c084fc;
+  --color-text: #3b0764;
+  --color-title-ink: #7621b7;
+}
+
+:root[data-theme="deep-green"] {
+  --color-primary-titles: #008346;
+  --color-bg: #d4eedf;
+  --color-map-surface: #5bc588;
+  --color-text: #00361c;
+  --color-title-ink: #00542d;
+}
+
+:root {
+  color-scheme: light;
+  --color-white: #fff;
+  --color-no-data: #65706c;
+  --color-warning: #724216;
+  --color-warning-bg: #fff1cd;
+  --color-danger: #7c362a;
+  --color-danger-bg: #f9e7e0;
+  --color-overlay: color-mix(in srgb, var(--color-text) 46%, transparent);
+  --color-shadow: color-mix(in srgb, var(--color-text) 14%, transparent);
+
+  --bg-app: var(--color-bg);
+  --bg-surface: color-mix(in srgb, var(--color-bg) 20%, var(--color-white));
+  --bg-sidebar: var(--bg-surface);
+  --bg-surface-elevated: var(--color-bg);
+  --bg-surface-hover: var(--primary-subtle);
+  --text-main: var(--color-text);
+  --text-muted: color-mix(in srgb, var(--color-text) 88%, var(--bg-surface));
+  --text-faint: var(--text-muted);
+  --text-secondary: var(--text-muted);
+  --primary: var(--color-title-ink);
+  --primary-light: var(--primary);
+  --primary-subtle: color-mix(in srgb, var(--color-map-surface) 20%, var(--bg-surface));
+  --primary-glow: var(--color-shadow);
+  --border-subtle: color-mix(in srgb, var(--color-text) 20%, var(--bg-surface));
+  --border-default: color-mix(in srgb, var(--color-text) 66%, var(--bg-surface));
+  --border-active: var(--primary);
+  --accent-teal: var(--primary);
+  --accent-cyan: var(--primary);
+  --accent-blue: var(--primary);
+  --accent-indigo: var(--primary);
+  --accent-amber: var(--color-warning);
+  --accent-rose: var(--color-danger);
+  --glass-bg: var(--bg-surface);
+  --glass-border: var(--border-default);
+  --shadow-card: 0 3px 12px var(--color-shadow);
+}

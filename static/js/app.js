@@ -1,3 +1,4 @@
+import {setupTheme} from './theme.js';
 import {setupDrawer} from './accessibility.js';
 import {reveal,setupScrollMotion,createViewSwap} from './motion.js';
 import {setupLocation,renderFilters} from './location.js';
@@ -13,6 +14,10 @@ let storage;try{storage=window.localStorage;}catch{}
 const store=createStore(storage),snapshotRequest=new LatestRequest(),municipalityRequest=new LatestRequest(),statsRequest=new LatestRequest();
 const life=new AbortController(),charts=new Charts(),tables=new Map(),searches=new Map();
 const map=new BrazilMap(uf=>selectUF(uf));
+setupTheme(byId('theme-select'), storage, () => {
+  map.update(store.get());
+  charts.refreshTheme();
+}, life.signal);
 let searchTimer=0;
 function chartRows(kind,rows){
   if(kind==='mkt')charts.show('chart-market',rows,'nm','ben','Beneficiários — página exibida');

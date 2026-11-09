@@ -1,6 +1,12 @@
-/* SaúDash motion layer. Only transform and opacity are interpolated.
-   This also constrains legacy `transition: all`, width, color and shadow rules. */
-*, *::before, *::after { transition-property:transform,opacity !important; }
+/* Limit legacy transition:all rules to movement and theme-dependent paint. */
+*, *::before, *::after {
+  transition-property:transform, opacity, background-color, color, fill, border-color !important;
+}
+html, body, header, main, section, .page, .map-viewport, .map-legend,
+.map-side-panel, .card-panel, .theme-picker select, .brand-logo path, #pip-svg path,
+#map-svg .state-feature {
+  transition:background-color 0.3s ease, color 0.3s ease, fill 0.3s ease;
+}
 :root { --motion-ease:cubic-bezier(.22,1,.36,1); }
 /* Sliding views must not create a horizontal scrollbar on narrow screens.
    Wide data tables keep their own existing horizontal scroll container. */
@@ -21,8 +27,8 @@ button, .brand-logo, .nav-link, .metric-card, .stat-tile, .pip-card {
   transition-timing-function:var(--motion-ease);
 }
 /* Preserve card dimensions on hover; lift instead of adding/removing borders. */
-.stat-tile:hover { border:0; border-left:3px solid var(--profile-base); }
-.pip-card:hover { box-shadow:0 5px 15px #254e3d20; }
+.stat-tile:hover { border:0; border-left:3px solid var(--color-primary-titles); }
+.pip-card:hover { box-shadow:0 5px 15px var(--color-shadow); }
 .brand-logo { transform-origin:center; }
 @media (hover:hover) and (pointer:fine) and (prefers-reduced-motion:no-preference) {
   :is(.seg-btn,.ctrl-btn,.swap-view-btn,.shortcut-button,.filter-chip,.table-detail-btn,
