@@ -2,9 +2,9 @@
 
 ## Identidade visual
 
-O cabeçalho usa uma assinatura SVG inline, vetorizada a partir da marca original. O seletor **Tema** oferece Esmeralda, Dourado, Roxo e Verde profundo. A preferência fica salva neste navegador e vale para os três perfis de consulta.
+O cabeçalho usa uma assinatura SVG inline, vetorizada a partir da marca original. O perfil selecionado define a paleta do painel: verde para Pessoas Físicas, roxo para Governo e amarelo-dourado para Operadoras. Ao reabrir o painel, a paleta acompanha o último perfil salvo no navegador. O painel inicia no modo claro. No cabeçalho, a lua ativa o modo escuro e o sol retorna ao modo claro.
 
-As quatro paletas ficam em `static/styles/themes.css`. O mapa, o minimapa, a legenda e os gráficos usam os mesmos tokens da interface. O token `--color-title-ink` fornece a variante de contraste para títulos sobre fundos claros.
+As três paletas ficam em `static/styles/themes.css`. O mapa, o minimapa, a legenda e os gráficos usam os mesmos tokens da interface. O token `--color-title-ink` fornece a variante de contraste para títulos sobre fundos claros.
 
 ## Projeto
 
@@ -14,7 +14,7 @@ Dashboard Flask + PostgreSQL, com JavaScript modular, D3 e Chart.js. Esta revis�
 
 `static/js/motion.js` usa Web Animations API e um único IntersectionObserver com o `main` como raiz de rolagem. Entradas em cascata duram 420 ms, com intervalo de 45 ms e atraso máximo de 240 ms; cada lote anima até 16 elementos. Cards, tabelas e resultados adicionados pela API são observados automaticamente, e elementos removidos são liberados.
 
-`static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As animações de entrada usam `transform` e `opacity`. A troca de tema suaviza as cores por 300 ms e respeita a preferência por movimento reduzido. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
+`static/styles/motion.css` adiciona elevação no hover, resposta ao clique e entrada de diálogos. As animações de entrada usam `transform` e `opacity`. A troca de perfil suaviza as cores por 300 ms e respeita a preferência por movimento reduzido. Não há listeners de scroll por frame nem `will-change` permanente. Gráficos são desenhados sem interpolação do canvas; a entrada visual acontece no contêiner.
 
 A troca mapa ↔ tabela tem saída de 150 ms e entrada de 300 ms, com fade e deslocamento horizontal invertido na volta. Os botões e o card flutuante compartilham o mesmo controlador, que cancela transições substituídas e faz a troca imediatamente quando movimento reduzido está ativo.
 

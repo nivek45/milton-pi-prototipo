@@ -1,40 +1,44 @@
-/* Theme primitives shared by CSS, the D3 scale and Chart.js. */
+/* The active consultation profile supplies every surface and data color. */
+:root {
+  --persona-amber: #f4b82d;
+  --persona-purple: #982eaa;
+  --persona-green: #20ac5e;
+}
 :root,
-:root[data-theme="green"] {
-  --color-primary-titles: #22b55e;
-  --color-bg: #e6f7f0;
-  --color-map-surface: #6ee7b7;
-  --color-text: #064e3b;
-  --color-title-ink: #08663c;
+:root[data-persona="pessoa_comum"] {
+  --color-primary-titles: var(--persona-green);
+  --color-on-accent: #052b15;
+  --color-bg: #edf8ef;
+  --color-map-surface: #a4ddb8;
+  --color-text: #144a2b;
+  --color-title-ink: #086739;
 }
-
-:root[data-theme="amber"] {
-  --color-primary-titles: #f59e0b;
-  --color-bg: #fefce8;
-  --color-map-surface: #fde047;
-  --color-text: #78350f;
-  --color-title-ink: #805000;
+:root[data-persona="setor_publico"] {
+  --color-primary-titles: var(--persona-purple);
+  --color-on-accent: var(--color-white);
+  --color-bg: #faf3fb;
+  --color-map-surface: #dbb9e4;
+  --color-text: #47184e;
+  --color-title-ink: #762485;
 }
-
-:root[data-theme="purple"] {
-  --color-primary-titles: #9333ea;
-  --color-bg: #faf5ff;
-  --color-map-surface: #c084fc;
-  --color-text: #3b0764;
-  --color-title-ink: #7621b7;
-}
-
-:root[data-theme="deep-green"] {
-  --color-primary-titles: #008346;
-  --color-bg: #d4eedf;
-  --color-map-surface: #5bc588;
-  --color-text: #00361c;
-  --color-title-ink: #00542d;
+:root[data-persona="setor_privado"] {
+  --color-primary-titles: var(--persona-amber);
+  --color-on-accent: #322108;
+  --color-bg: #fff9e9;
+  --color-map-surface: #f7dda0;
+  --color-text: #53380d;
+  --color-title-ink: #855708;
 }
 
 :root {
   color-scheme: light;
   --color-white: #fff;
+  --color-map-background: color-mix(in srgb, var(--color-map-surface) 16%, var(--color-white));
+  --color-map-glow: color-mix(in srgb, var(--color-white) 58%, transparent);
+  --color-map-boundary: var(--color-white);
+  --color-scale-low: var(--color-bg);
+  --color-inverse-surface: var(--color-text);
+  --color-inverse-ink: var(--color-white);
   --color-no-data: #65706c;
   --color-warning: #724216;
   --color-warning-bg: #fff1cd;
@@ -68,4 +72,45 @@
   --glass-bg: var(--bg-surface);
   --glass-border: var(--border-default);
   --shadow-card: 0 3px 12px var(--color-shadow);
+}
+
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --persona-green: #4bc989;
+  --persona-purple: #ce85de;
+  --persona-amber: #efbc55;
+  --bg-surface: color-mix(in srgb, var(--color-bg) 94%, var(--color-text));
+  --bg-surface-elevated: color-mix(in srgb, var(--color-bg) 89%, var(--color-text));
+  --color-map-background: color-mix(in srgb, var(--color-map-surface) 32%, var(--color-bg));
+  --color-map-glow: color-mix(in srgb, var(--color-map-surface) 28%, transparent);
+  --color-map-boundary: var(--color-bg);
+  --color-scale-low: var(--color-map-surface);
+  --color-inverse-surface: var(--color-map-surface);
+  --color-inverse-ink: var(--color-text);
+  --color-no-data: #6d7977;
+  --color-overlay: rgb(0 0 0 / 65%);
+  --color-shadow: rgb(0 0 0 / 30%);
+  --color-warning: #ffdc96;
+  --color-warning-bg: #42341d;
+  --color-danger: #ffbcae;
+  --color-danger-bg: #452725;
+}
+:root[data-mode="dark"][data-persona="pessoa_comum"] {
+  --color-bg: #101b17;
+  --color-map-surface: #284e3b;
+  --color-text: #e1f2e7;
+  --color-title-ink: #92e1b2;
+}
+:root[data-mode="dark"][data-persona="setor_publico"] {
+  --color-bg: #1c1621;
+  --color-map-surface: #503658;
+  --color-on-accent: #33153d;
+  --color-text: #f2e6f5;
+  --color-title-ink: #e0abee;
+}
+:root[data-mode="dark"][data-persona="setor_privado"] {
+  --color-bg: #201b12;
+  --color-map-surface: #584421;
+  --color-text: #f5ead5;
+  --color-title-ink: #f2ce82;
 }

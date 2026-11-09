@@ -64,7 +64,7 @@ export class BrazilMap {
     const values=(this.geo?.features||[]).map(d=>metricValue(this.state?.snapshot,d.properties.sigla,metric)).filter(finite);
     const domain=spec.domain||[0,Math.max(1,...values)];
     const palette=themeColors();
-    const colors=[palette.background,palette.accent,palette.text];
+    const colors=[palette.scaleLow,palette.accent,palette.text];
     return this.d3.scaleSequential().domain(domain).interpolator(this.d3.interpolateRgbBasis(colors)).clamp(true);
   }
   draw(geometry) {
@@ -113,7 +113,7 @@ export class BrazilMap {
     const projection=this.d3.geoMercator().fitExtent([[4,4],[202,100]],this.geo);
     const path=this.d3.geoPath(projection);
     svg.attr('viewBox','0 0 206 104').selectAll('path').data(this.geo.features,d=>d.properties.sigla).join('path')
-      .attr('d',path).attr('fill',fill).attr('stroke',d=>d.properties.sigla===this.state?.uf?'var(--color-text)':'var(--color-white)')
+      .attr('d',path).attr('fill',fill).attr('stroke',d=>d.properties.sigla===this.state?.uf?'var(--color-text)':'var(--color-map-boundary)')
       .attr('stroke-width',d=>d.properties.sigla===this.state?.uf?1.4:0.5);
   }
   focus(uf,animate=true) {

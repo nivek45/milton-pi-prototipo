@@ -1,4 +1,4 @@
-import {setupTheme} from './theme.js';
+import {themeColors} from './theme.js';
 import {setupDrawer} from './accessibility.js';
 import {reveal,setupScrollMotion,createViewSwap} from './motion.js';
 import {setupLocation,renderFilters} from './location.js';
@@ -14,10 +14,6 @@ let storage;try{storage=window.localStorage;}catch{}
 const store=createStore(storage),snapshotRequest=new LatestRequest(),municipalityRequest=new LatestRequest(),statsRequest=new LatestRequest();
 const life=new AbortController(),charts=new Charts(),tables=new Map(),searches=new Map();
 const map=new BrazilMap(uf=>selectUF(uf));
-setupTheme(byId('theme-select'), storage, () => {
-  map.update(store.get());
-  charts.refreshTheme();
-}, life.signal);
 let searchTimer=0;
 function chartRows(kind,rows){
   if(kind==='mkt')charts.show('chart-market',rows,'nm','ben','Beneficiários — página exibida');
@@ -98,7 +94,10 @@ function render(state,previous={},action={}){
   const focused=document.activeElement;
   if(previous.page&&previousView!==currentView)scrollPositions.set(previousView,document.querySelector('main').scrollTop);
   document.body.dataset.loadState=state.status;
-  document.body.dataset.persona=state.persona;
+  if (previous.persona !== state.persona) {
+    document.documentElement.dataset.persona = state.persona;
+    refreshTheme();
+  }
   byId('state-details').hidden=!state.uf;
   document.body.dataset.scope=state.uf?'state':'country';
   byId('persona-selector').style.setProperty('--persona-index',Object.keys(PERSONAS).indexOf(state.persona));
@@ -160,7 +159,20 @@ const viewSwap=createViewSwap({
   getElement:view=>byId(view==='map'?'map-layout-el':'swap-table-container'),
   commit:view=>store.dispatch({type:'view',value:view}),
 });
+function refreshTheme() {
+  document.querySelector('meta[name="theme-color"]').content = themeColors().background;
+  charts.refreshTheme();
+}
 const actions={
+  toggleMode(event) {
+    const root = document.documentElement;
+    const dark = root.dataset.mode !== 'dark';
+    root.dataset.mode = dark ? 'dark' : 'light';
+    event.currentTarget.setAttribute('aria-pressed', String(dark));
+    event.currentTarget.title = dark ? 'Ativar modo claro' : 'Ativar modo escuro';
+    refreshTheme();
+    map.update(store.get());
+  },
   goToMap:event=>{
     event.preventDefault();
     viewSwap.cancel();

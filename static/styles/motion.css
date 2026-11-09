@@ -3,7 +3,7 @@
   transition-property:transform, opacity, background-color, color, fill, border-color !important;
 }
 html, body, header, main, section, .page, .map-viewport, .map-legend,
-.map-side-panel, .card-panel, .theme-picker select, .brand-logo path, #pip-svg path,
+.map-side-panel, .card-panel, .brand-logo path, #pip-svg path,
 #map-svg .state-feature {
   transition:background-color 0.3s ease, color 0.3s ease, fill 0.3s ease;
 }

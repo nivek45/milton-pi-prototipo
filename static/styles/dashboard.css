@@ -1814,7 +1814,7 @@
         height: 108px;
         border-radius: var(--radius-sm);
         overflow: hidden;
-        background: var(--color-map-surface);
+        background: var(--color-map-background);
         border: 1px solid var(--border-subtle);
       }
 

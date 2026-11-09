@@ -245,8 +245,8 @@ export class Charts {
     const {legend, title, tooltip} = chart.options.plugins;
     legend.labels.color = colors.text;
     title.color = colors.title;
-    tooltip.backgroundColor = colors.text;
-    tooltip.titleColor = tooltip.bodyColor = colors.white;
+    tooltip.backgroundColor = colors.tooltipSurface;
+    tooltip.titleColor = tooltip.bodyColor = colors.tooltipText;
     for (const axis of Object.values(chart.options.scales)) {
       axis.ticks.color = colors.text;
       axis.grid.color = colors.background;
